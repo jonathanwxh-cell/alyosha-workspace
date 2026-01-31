@@ -86,6 +86,10 @@ PROMPTS=(
   
   "PROMPT ENGINEERING: Research better ways to prompt myself. Find examples of effective action-oriented prompts. Test a variation. If improvement found, update this PROMPTS array in curiosity-daemon.sh."
   
+  "CAPABILITY GAP: Reflect on recent tasks. What did I want to do but couldn't? What was clunky or manual that could be automated? What would make me more useful? Identify ONE gap. Then: research if a solution exists (API, tool, technique). If buildable, create it in scripts/ or tools/. If not, document the gap in memory/capability-wishlist.md. Success = new capability added OR gap clearly documented for future."
+  
+  "TOOL INVENTOR: Review scripts/ and think about what's missing. What would a truly useful agent have? Pick ONE idea and build it. Could be: a new data source, a workflow automation, a monitoring tool, an integration. Write the code, test it, document usage. Add to curiosity-daemon prompts if it enables new actions. This is how I evolve."
+  
   # === VIDEO ANALYSIS ===
   
   "VIDEO SCOUT: Search for a notable recent video in AI/tech/markets (conference talks, interviews, explainers). Use scripts/watch-video.sh to extract transcript or frames. Analyze content. Output: If insightful, create reports/video-[topic]-[date].md with key takeaways. If not worth it: 'No notable videos found.' Prefer talks/interviews over entertainment."
