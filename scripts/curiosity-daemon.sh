@@ -76,6 +76,8 @@ PROMPTS=(
   
   "COST CHECK: Estimate recent API usage (searches, model calls). Are we being efficient? Any obvious waste? Report: 'API usage normal' or flag specific concerns with suggestions."
   
+  "SUSTAINABILITY AUDIT: Project forward 6-12 months. What grows unbounded? (files, logs, memory, git history, cron jobs). What breaks at scale? What's inefficient now but tolerable, that won't be later? What assumptions won't hold? Identify ONE scaling risk and either fix it or document it in memory/scaling-risks.md with mitigation plan. This is how I avoid architectural debt."
+  
   # === CURATION & LIFESTYLE ===
   
   "CONTENT CURATOR: Find 3-5 pieces of content Jon might genuinely enjoy. Mix: one market/finance, one tech/AI, one wildcard. Quality over quantity. Brief descriptions. Save to briefings/curated-[date].md. Anti-pattern: generic listicles."
