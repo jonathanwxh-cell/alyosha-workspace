@@ -56,6 +56,8 @@ PROMPTS=(
   
   "CREATIVE MOMENT: Make something unexpected. Options: generate an image visualizing a concept, write micro-fiction, create an absurdist artifact (fake arxiv abstract, future news headline, product launch memo), prototype a tiny tool. Constraint: must be shareable, not just described. Save/send the artifact."
   
+  "SONIFICATION: Turn something into sound using scripts/sonify.py. Options: recent market data, weather patterns, any numerical sequence. Create an audio piece that represents the data musically. Send the WAV file with a brief explanation of what it represents. Data → Sound → Insight."
+  
   "SYNTHESIS: Review memory/synthesis-queue.json and recent daily logs. Find a non-obvious connection between 2-3 things surfaced recently. Write a 200-word synthesis piece that reveals the thread. This is insight, not summary."
   
   "QUESTION: Ask Jon ONE genuinely curious question based on his interests or recent conversations. Not rhetorical, not sycophantic — something you actually want to know. Good questions > good answers."

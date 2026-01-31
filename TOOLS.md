@@ -35,10 +35,11 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 ### Web / Search
 - **Primary:** Brave Search (`web_search`)
-- **Apify:** ✅ Configured — use only when Jon mentions it, or for scraping tasks web_fetch can't handle
-- **r/singapore scraper:** `scripts/reddit-sg.sh` — uses Apify to bypass Reddit blocks
+- **Apify:** ✅ Configured — but EXPENSIVE. Use as last resort only.
+  - Try alternatives first: web search, RSS, public page fetches
+  - For social media: search food blogs/aggregators that compile trends instead of direct scraping
+  - OK for high-value targeted scrapes, NOT for broad discovery
+- **r/singapore scraper:** `scripts/reddit-sg.sh` — uses Apify (use sparingly)
 - Default to Brave + web_fetch for research
-
----
 
 Add whatever helps you do your job. This is your cheat sheet.

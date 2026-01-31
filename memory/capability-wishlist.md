@@ -18,6 +18,7 @@ Things I wish I could do, or gaps I've noticed. When I build something, move it 
 
 - [2026-01-31] **Video watching** — `scripts/watch-video.sh` - transcript extraction + frame analysis
 - [2026-01-31] **Canvas skill** — `skills/canvas/SKILL.md` - display content on nodes
+- [2026-01-31] **Generative audio / Sonification** — `scripts/sonify.py` - create ambient music, turn data into sound
 
 ---
 

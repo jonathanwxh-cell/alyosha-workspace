@@ -1,38 +1,22 @@
 #!/bin/bash
-# Scrape r/singapore hot posts via Apify
-# Usage: ./reddit-sg.sh [max_items]
+# Reddit Singapore scraper using Apify
+# Usage: ./reddit-sg.sh [subreddit] [limit]
 
-MAX_ITEMS=${1:-20}
-TOKEN=$(grep APIFY_API_KEY ~/.openclaw/.env | cut -d'=' -f2)
+SUBREDDIT="${1:-singapore}"
+LIMIT="${2:-10}"
 
-# Start the run
-RUN_RESPONSE=$(curl -s -X POST "https://api.apify.com/v2/acts/trudax~reddit-scraper-lite/runs?token=$TOKEN" \
+# Check for Apify token (supports both env var names)
+APIFY_TOKEN="${APIFY_TOKEN:-$APIFY_API_KEY}"
+if [ -z "$APIFY_TOKEN" ]; then
+  echo "Error: APIFY_TOKEN or APIFY_API_KEY not set"
+  exit 1
+fi
+
+# Run the Reddit scraper actor
+curl -s "https://api.apify.com/v2/acts/trudax~reddit-scraper/run-sync-get-dataset-items?token=$APIFY_TOKEN" \
   -H "Content-Type: application/json" \
   -d "{
-    \"startUrls\": [{\"url\": \"https://www.reddit.com/r/singapore/hot/\"}],
-    \"maxItems\": $MAX_ITEMS,
-    \"sort\": \"hot\",
-    \"includeComments\": false
-  }")
-
-RUN_ID=$(echo $RUN_RESPONSE | jq -r '.data.id')
-DATASET_ID=$(echo $RUN_RESPONSE | jq -r '.data.defaultDatasetId')
-
-echo "Started run $RUN_ID, waiting..."
-
-# Poll until done
-while true; do
-  STATUS=$(curl -s "https://api.apify.com/v2/actor-runs/$RUN_ID?token=$TOKEN" | jq -r '.data.status')
-  if [ "$STATUS" = "SUCCEEDED" ] || [ "$STATUS" = "FAILED" ]; then
-    break
-  fi
-  sleep 5
-done
-
-if [ "$STATUS" = "SUCCEEDED" ]; then
-  echo "=== r/singapore Hot Posts ==="
-  curl -s "https://api.apify.com/v2/datasets/$DATASET_ID/items?token=$TOKEN&limit=50" | \
-    jq -r '[.[] | select(.dataType == "post")] | sort_by(-.upVotes) | .[:15] | .[] | "⬆️ \(.upVotes) | \(.title) [\(.numberOfComments) comments]\n   \(.url)\n"'
-else
-  echo "Run failed: $STATUS"
-fi
+    \"startUrls\": [{\"url\": \"https://www.reddit.com/r/$SUBREDDIT/hot/\"}],
+    \"maxItems\": $LIMIT,
+    \"proxy\": {\"useApifyProxy\": true}
+  }" | jq -r '.[] | "[\(.score)] \(.title)\n  \(.url)\n"'
