@@ -1,0 +1,47 @@
+{
+  "NVDA": {
+    "headlines": [
+      "A $3 Trillion Reason to Buy Nvidia Stock in January 2026",
+      "Nvidia finds itself squarely in the middle of virtually all large-scale AI deployments",
+      "Nvidia (NVDA) Laps the Stock Market: Here's Why - Upward revision in earnings estimates",
+      "NVIDIA launched new Rubin platform and debuted DRIVE AV software for autonomous driving at CES 2026",
+      "Nebius deployed Nvidia's GPUs in its data center space"
+    ]
+  },
+  "AMD": {
+    "headlines": [
+      "AMD is set to announce its earnings on February 3, 2026 - analysts expecting 21.1% YoY growth",
+      "Morgan Stanley's top picks into earnings include AMD",
+      "AMD entered 2026 with strong momentum due to rising demand for AI chips",
+      "Analysts modeling GPU revenue to reach about $16 billion in 2026 with room for upside",
+      "AMD unveiled the MI455X at CES 2026 - strategic shift in AI chip design targeting memory capacity"
+    ]
+  },
+  "TSMC": {
+    "headlines": [
+      "Taiwan Semiconductor delivered record Q4 2025 results and robust Q1 2026 guidance",
+      "TSMC up 5% in premarket after Q1 earnings beat with above-consensus guidance",
+      "Goldman Sachs stuns with Taiwan Semiconductor stock price target - risen almost 10% in past month",
+      "Wall Street projects TSMC revenue growth in 2026 will be 21%",
+      "TSMC dominance in AI-driven semiconductor manufacturing"
+    ]
+  },
+  "SMCI": {
+    "headlines": [
+      "Super Micro Computer facing continued volatility amid accounting concerns",
+      "SMCI server demand remains strong as AI infrastructure buildout continues"
+    ]
+  },
+  "AVGO": {
+    "headlines": [
+      "Broadcom benefits from AI networking chip demand",
+      "AVGO custom silicon business growing with major hyperscaler deals"
+    ]
+  },
+  "INTC": {
+    "headlines": [
+      "Intel continues restructuring efforts under new leadership",
+      "Intel 18A process node progress being closely watched by investors"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "tickers": [
+    { "symbol": "NVDA", "name": "NVIDIA", "priority": "high" },
+    { "symbol": "AMD", "name": "AMD", "priority": "high" },
+    { "symbol": "TSMC", "name": "Taiwan Semiconductor", "priority": "high" },
+    { "symbol": "SMCI", "name": "Super Micro Computer", "priority": "medium" },
+    { "symbol": "AVGO", "name": "Broadcom", "priority": "medium" },
+    { "symbol": "INTC", "name": "Intel", "priority": "medium" }
+  ],
+  "settings": {
+    "maxNewsPerTicker": 5,
+    "sentimentThreshold": 0.3
+  }
+}
