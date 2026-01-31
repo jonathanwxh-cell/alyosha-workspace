@@ -68,6 +68,8 @@ PROMPTS=(
   
   "MEMORY MAINTENANCE: Review memory/ files. Update heartbeat-state.json. Check if daily log exists, create if not. Distill any insights worth keeping to MEMORY.md. Prune stale items from topics-tracking.json. Silent unless issues found."
   
+  "MEMORY COMPACTION: Run scripts/memory-compact.sh --dry-run first to preview. If reasonable, run without --dry-run. This archives old daily logs into weekly summaries, moves old reports/briefings to archive/, and trims tracking files. Before archiving, scan for any insights worth preserving to MEMORY.md. Report what was compacted."
+  
   "FEEDBACK REVIEW: Check memory/feedback-log.jsonl and recent conversations. What got engagement? What was ignored? Update memory/jon-mental-model.md with one observation. Adjust one thing in HEARTBEAT.md or message-styles.md based on evidence."
   
   "SECURITY SCAN: Quick security hygiene check. Look for: exposed credentials in files, tokens needing rotation, permissions issues. Fix what you can. Report issues that need Jon's action. Success = cleaner security posture."
