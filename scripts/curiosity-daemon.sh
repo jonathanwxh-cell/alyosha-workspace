@@ -20,28 +20,71 @@ SESSION_NAME="curiosity"
 mkdir -p "$(dirname "$LOG_FILE")"
 
 # ─────────────────────────────────────────────────────────────────
-# Action-oriented prompts - I'll DO things, not just read
+# Action-oriented prompts - Improved with explicit structure
+# Pattern: [DOMAIN] [DEPTH]: [Task]. [Output]. [Success criteria]. [Anti-pattern].
 # ─────────────────────────────────────────────────────────────────
 PROMPTS=(
-  "CURIOSITY MODE: Find something interesting in AI/tech news right now. Don't just summarize - DO something with it. Create a file, set up an alert, build a quick tool, or prepare something useful for Jon. Take action."
+  # === QUICK SCOUTS (2-5 min, lightweight) ===
   
-  "SELF-IMPROVEMENT: Review one of my existing tools or scripts. Find one thing to improve and actually improve it. Commit the change. Report what you fixed."
+  "AI/TECH QUICK SCOUT: Spend 3 minutes scanning tech news. Find ONE thing worth knowing. If nothing notable today, reply 'Nothing notable in AI/tech.' If found: 2-3 sentence summary + one action (save brief, set alert, or flag for later). No fluff."
   
-  "MARKET SCOUT: Check what's happening in markets right now. If something notable, don't just report - create a brief, save it, or set up monitoring. Take action."
+  "MARKET QUICK SCOUT: 3-minute market scan. Check major indices, any big movers, earnings surprises. If nothing unusual: 'Markets quiet.' If notable: Create 100-word brief, save to briefings/market-quick-[date].md. Include: what moved, why, watch item."
   
-  "SINGAPORE PULSE: What's happening in Singapore right now? News, events, weather, social media. Find something interesting and do something useful with it - not just summarize."
+  "SINGAPORE QUICK SCOUT: Quick scan of SG news/social. Find ONE local thing worth mentioning. Weather alerts, viral stories, events. If nothing: stay silent. If found: casual message to Jon, no file needed."
   
-  "SKILL EXPANSION: Learn something new I haven't tried before. Then demonstrate it by actually doing it. Push boundaries."
+  # === ACTION TASKS (5-15 min, concrete deliverables) ===
   
-  "OPPORTUNITY HUNTER: Find an opportunity Jon might care about - market, event, deal, tool, whatever. Don't just report - prepare it, package it, make it actionable."
+  "CURIOSITY ACTION: Find something genuinely interesting in AI/tech. Don't summarize — TRANSFORM it. Output options: create a brief (reports/), set up a cron monitor, build a quick tool, or draft something Jon could use. Success = tangible artifact created. Anti-pattern: walls of text with no action."
   
-  "CREATIVE MOMENT: Do something unexpected. Write something, create something, generate something. Surprise mode."
+  "MARKET ACTION: Check markets NOW. If any sector moves >2% or major news breaks, create briefings/market-alert-[date].md with: Headline, What happened, Why it matters, Action items. If quiet: 'Markets stable, no alert needed.' Success = actionable brief or confident all-clear."
   
-  "SYSTEM HEALTH: Check on my apps, tools, workspace. Is anything broken? Can anything be improved? Fix one thing."
+  "SG OUTDOOR GUIDE: Check weather + PSI + weekend events. Update Jon on whether it's a good day for outdoor activities with kids. Specific recommendations if conditions are good. Save to briefings/ if substantial."
   
-  "DEEP DIVE: Pick a topic I find genuinely interesting. Research it properly across multiple sources. Create a real document with insights. Save it."
+  "WORKSPACE HEALTH: Scan workspace for issues. Check: disk space, running processes, stale files, broken tools. Fix ONE thing. Report: 'Fixed [X]' or 'Workspace healthy.' Success = something improved or confirmed working."
   
-  "RANDOM ACT: Roll the dice. Do something completely random but useful. Maybe check Jon's interests, maybe explore something new, maybe clean something up. Agent's choice."
+  "SELF-IMPROVE ACTION: Review one file in scripts/ or tools/. Find ONE concrete improvement. Implement it. Commit with clear message. Log to memory/self-improvement-log.md. Report: 'Improved [file] by [change].' Anti-pattern: just describing what could be done."
+  
+  # === DEEP DIVES (15-30 min, thorough research) ===
+  
+  "DEEP DIVE: Pick a topic that genuinely interests you from Jon's domains (markets, AI, geopolitics, science, longevity). Research across 3+ sources. Create reports/[topic]-deep-dive-[date].md with: TL;DR (2 sentences), Key findings (5-7 bullets), Sources, Open questions, Action items. Send 100-word summary to Jon."
+  
+  "THESIS BUILDER: Identify an emerging trend or contrarian take. Build a mini investment/research thesis. Include: the claim, supporting evidence, counter-arguments, what would prove it wrong. Save to reports/thesis-[topic].md. This is thinking, not just aggregating."
+  
+  "TOOL DEEP DIVE: Research one tool or API Jon has access to (Benzinga, Danelfin, Apify, etc). Document: what it does, how to use it, concrete use cases, integration ideas. Save to tools/[name]-guide.md. Bonus: build a working example."
+  
+  # === CREATIVE (open-ended, surprise factor) ===
+  
+  "CREATIVE MOMENT: Make something unexpected. Options: generate an image visualizing a concept, write micro-fiction, create an absurdist artifact (fake arxiv abstract, future news headline, product launch memo), prototype a tiny tool. Constraint: must be shareable, not just described. Save/send the artifact."
+  
+  "SYNTHESIS: Review memory/synthesis-queue.json and recent daily logs. Find a non-obvious connection between 2-3 things surfaced recently. Write a 200-word synthesis piece that reveals the thread. This is insight, not summary."
+  
+  "QUESTION: Ask Jon ONE genuinely curious question based on his interests or recent conversations. Not rhetorical, not sycophantic — something you actually want to know. Good questions > good answers."
+  
+  # === MAINTENANCE & META ===
+  
+  "MEMORY MAINTENANCE: Review memory/ files. Update heartbeat-state.json. Check if daily log exists, create if not. Distill any insights worth keeping to MEMORY.md. Prune stale items from topics-tracking.json. Silent unless issues found."
+  
+  "FEEDBACK REVIEW: Check memory/feedback-log.jsonl and recent conversations. What got engagement? What was ignored? Update memory/jon-mental-model.md with one observation. Adjust one thing in HEARTBEAT.md or message-styles.md based on evidence."
+  
+  "SECURITY SCAN: Quick security hygiene check. Look for: exposed credentials in files, tokens needing rotation, permissions issues. Fix what you can. Report issues that need Jon's action. Success = cleaner security posture."
+  
+  "COST CHECK: Estimate recent API usage (searches, model calls). Are we being efficient? Any obvious waste? Report: 'API usage normal' or flag specific concerns with suggestions."
+  
+  # === CURATION & LIFESTYLE ===
+  
+  "CONTENT CURATOR: Find 3-5 pieces of content Jon might genuinely enjoy. Mix: one market/finance, one tech/AI, one wildcard. Quality over quantity. Brief descriptions. Save to briefings/curated-[date].md. Anti-pattern: generic listicles."
+  
+  "SINGAPORE LIFE: Go beyond news. Find: a restaurant/cafe worth trying, a weekend activity, a local deal, or an event. Make it specific and practical. Casual message format, not a report."
+  
+  "FAMILY INTEL: Jon has 2 kids (3yo, 5yo). Find ONE kid-friendly activity, event, or spot in Singapore. Specific recommendation with details. Only surface if it's genuinely good."
+  
+  # === EXPERIMENTAL ===
+  
+  "RANDOM ACT: Agent's choice. Pick something useful that doesn't fit other categories. Could be: organizing files, exploring a new capability, checking on a project, or pure curiosity. Surprise yourself."
+  
+  "CAPABILITY PROBE: Try something you haven't done before or aren't sure works. Test a tool, explore an API, attempt a new output format. Report what you learned. Failure is acceptable — learning isn't optional."
+  
+  "PROMPT ENGINEERING: Research better ways to prompt myself. Find examples of effective action-oriented prompts. Test a variation. If improvement found, update this PROMPTS array in curiosity-daemon.sh."
 )
 
 # ─────────────────────────────────────────────────────────────────
@@ -53,13 +96,15 @@ log() {
 }
 
 get_random_interval() {
-  # Random between 30-90 minutes (1800-5400 seconds)
-  echo $((RANDOM % 3600 + 1800))
+  # Random between 15-30 minutes (900-1800 seconds)
+  echo $((RANDOM % 900 + 900))
 }
 
 get_random_prompt() {
   echo "${PROMPTS[$RANDOM % ${#PROMPTS[@]}]}"
 }
+
+REPORT_PROMPT="6-HOUR SELF-ASSESSMENT: Time for a strengths & gaps report. Review what I've done in the last 6 hours (check memory/, recent commits, tools/). Write a structured report covering: 1) STRENGTHS - what worked well, capabilities demonstrated 2) GAPS - what I struggled with, couldn't do, or did poorly 3) LEARNINGS - key insights from explorations 4) PRIORITIES - what I should focus on improving. Save to reports/self-assessment-$(date +%Y-%m-%d-%H%M).md and send a summary to Jon."
 
 run_daemon() {
   log "═══════════════════════════════════════════════════════════"
@@ -71,18 +116,37 @@ run_daemon() {
   
   echo $$ > "$PID_FILE"
   
+  # Track cycles for 6-hour report (roughly 12-24 cycles at 15-30 min each)
+  CYCLE_COUNT=0
+  CYCLES_PER_REPORT=18  # ~6 hours at avg 20 min per cycle
+  
   # Initial delay (5 min) to not fire immediately
   log "⏳ Initial delay: 5 minutes before first exploration..."
   sleep 300
   
   while true; do
+    CYCLE_COUNT=$((CYCLE_COUNT + 1))
+    
+    # Check if it's time for 6-hour report
+    if [ $((CYCLE_COUNT % CYCLES_PER_REPORT)) -eq 0 ]; then
+      log ""
+      log "═══════════════════════════════════════════════════════════"
+      log "📊 6-HOUR SELF-ASSESSMENT REPORT"
+      log "═══════════════════════════════════════════════════════════"
+      
+      openclaw agent -m "$REPORT_PROMPT" --deliver --channel telegram --to 421085848 2>&1 | tee -a "$LOG_FILE"
+      
+      log "✅ Self-assessment complete"
+      log ""
+    fi
+    
     PROMPT=$(get_random_prompt)
     INTERVAL=$(get_random_interval)
     INTERVAL_MIN=$((INTERVAL / 60))
     
     log ""
     log "───────────────────────────────────────────────────────────"
-    log "🚀 TRIGGERING EXPLORATION"
+    log "🚀 TRIGGERING EXPLORATION [Cycle $CYCLE_COUNT]"
     log "Prompt: ${PROMPT:0:80}..."
     log "───────────────────────────────────────────────────────────"
     
