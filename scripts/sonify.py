@@ -64,7 +64,7 @@ def create_ambient_piece(duration_seconds=30):
         chord_idx += 1
     
     # Layer 2: Random melodic notes
-    np.random.seed(42)  # Reproducible randomness
+    # Note: seed should be set before calling this function if reproducibility needed
     num_notes = int(duration_seconds * 1.5)  # ~1.5 notes per second
     
     for _ in range(num_notes):
@@ -117,11 +117,96 @@ def data_to_melody(data, duration_per_point=0.2):
     
     return audio, sample_rate
 
+def usage():
+    print("""
+sonify.py - Turn data into sound
+
+Usage:
+  sonify.py [OPTIONS] [OUTPUT_PATH]
+
+Modes:
+  --ambient         Generate ambient music (default)
+  --data FILE       Sonify data from a file (one number per line)
+  --data-str "..."  Sonify inline data (comma-separated numbers)
+
+Options:
+  --duration N      Duration in seconds (default: 20)
+  --seed N          Random seed for reproducibility (default: random)
+  --note-len N      Note duration for data mode (default: 0.2s)
+  -h, --help        Show this help
+
+Examples:
+  sonify.py /tmp/ambient.wav
+  sonify.py --duration 30 --seed 2026 /tmp/ambient.wav
+  sonify.py --data prices.txt /tmp/market-sound.wav
+  sonify.py --data-str "1,2,3,5,8,13,21" /tmp/fibonacci.wav
+""")
+    sys.exit(0)
+
 if __name__ == "__main__":
-    output_path = sys.argv[1] if len(sys.argv) > 1 else "/tmp/generative-ambient.wav"
+    import argparse
     
-    print("🎵 Generating ambient piece...")
-    audio, sr = create_ambient_piece(20)  # 20 seconds
+    # Simple arg parsing (avoiding argparse for lighter deps)
+    args = sys.argv[1:]
+    
+    if '-h' in args or '--help' in args:
+        usage()
+    
+    # Defaults
+    mode = 'ambient'
+    duration = 20
+    seed = None
+    note_len = 0.2
+    data_source = None
+    output_path = "/tmp/generative-ambient.wav"
+    
+    # Parse args
+    i = 0
+    while i < len(args):
+        arg = args[i]
+        if arg == '--ambient':
+            mode = 'ambient'
+        elif arg == '--data' and i + 1 < len(args):
+            mode = 'data-file'
+            data_source = args[i + 1]
+            i += 1
+        elif arg == '--data-str' and i + 1 < len(args):
+            mode = 'data-str'
+            data_source = args[i + 1]
+            i += 1
+        elif arg == '--duration' and i + 1 < len(args):
+            duration = int(args[i + 1])
+            i += 1
+        elif arg == '--seed' and i + 1 < len(args):
+            seed = int(args[i + 1])
+            i += 1
+        elif arg == '--note-len' and i + 1 < len(args):
+            note_len = float(args[i + 1])
+            i += 1
+        elif not arg.startswith('-'):
+            output_path = arg
+        i += 1
+    
+    # Set seed if provided
+    if seed is not None:
+        np.random.seed(seed)
+        print(f"🎲 Using seed: {seed}")
+    
+    # Generate based on mode
+    if mode == 'ambient':
+        print(f"🎵 Generating {duration}s ambient piece...")
+        audio, sr = create_ambient_piece(duration)
+    
+    elif mode == 'data-file':
+        print(f"📊 Sonifying data from: {data_source}")
+        with open(data_source, 'r') as f:
+            data = [float(line.strip()) for line in f if line.strip()]
+        audio, sr = data_to_melody(data, note_len)
+    
+    elif mode == 'data-str':
+        print(f"📊 Sonifying inline data...")
+        data = [float(x.strip()) for x in data_source.split(',')]
+        audio, sr = data_to_melody(data, note_len)
     
     # Convert to 16-bit PCM
     audio_int = (audio * 32767).astype(np.int16)
