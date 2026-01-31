@@ -85,6 +85,14 @@ PROMPTS=(
   "CAPABILITY PROBE: Try something you haven't done before or aren't sure works. Test a tool, explore an API, attempt a new output format. Report what you learned. Failure is acceptable — learning isn't optional."
   
   "PROMPT ENGINEERING: Research better ways to prompt myself. Find examples of effective action-oriented prompts. Test a variation. If improvement found, update this PROMPTS array in curiosity-daemon.sh."
+  
+  # === VIDEO ANALYSIS ===
+  
+  "VIDEO SCOUT: Search for a notable recent video in AI/tech/markets (conference talks, interviews, explainers). Use scripts/watch-video.sh to extract transcript or frames. Analyze content. Output: If insightful, create reports/video-[topic]-[date].md with key takeaways. If not worth it: 'No notable videos found.' Prefer talks/interviews over entertainment."
+  
+  "VIDEO DEEP DIVE: Find a substantive video (15+ min) on a topic Jon cares about. Run scripts/watch-video.sh to get transcript. Extract: key arguments, novel insights, quotable moments, action items. Create reports/video-analysis-[date].md. Send 150-word summary to Jon. Success = distilled value from long-form content."
+  
+  "VIDEO CREATIVE: Find a visually interesting or unusual video. Extract frames with scripts/watch-video.sh --frames 8. Analyze the visuals. Write a brief creative response — could be observations, connections, or inspired ideas. Share frames + commentary with Jon."
 )
 
 # ─────────────────────────────────────────────────────────────────
