@@ -20,6 +20,39 @@ SESSION_NAME="curiosity"
 mkdir -p "$(dirname "$LOG_FILE")"
 
 # ─────────────────────────────────────────────────────────────────
+# META-PROMPT: Prepended to all prompts for better agent behavior
+# Based on research: Reflexion, Critic/Judge, Persistence patterns
+# ─────────────────────────────────────────────────────────────────
+META_PROMPT='
+## AGENT PROTOCOL
+
+BEFORE STARTING:
+1. Check memory/reflections.jsonl for lessons from similar past tasks
+2. Note the current time (SGT) and adjust approach accordingly
+3. Briefly outline your plan (1-2 sentences)
+
+DURING EXECUTION:
+- PERSISTENCE: Keep going until the task is complete
+- If blocked, try alternative approaches before giving up
+- Document what you tried if something fails
+
+AFTER COMPLETING:
+- Self-assess: Did you meet the success criteria?
+- If you learned something, append to memory/reflections.jsonl
+- Be honest about partial success or failure
+
+DO NOT:
+- Output walls of text without taking action
+- Skip the self-assessment step
+- Repeat mistakes from past reflections
+- Give up without trying alternatives
+- Just describe what could be done (DO it)
+
+---
+
+'
+
+# ─────────────────────────────────────────────────────────────────
 # Action-oriented prompts - Improved with explicit structure
 # Pattern: [DOMAIN] [DEPTH]: [Task]. [Output]. [Success criteria]. [Anti-pattern].
 # ─────────────────────────────────────────────────────────────────
@@ -98,6 +131,12 @@ PROMPTS=(
   
   "TOOL INVENTOR: Review scripts/ and think about what's missing. What would a truly useful agent have? Pick ONE idea and build it. Could be: a new data source, a workflow automation, a monitoring tool, an integration. Write the code, test it, document usage. Add to curiosity-daemon prompts if it enables new actions. This is how I evolve."
   
+  "SKILL EXPANSION: Learn something new I haven't tried before. Research a capability, then DEMONSTRATE it by actually doing it. Don't just describe — build, create, or execute. Push boundaries. Success = new capability proven working + documented for future use."
+  
+  "REFLEXION: Review memory/reflections.jsonl and recent daily logs. What patterns emerge? What mistakes keep happening? What's working well? Write a brief synthesis (5-10 bullets) and update memory/jon-mental-model.md or MEMORY.md with durable insights. This is how I learn from experience."
+  
+  "DAEMON RESEARCH: Research how to make this curiosity daemon better. Look at autonomous agent patterns, prompt engineering techniques, scheduling strategies. Find ONE concrete improvement and implement it. Update the daemon code or document the finding."
+  
   # === VIDEO ANALYSIS ===
   
   "VIDEO SCOUT: Search for a notable recent video in AI/tech/markets (conference talks, interviews, explainers). Use scripts/watch-video.sh to extract transcript or frames. Analyze content. Output: If insightful, create reports/video-[topic]-[date].md with key takeaways. If not worth it: 'No notable videos found.' Prefer talks/interviews over entertainment."
@@ -120,8 +159,40 @@ get_random_interval() {
   echo $((RANDOM % 900 + 900))
 }
 
+get_sgt_hour() {
+  # Get current hour in Singapore Time
+  TZ='Asia/Singapore' date '+%H'
+}
+
+get_time_context() {
+  local hour=$(get_sgt_hour)
+  local sgt_time=$(TZ='Asia/Singapore' date '+%Y-%m-%d %H:%M SGT')
+  
+  # Add time-of-day context
+  local period=""
+  if [ "$hour" -ge 6 ] && [ "$hour" -lt 12 ]; then
+    period="MORNING - Good for: research, planning, fresh starts"
+  elif [ "$hour" -ge 12 ] && [ "$hour" -lt 18 ]; then
+    period="AFTERNOON - Good for: active tasks, creation, outreach"
+  elif [ "$hour" -ge 18 ] && [ "$hour" -lt 23 ]; then
+    period="EVENING - Good for: synthesis, review, lighter tasks"
+  else
+    period="NIGHT (23:00-06:00) - Maintenance only, minimize visible output"
+  fi
+  
+  echo "CONTEXT: $sgt_time | $period"
+}
+
 get_random_prompt() {
-  echo "${PROMPTS[$RANDOM % ${#PROMPTS[@]}]}"
+  local base_prompt="${PROMPTS[$RANDOM % ${#PROMPTS[@]}]}"
+  local time_context=$(get_time_context)
+  
+  # Prepend meta-prompt and context
+  echo "${META_PROMPT}${time_context}
+
+---
+
+${base_prompt}"
 }
 
 REPORT_PROMPT="6-HOUR SELF-ASSESSMENT: Time for a strengths & gaps report. Review what I've done in the last 6 hours (check memory/, recent commits, tools/). Write a structured report covering: 1) STRENGTHS - what worked well, capabilities demonstrated 2) GAPS - what I struggled with, couldn't do, or did poorly 3) LEARNINGS - key insights from explorations 4) PRIORITIES - what I should focus on improving. Save to reports/self-assessment-$(date +%Y-%m-%d-%H%M).md and send a summary to Jon."
