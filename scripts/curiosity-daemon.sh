@@ -58,6 +58,8 @@ PROMPTS=(
   
   "SONIFICATION: Turn something into sound using scripts/sonify.py. Options: recent market data, weather patterns, any numerical sequence. Create an audio piece that represents the data musically. Send the WAV file with a brief explanation of what it represents. Data → Sound → Insight."
   
+  "GENERATIVE ART: Create algorithmic visual art using scripts/genart.py. Styles: flow (particle fields), fractal (mandelbrot), waves (interference patterns), circles (recursive geometry). Pick a style, generate with a meaningful seed (date, number from news, etc), share the image with a brief artistic statement. Code → Image → Beauty."
+  
   "SYNTHESIS: Review memory/synthesis-queue.json and recent daily logs. Find a non-obvious connection between 2-3 things surfaced recently. Write a 200-word synthesis piece that reveals the thread. This is insight, not summary."
   
   "QUESTION: Ask Jon ONE genuinely curious question based on his interests or recent conversations. Not rhetorical, not sycophantic — something you actually want to know. Good questions > good answers."
