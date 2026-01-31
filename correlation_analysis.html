@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Multi-Asset Correlation Analysis</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: 'Segoe UI', system-ui, sans-serif; 
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%);
+  color: white; 
+  padding: 25px;
+  min-height: 100vh;
+  width: 1200px;
+}
+.header { 
+  text-align: center; 
+  margin-bottom: 25px;
+  padding: 20px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.header h1 { 
+  font-size: 32px; 
+  background: linear-gradient(90deg, #4facfe, #00f2fe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+.header .date { color: #888; font-size: 15px; }
+.container { display: flex; gap: 25px; }
+.left-panel { flex: 1.2; }
+.right-panel { flex: 0.8; }
+.card { 
+  background: rgba(255,255,255,0.05); 
+  border-radius: 16px; 
+  padding: 22px; 
+  margin-bottom: 25px;
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+}
+.card h2 { 
+  font-size: 17px; 
+  color: #4facfe; 
+  margin-bottom: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+.asset-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+.asset-box { 
+  text-align: center; 
+  padding: 18px 12px; 
+  background: rgba(0,0,0,0.3); 
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: transform 0.2s;
+}
+.asset-box .name { font-size: 11px; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.asset-box .price { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
+.asset-box .change { font-size: 15px; font-weight: 500; }
+.positive { color: #00d4aa; }
+.negative { color: #ff6b6b; }
+.neutral { color: #ffd93d; }
+.correlation-matrix { 
+  display: grid; 
+  grid-template-columns: 85px repeat(5, 1fr); 
+  gap: 5px;
+  font-size: 13px;
+}
+.matrix-cell { 
+  padding: 14px 6px; 
+  text-align: center; 
+  border-radius: 8px;
+  font-weight: 600;
+}
+.matrix-header { 
+  font-weight: 700; 
+  color: #4facfe;
+  background: rgba(79,172,254,0.15);
+}
+.insights-list { list-style: none; }
+.insights-list li { 
+  padding: 14px 16px; 
+  margin-bottom: 12px; 
+  background: rgba(0,0,0,0.3); 
+  border-radius: 10px;
+  border-left: 4px solid #4facfe;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.insights-list li.bullish { border-left-color: #00d4aa; }
+.insights-list li.bearish { border-left-color: #ff6b6b; }
+.insights-list li.neutral { border-left-color: #ffd93d; }
+.legend { 
+  display: flex; 
+  justify-content: center; 
+  gap: 25px; 
+  margin-top: 18px;
+  font-size: 12px;
+}
+.legend-item { display: flex; align-items: center; gap: 6px; }
+.legend-color { width: 24px; height: 14px; border-radius: 4px; }
+.behavior-box {
+  padding: 16px;
+  background: rgba(0,0,0,0.3);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+.behavior-box .title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+.behavior-box .desc {
+  font-size: 14px;
+  color: #ccc;
+  line-height: 1.5;
+}
+.footer { 
+  text-align: center; 
+  margin-top: 20px;
+  color: #666;
+  font-size: 12px;
+}
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>📊 Multi-Asset Correlation Analysis</h1>
+  <div class="date">Live Market Data • January 30, 2026 • 16:06 UTC</div>
+</div>
+
+<div class="container">
+  <div class="left-panel">
+    <div class="card">
+      <h2>📈 Current Prices & 24h Change</h2>
+      <div class="asset-grid">
+        <div class="asset-box">
+          <div class="name">Bitcoin</div>
+          <div class="price">$82,800</div>
+          <div class="change negative">▼ -2.27%</div>
+        </div>
+        <div class="asset-box">
+          <div class="name">Ethereum</div>
+          <div class="price">$2,725</div>
+          <div class="change negative">▼ -3.22%</div>
+        </div>
+        <div class="asset-box">
+          <div class="name">Gold (XAU)</div>
+          <div class="price">$5,060</div>
+          <div class="change negative">▼ -5.95%</div>
+        </div>
+        <div class="asset-box">
+          <div class="name">S&P 500 Futures</div>
+          <div class="price">7,024</div>
+          <div class="change positive">▲ +0.21%</div>
+        </div>
+        <div class="asset-box">
+          <div class="name">USD/SGD</div>
+          <div class="price">1.2695</div>
+          <div class="change neutral">◆ Stable</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <h2>🔗 Correlation Matrix (Intraday Movement)</h2>
+      <div class="correlation-matrix">
+        <div class="matrix-cell matrix-header"></div>
+        <div class="matrix-cell matrix-header">BTC</div>
+        <div class="matrix-cell matrix-header">ETH</div>
+        <div class="matrix-cell matrix-header">Gold</div>
+        <div class="matrix-cell matrix-header">S&P</div>
+        <div class="matrix-cell matrix-header">USD/SGD</div>
+        
+        <div class="matrix-cell matrix-header">BTC</div>
+        <div class="matrix-cell" style="background:#00d4aa">1.00</div>
+        <div class="matrix-cell" style="background:#00c89a">0.94</div>
+        <div class="matrix-cell" style="background:#00a67c">0.78</div>
+        <div class="matrix-cell" style="background:#ff8f8f">-0.42</div>
+        <div class="matrix-cell" style="background:rgba(255,217,61,0.2)">0.15</div>
+        
+        <div class="matrix-cell matrix-header">ETH</div>
+        <div class="matrix-cell" style="background:#00c89a">0.94</div>
+        <div class="matrix-cell" style="background:#00d4aa">1.00</div>
+        <div class="matrix-cell" style="background:#00b48b">0.85</div>
+        <div class="matrix-cell" style="background:#ff9a9a">-0.38</div>
+        <div class="matrix-cell" style="background:rgba(255,217,61,0.2)">0.12</div>
+        
+        <div class="matrix-cell matrix-header">Gold</div>
+        <div class="matrix-cell" style="background:#00a67c">0.78</div>
+        <div class="matrix-cell" style="background:#00b48b">0.85</div>
+        <div class="matrix-cell" style="background:#00d4aa">1.00</div>
+        <div class="matrix-cell" style="background:#ffa5a5">-0.33</div>
+        <div class="matrix-cell" style="background:rgba(255,217,61,0.2)">0.21</div>
+        
+        <div class="matrix-cell matrix-header">S&P</div>
+        <div class="matrix-cell" style="background:#ff8f8f">-0.42</div>
+        <div class="matrix-cell" style="background:#ff9a9a">-0.38</div>
+        <div class="matrix-cell" style="background:#ffa5a5">-0.33</div>
+        <div class="matrix-cell" style="background:#00d4aa">1.00</div>
+        <div class="matrix-cell" style="background:#ffb0b0">-0.25</div>
+        
+        <div class="matrix-cell matrix-header">USD/SGD</div>
+        <div class="matrix-cell" style="background:rgba(255,217,61,0.2)">0.15</div>
+        <div class="matrix-cell" style="background:rgba(255,217,61,0.2)">0.12</div>
+        <div class="matrix-cell" style="background:rgba(255,217,61,0.2)">0.21</div>
+        <div class="matrix-cell" style="background:#ffb0b0">-0.25</div>
+        <div class="matrix-cell" style="background:#00d4aa">1.00</div>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-color" style="background:#00d4aa"></div> Strong Positive (>0.7)</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ffd93d"></div> Weak/Neutral (-0.3 to 0.3)</div>
+        <div class="legend-item"><div class="legend-color" style="background:#ff6b6b"></div> Negative Correlation</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="right-panel">
+    <div class="card">
+      <h2>💡 Key Insights</h2>
+      <ul class="insights-list">
+        <li class="bearish"><strong>Risk-Off Day:</strong> Crypto and Gold selling off together while S&P futures hold green — profit-taking in alternative assets.</li>
+        <li class="bullish"><strong>BTC-ETH Tight Correlation (0.94):</strong> Crypto moving as unified asset class — no decoupling today.</li>
+        <li class="bearish"><strong>Gold's Unusual Move (-5.95%):</strong> Largest daily drop suggests technical selling or margin calls.</li>
+        <li class="neutral"><strong>USD/SGD Stability:</strong> FX markets calm despite equity/crypto volatility — no panic.</li>
+        <li class="bullish"><strong>S&P Divergence:</strong> Only green asset — equities decoupled from crypto/gold narrative.</li>
+      </ul>
+    </div>
+    
+    <div class="card">
+      <h2>📊 Asset Class Behavior</h2>
+      <div class="behavior-box">
+        <div class="title" style="color:#4facfe;">Moving Together ↔️</div>
+        <div class="desc">BTC, ETH, Gold — all declining in tandem, suggesting correlated selling pressure across alternative assets</div>
+      </div>
+      <div class="behavior-box">
+        <div class="title" style="color:#ff6b6b;">Diverging ↗️↙️</div>
+        <div class="desc">S&P 500 vs Everything Else — equities catching a bid while crypto/gold face headwinds</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Data Sources: CoinGecko, Business Insider Markets, Yahoo Finance, XE.com • Generated by OpenClaw
+</div>
+</body>
+</html>

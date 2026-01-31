@@ -77,12 +77,22 @@ async function getFearGreedIndex() {
 }
 
 async function getMarketStatus() {
-  // Check if US markets are open (rough check)
+  // Check if US markets are open using proper timezone handling
   const now = new Date();
-  const nyHour = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' })).getHours();
-  const nyDay = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' })).getDay();
   
-  const isWeekend = nyDay === 0 || nyDay === 6;
+  // Use Intl.DateTimeFormat to reliably get NY time components
+  const nyFormatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/New_York',
+    hour: 'numeric',
+    hour12: false,
+    weekday: 'short'
+  });
+  
+  const parts = nyFormatter.formatToParts(now);
+  const nyHour = parseInt(parts.find(p => p.type === 'hour').value, 10);
+  const nyWeekday = parts.find(p => p.type === 'weekday').value;
+  
+  const isWeekend = nyWeekday === 'Sat' || nyWeekday === 'Sun';
   const isMarketHours = nyHour >= 9 && nyHour < 16;
   const isPreMarket = nyHour >= 4 && nyHour < 9;
   const isAfterHours = nyHour >= 16 && nyHour < 20;
@@ -283,6 +293,25 @@ async function generateBriefing(options = {}) {
 // CLI
 async function main() {
   const args = process.argv.slice(2);
+  
+  if (args.includes('--help') || args.includes('-h')) {
+    console.log(`
+Market Intelligence Briefing Tool
+Built by Alyosha 🕯️
+
+Usage:
+  node market-intel.js              Full briefing with news
+  node market-intel.js --quick      Quick summary (no news)
+  node market-intel.js --json       Output as JSON
+  node market-intel.js --help       Show this help
+
+Tracks:
+  Indices: ${WATCHLIST.indices.join(', ')}
+  Semis:   ${WATCHLIST.semiconductors.join(', ')}
+`);
+    process.exit(0);
+  }
+  
   const options = {
     json: args.includes('--json'),
     quick: args.includes('--quick')

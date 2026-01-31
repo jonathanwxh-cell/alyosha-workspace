@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jon's Intelligence Briefing</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0f0f23 100%);
+      color: #e0e0e0;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container { max-width: 1200px; margin: 0 auto; }
+    header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding: 20px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    header h1 {
+      font-size: 2.2em;
+      background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb, #ff9ff3);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+    header .subtitle { color: #888; font-size: 0.95em; }
+    header .time { color: #48dbfb; font-size: 1.1em; margin-top: 8px; font-weight: 600; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; }
+    .card {
+      background: rgba(255,255,255,0.04);
+      border-radius: 16px;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+    }
+    .card h2 {
+      font-size: 1.1em;
+      color: #888;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card h2 .icon { font-size: 1.3em; }
+    
+    /* Stock Card */
+    .stock-main {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+    .stock-price { font-size: 2.8em; font-weight: 700; color: #fff; }
+    .stock-change { font-size: 1.2em; padding: 4px 10px; border-radius: 6px; }
+    .stock-change.up { background: rgba(0,200,83,0.2); color: #00c853; }
+    .stock-change.down { background: rgba(255,82,82,0.2); color: #ff5252; }
+    .stock-change.flat { background: rgba(255,255,255,0.1); color: #888; }
+    .stock-meta { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 15px; }
+    .stock-meta-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; }
+    .stock-meta-item .label { color: #666; font-size: 0.8em; }
+    .stock-meta-item .value { color: #fff; font-size: 1.1em; font-weight: 600; }
+    
+    /* News Card */
+    .news-item {
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .news-item:last-child { border-bottom: none; }
+    .news-item .headline { color: #fff; font-weight: 500; margin-bottom: 4px; }
+    .news-item .source { color: #666; font-size: 0.85em; }
+    .news-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75em;
+      font-weight: 600;
+      margin-right: 8px;
+    }
+    .news-tag.hot { background: rgba(255,107,107,0.3); color: #ff6b6b; }
+    .news-tag.new { background: rgba(72,219,251,0.3); color: #48dbfb; }
+    
+    /* Weather Card */
+    .weather-main {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+    .weather-icon { font-size: 4em; }
+    .weather-temp { font-size: 3em; font-weight: 700; color: #fff; }
+    .weather-desc { color: #888; font-size: 1em; }
+    .weather-details { display: flex; gap: 20px; flex-wrap: wrap; }
+    .weather-detail { text-align: center; }
+    .weather-detail .value { color: #fff; font-weight: 600; }
+    .weather-detail .label { color: #666; font-size: 0.85em; }
+    
+    /* Chip Stocks */
+    .chip-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .chip-stock {
+      background: rgba(255,255,255,0.03);
+      padding: 12px;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .chip-stock .ticker { font-weight: 700; color: #fff; }
+    .chip-stock .name { color: #666; font-size: 0.8em; }
+    .chip-stock .price { text-align: right; }
+    .chip-stock .price .value { color: #fff; font-weight: 600; }
+    .chip-stock .price .change { font-size: 0.9em; }
+    .chip-stock .price .change.up { color: #00c853; }
+    .chip-stock .price .change.down { color: #ff5252; }
+    
+    /* Key Facts */
+    .key-fact {
+      background: linear-gradient(135deg, rgba(255,107,107,0.1), rgba(255,159,243,0.1));
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 10px;
+      border-left: 3px solid #ff6b6b;
+    }
+    .key-fact p { color: #e0e0e0; line-height: 1.5; }
+    
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      padding: 20px;
+      color: #555;
+      font-size: 0.9em;
+    }
+    footer .alyosha { color: #feca57; }
+    
+    /* Pulse animation for live indicator */
+    .live-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #00c853;
+      font-size: 0.85em;
+    }
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      background: #00c853;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🕯️ Intelligence Briefing</h1>
+      <div class="subtitle">Curated by Alyosha for Jon</div>
+      <div class="time">
+        <span class="live-indicator"><span class="live-dot"></span> LIVE</span>
+        &nbsp;•&nbsp; Thursday, January 30, 2026 • 01:43 SGT
+      </div>
+    </header>
+    
+    <div class="grid">
+      <!-- NVIDIA Card -->
+      <div class="card">
+        <h2><span class="icon">📈</span> NVIDIA (NVDA)</h2>
+        <div class="stock-main">
+          <span class="stock-price">$192.49</span>
+          <span class="stock-change flat">−0.01%</span>
+        </div>
+        <div class="stock-meta">
+          <div class="stock-meta-item">
+            <div class="label">Market Cap</div>
+            <div class="value">$4.67T</div>
+          </div>
+          <div class="stock-meta-item">
+            <div class="label">P/E Ratio</div>
+            <div class="value">47.68</div>
+          </div>
+          <div class="stock-meta-item">
+            <div class="label">YTD Return</div>
+            <div class="value" style="color:#00c853">+1.42%</div>
+          </div>
+          <div class="stock-meta-item">
+            <div class="label">Next Earnings</div>
+            <div class="value">Feb 25</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Breaking News Card -->
+      <div class="card">
+        <h2><span class="icon">🔥</span> Breaking News</h2>
+        <div class="news-item">
+          <span class="news-tag hot">HOT</span>
+          <span class="headline">China Clears DeepSeek to Buy NVIDIA H200 Chips</span>
+          <div class="source">Reuters • Today</div>
+        </div>
+        <div class="news-item">
+          <span class="news-tag new">NEW</span>
+          <span class="headline">Mercedes, NVIDIA & Uber Team Up for S-Class Robotaxis</span>
+          <div class="source">Zacks • Today</div>
+        </div>
+        <div class="news-item">
+          <span class="headline">NVIDIA Plans $100B Investment in OpenAI</span>
+          <div class="source">GuruFocus • Today</div>
+        </div>
+      </div>
+      
+      <!-- Weather Card -->
+      <div class="card">
+        <h2><span class="icon">🌤️</span> Singapore Weather</h2>
+        <div class="weather-main">
+          <div class="weather-icon">⛅</div>
+          <div>
+            <div class="weather-temp">32°C</div>
+            <div class="weather-desc">Partly cloudy, chance of afternoon showers</div>
+          </div>
+        </div>
+        <div class="weather-details">
+          <div class="weather-detail">
+            <div class="value">25°C</div>
+            <div class="label">Low</div>
+          </div>
+          <div class="weather-detail">
+            <div class="value">33°C</div>
+            <div class="label">High</div>
+          </div>
+          <div class="weather-detail">
+            <div class="value">NE</div>
+            <div class="label">Wind</div>
+          </div>
+          <div class="weather-detail">
+            <div class="value">Monsoon</div>
+            <div class="label">Season</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Chip Stocks Card -->
+      <div class="card">
+        <h2><span class="icon">🎯</span> Semiconductor Sector</h2>
+        <div class="chip-grid">
+          <div class="chip-stock">
+            <div>
+              <div class="ticker">AMD</div>
+              <div class="name">Advanced Micro</div>
+            </div>
+            <div class="price">
+              <div class="value">$240.31</div>
+              <div class="change down">−4.71%</div>
+            </div>
+          </div>
+          <div class="chip-stock">
+            <div>
+              <div class="ticker">AVGO</div>
+              <div class="name">Broadcom</div>
+            </div>
+            <div class="price">
+              <div class="value">$331.82</div>
+              <div class="change up">+0.33%</div>
+            </div>
+          </div>
+          <div class="chip-stock">
+            <div>
+              <div class="ticker">INTC</div>
+              <div class="name">Intel</div>
+            </div>
+            <div class="price">
+              <div class="value">$47.62</div>
+              <div class="change down">−2.14%</div>
+            </div>
+          </div>
+          <div class="chip-stock">
+            <div>
+              <div class="ticker">ARM</div>
+              <div class="name">ARM Holdings</div>
+            </div>
+            <div class="price">
+              <div class="value">$106.09</div>
+              <div class="change down">−2.16%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Key Intelligence Card -->
+      <div class="card" style="grid-column: span 2;">
+        <h2><span class="icon">🧠</span> Key Intelligence</h2>
+        <div class="key-fact">
+          <p>🔹 <strong>DeepSeek + NVIDIA:</strong> China has conditionally approved DeepSeek to purchase NVIDIA's H200 chips — a significant development in US-China tech relations. This could signal thawing tensions or strategic positioning ahead of negotiations.</p>
+        </div>
+        <div class="key-fact">
+          <p>🔹 <strong>OpenAI Mega-Deal:</strong> NVIDIA planning $100B investment in OpenAI, potentially contributing $30B to their fundraising. OpenAI would lease 5 million NVIDIA chips worth $350B — this is the largest AI infrastructure deal in history if it closes.</p>
+        </div>
+        <div class="key-fact">
+          <p>🔹 <strong>Robotaxi Alliance:</strong> Mercedes-Benz partnering with NVIDIA and Uber to build S-Class autonomous vehicles. This signals the luxury automaker's serious push into autonomous mobility.</p>
+        </div>
+      </div>
+    </div>
+    
+    <footer>
+      <p>Generated by <span class="alyosha">Alyosha</span> 🕯️ using parallel sub-agents, live browser automation, and multi-source synthesis</p>
+      <p style="margin-top: 8px; font-size: 0.8em;">Data as of Jan 30, 2026 17:43 UTC • Not financial advice</p>
+    </footer>
+  </div>
+</body>
+</html>
