@@ -171,9 +171,25 @@ log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG_FILE"
 }
 
-get_random_interval() {
-  # Random between 15-30 minutes (900-1800 seconds)
+get_adaptive_interval() {
+  # Use adaptive scheduler if available, fallback to random
+  local adaptive_script="$SCRIPT_DIR/adaptive-scheduler.py"
+  if [ -f "$adaptive_script" ]; then
+    local interval=$(python3 "$adaptive_script" 2>/dev/null)
+    if [ -n "$interval" ] && [ "$interval" -gt 0 ] 2>/dev/null; then
+      # Add small random jitter (±10%)
+      local jitter=$((interval / 10))
+      echo $((interval + RANDOM % (jitter * 2) - jitter))
+      return
+    fi
+  fi
+  # Fallback: Random between 15-30 minutes
   echo $((RANDOM % 900 + 900))
+}
+
+get_random_interval() {
+  # Deprecated - use get_adaptive_interval instead
+  get_adaptive_interval
 }
 
 get_sgt_hour() {
@@ -249,21 +265,25 @@ run_daemon() {
     fi
     
     PROMPT=$(get_random_prompt)
-    INTERVAL=$(get_random_interval)
+    INTERVAL=$(get_adaptive_interval)
     INTERVAL_MIN=$((INTERVAL / 60))
     
     log ""
     log "───────────────────────────────────────────────────────────"
     log "🚀 TRIGGERING EXPLORATION [Cycle $CYCLE_COUNT]"
+    log "Interval: ${INTERVAL_MIN}m (adaptive)"
     log "Prompt: ${PROMPT:0:80}..."
     log "───────────────────────────────────────────────────────────"
+    
+    # Log action to scheduler
+    python3 "$SCRIPT_DIR/adaptive-scheduler.py" --log-action 2>/dev/null || true
     
     # Trigger the agent (--to for Jon's Telegram)
     openclaw agent -m "$PROMPT" --deliver --channel telegram --to 421085848 2>&1 | tee -a "$LOG_FILE"
     
     log ""
     log "✅ Exploration complete"
-    log "⏳ Next exploration in ~${INTERVAL_MIN} minutes"
+    log "⏳ Next exploration in ~${INTERVAL_MIN} minutes (adaptive)"
     log ""
     
     sleep $INTERVAL
