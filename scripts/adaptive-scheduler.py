@@ -175,11 +175,13 @@ def calculate_engagement_multiplier(recent_engagement: list) -> float:
 
 def calculate_day_multiplier(day: int) -> float:
     """
-    Weekend = longer intervals (family time).
+    Day of week adjustment.
     Day: 0=Mon, 5=Sat, 6=Sun
+    
+    Updated: Weekends aren't automatically slower - Jon may have
+    more discretionary time in evenings. Let engagement signal drive.
     """
-    if day >= 5:  # Weekend
-        return 1.3  # 30% longer
+    # No automatic weekend penalty - let engagement data decide
     return 1.0
 
 def calculate_actions_today_multiplier(state: dict) -> float:
