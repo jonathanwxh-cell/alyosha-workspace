@@ -52,8 +52,43 @@
     "daemon_meta": {
       "label": "Curiosity Daemon Improvement",
       "related": ["openclaw", "agents", "automation"],
-      "lastMentioned": "2026-02-01",
+      "lastMentioned": "2026-02-02",
       "engagementScore": 0.9
+    },
+    "talebian": {
+      "label": "Talebian Framework",
+      "related": ["antifragility", "black_swan", "barbell", "risk"],
+      "lastMentioned": "2026-02-02",
+      "engagementScore": 0.8,
+      "notes": "Core intellectual framework. Antifragile, Black Swan, skin-in-the-game. Operationalize in analysis."
+    },
+    "wisdom": {
+      "label": "Philosophy / Wisdom Traditions",
+      "related": ["stoicism", "non_duality", "meaning"],
+      "lastMentioned": "2026-02-02",
+      "engagementScore": 0.5,
+      "notes": "Light touch. Stoicism, Taoism, Advaita, Buddhism. Surface organically."
+    },
+    "asia_markets": {
+      "label": "Asia / EM Markets",
+      "related": ["china", "japan", "korea", "india", "asean", "singapore"],
+      "lastMentioned": "2026-02-02",
+      "engagementScore": 0.6,
+      "notes": "Geographic relevance. MAS policy, regional investment angles."
+    },
+    "contrarian": {
+      "label": "Contrarian / Counter-Consensus",
+      "related": ["sentiment", "positioning", "crowded_trades"],
+      "lastMentioned": "2026-02-02",
+      "engagementScore": 0.7,
+      "notes": "What is the crowd missing? Track consensus to find counter-signals."
+    },
+    "cross_domain_science": {
+      "label": "Cross-Domain Science",
+      "related": ["physics", "biology", "math", "materials", "complexity"],
+      "lastMentioned": "2026-02-02",
+      "engagementScore": 0.6,
+      "notes": "Connecting dots across domains. Paradigm shifts, unexpected connections."
     }
   },
   "connections": [
@@ -61,10 +96,16 @@
     {"from": "nvidia", "to": "robotics", "reason": "NVIDIA powers embodied AI / physical AI"},
     {"from": "nvidia", "to": "biotech", "reason": "NVIDIA partnerships in drug discovery"},
     {"from": "world_models", "to": "robotics", "reason": "World models enable robot reasoning"},
-    {"from": "us_china", "to": "nvidia", "reason": "Export controls affect NVIDIA China revenue"}
+    {"from": "us_china", "to": "nvidia", "reason": "Export controls affect NVIDIA China revenue"},
+    {"from": "talebian", "to": "contrarian", "reason": "Antifragility often found where consensus is wrong"},
+    {"from": "talebian", "to": "asia_markets", "reason": "Fat tails more common in EM, barbell opportunities"},
+    {"from": "wisdom", "to": "talebian", "reason": "Stoicism + antifragility share acceptance of uncertainty"},
+    {"from": "cross_domain_science", "to": "biotech", "reason": "Physics/math breakthroughs enable bio applications"},
+    {"from": "cross_domain_science", "to": "ai_capex", "reason": "Materials science affects chip manufacturing"}
   ],
   "meta": {
-    "lastUpdated": "2026-02-01",
-    "version": 1
+    "lastUpdated": "2026-02-02",
+    "version": 2,
+    "notes": "Added: talebian, wisdom, asia_markets, contrarian, cross_domain_science"
   }
 }
