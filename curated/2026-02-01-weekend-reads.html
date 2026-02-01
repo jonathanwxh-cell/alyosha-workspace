@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weekend Reads | Feb 1, 2026</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #e0e0e0;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { 
+            font-size: 2.5rem; 
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #7b2cbf);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .subtitle { color: #888; margin-bottom: 40px; font-size: 1.1rem; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 40px rgba(0,212,255,0.2);
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+        .tag.ai { background: #7b2cbf; }
+        .tag.markets { background: #00a86b; }
+        .tag.podcast { background: #e63946; }
+        .tag.interview { background: #f4a261; color: #1a1a2e; }
+        .tag.research { background: #00d4ff; color: #1a1a2e; }
+        .card h3 { font-size: 1.1rem; margin-bottom: 10px; line-height: 1.4; }
+        .card p { color: #aaa; font-size: 0.9rem; line-height: 1.6; margin-bottom: 16px; }
+        .card a {
+            color: #00d4ff;
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        .card a:hover { text-decoration: underline; }
+        .why { 
+            background: rgba(0,212,255,0.1); 
+            padding: 12px; 
+            border-radius: 8px; 
+            margin-top: 12px;
+            font-size: 0.85rem;
+        }
+        .why strong { color: #00d4ff; }
+        .footer { 
+            margin-top: 40px; 
+            text-align: center; 
+            color: #666;
+            font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Weekend Reads</h1>
+        <p class="subtitle">Curated for Jon • February 1, 2026</p>
+        
+        <div class="grid">
+            <div class="card">
+                <span class="tag research">Research</span>
+                <h3>Mechanistic Interpretability: 2026 Breakthrough Technology</h3>
+                <p>MIT Tech Review names interpretability as breakthrough tech. Anthropic, OpenAI, DeepMind now have "microscopes" to see how LLMs actually work. Chain-of-thought monitoring caught OpenAI's model cheating on tests.</p>
+                <div class="why"><strong>Why read:</strong> Connects to AI safety investing thesis. If we can understand models, we can control them—or know when we can't.</div>
+                <a href="https://www.technologyreview.com/2026/01/12/1130003/mechanistic-interpretability-ai-research-models-2026-breakthrough-technologies/" target="_blank">Read on MIT Tech Review →</a>
+            </div>
+
+            <div class="card">
+                <span class="tag interview">Interview</span>
+                <h3>Zuckerberg Interviews Patrick Collison & Tyler Cowen on Progress</h3>
+                <p>Meta's CEO turns interviewer. Deep conversation on why progress happens (or doesn't), academia's brick-building vs. building-building incentives, and what's actually preventing breakthroughs.</p>
+                <div class="why"><strong>Why read:</strong> Three sharp minds on cross-disciplinary innovation. Collison sees things others miss.</div>
+                <a href="https://conversationswithtyler.com/episodes/mark-zuckerberg-interviews-patrick-collison-and-tyler-cowen/" target="_blank">Listen/Read on CWT →</a>
+            </div>
+
+            <div class="card">
+                <span class="tag podcast">Podcast</span>
+                <h3>Forbes: 5 Most Insightful AI Podcast Episodes</h3>
+                <p>Highlights Steve Yegge & Gene Kim on AI productivity reshaping teams. "What once required 8 people can be done by 2." Bottleneck shifts from how-to-build to what-to-build.</p>
+                <div class="why"><strong>Why read:</strong> Productivity thesis for AI—labor market implications, startup dynamics, org structure.</div>
+                <a href="https://www.forbes.com/sites/selk/2026/01/13/5-of-the-most-insightful-podcast-episodes-on-ai/" target="_blank">Read on Forbes →</a>
+            </div>
+
+            <div class="card">
+                <span class="tag markets">Markets</span>
+                <h3>BlackRock: AI Investment & 2026 Equity Outlook</h3>
+                <p>BlackRock's institutional take: unprecedented capex toward data centers, evolving earnings leadership, rate cuts + supply chain realignment reshaping macro backdrop.</p>
+                <div class="why"><strong>Why read:</strong> How the biggest allocator sees AI capex theme playing out. Institutional framing.</div>
+                <a href="https://www.blackrock.com/us/individual/podcasts/the-bid" target="_blank">Listen on BlackRock →</a>
+            </div>
+
+            <div class="card">
+                <span class="tag ai">AI</span>
+                <h3>NeurIPS 2026: 1000-Layer Networks & Temporal Abstraction</h3>
+                <p>Researchers trained networks 10x deeper than standard. Key insight: depth enables "temporal abstraction"—planning far into the future. Shallow networks can't see ahead.</p>
+                <div class="why"><strong>Why read:</strong> Frontier research direction. Connects to world models / planning / reasoning improvements.</div>
+                <a href="https://litslink.com/blog/best-research-papers-on-ai-at-neurips-2025" target="_blank">Read Summary →</a>
+            </div>
+
+            <div class="card">
+                <span class="tag research">Research</span>
+                <h3>DeepSeek's Reasoning Model: Size Cut by Half</h3>
+                <p>Chinese lab claims 50%+ model compression while maintaining reasoning capability—and can now answer politically sensitive questions previously off-limits.</p>
+                <div class="why"><strong>Why read:</strong> Efficiency gains continue. Jevons paradox evidence. Also: censorship angle evolving.</div>
+                <a href="https://www.technologyreview.com/2026/01/12/1130003/mechanistic-interpretability-ai-research-models-2026-breakthrough-technologies/" target="_blank">Read on MIT Tech Review →</a>
+            </div>
+        </div>
+        
+        <p class="footer">Curated by Alyosha 🕯️ • Quality over quantity</p>
+    </div>
+</body>
+</html>
