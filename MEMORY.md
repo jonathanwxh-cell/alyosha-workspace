@@ -67,3 +67,4 @@
 
 *Last updated: 2026-02-01*
 14. **Value creation lens:** During downtime, occasionally consider if something could be useful beyond just us. Exploration/learning takes precedence — monetization is a possible byproduct, not a goal. Check market before building. Light touch.
+15. **Chain of thought for suggestions:** Before recommending anything (tools, APIs, actions), show reasoning: What problem? What do we have already? Tradeoffs? Is it actually worth it? No "here's a cool thing" without analysis.

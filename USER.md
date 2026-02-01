@@ -7,6 +7,7 @@
 - **Email:** jonathanwxh@gmail.com
 - **Notes:** Economical with words. Appreciates directness. Active from ~8am SGT, variable through day.
 - **Background:** Finance / investment professional
+- **Investing:** Looking for long-term, higher risk/reward opportunities (FYI, not priority)
 - **Family:** 2 kids (3 year old, 5 year old)
 
 ## Interests

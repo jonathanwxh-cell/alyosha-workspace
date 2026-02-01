@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: nvda-dashboard
+    runtime: static
+    buildCommand: echo "No build needed"
+    staticPublishPath: .
+    pullRequestPreviewsEnabled: false
+    envVars:
+      - key: SKIP_INSTALL_DEPS
+        value: true

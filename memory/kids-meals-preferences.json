@@ -1,0 +1,25 @@
+{
+  "preferences": {
+    "dish_types": ["protein", "vegetable", "carb/noodle/rice", "baked", "soup"],
+    "style": "proper dishes, variety of types (not all rice/noodle)",
+    "cuisines": ["Japanese", "Chinese", "Italian", "Korean", "Thai", "Malaysian", "Indian (mild)", "Western"],
+    "format": "suggest mix: 2 proteins, 1-2 vegetables, 1-2 carbs — can mix & match",
+    "requirements": [
+      "Toddler-friendly (3yo, 5yo)",
+      "Not too spicy",
+      "Under 30 min ideally",
+      "Easy to eat for small hands",
+      "Healthy and balanced (not junk food)",
+      "Tasty (kids will actually eat it)",
+      "Good nutrition: protein + veg + carb"
+    ],
+    "avoid": [
+      "Video links",
+      "Recipe list links", 
+      "Repeated recent dishes",
+      "All same dish type"
+    ]
+  },
+  "feedback_log": [],
+  "updated": "2026-02-01"
+}

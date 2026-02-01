@@ -78,7 +78,32 @@ Patterns from feedback data that consistently get engagement.
 
 ---
 
-*Updated: 2026-02-01*
+## Emerging Patterns (2026-02-02)
+
+### Cron Job Effectiveness
+| Job | Last Run | Engagement | Notes |
+|-----|----------|------------|-------|
+| Weekly Ambitious Proposal | ✅ OK | Pending | NVDA dashboard proposed |
+| Weekend Family Ideas | ✅ OK | 🤔 | Needs calibration |
+| Daily SG Briefing | ✅ OK | Unknown | No feedback yet |
+| Weekly Synthesis | ✅ OK | Unknown | First run |
+| Daily Research Scan | ❌ Error | N/A | Model fixed |
+| SpaceX IPO Tracker | ❌ Error | N/A | Model fixed |
+
+### Model Usage Pattern
+- Full paths like `anthropic/claude-sonnet-4` → errors
+- Aliases like `sonnet`, `opus`, `haiku` → work
+- Lesson: Use aliases for reliability
+
+### Prompt Improvements Made
+1. Added "check log first, avoid repeats" to family ideas
+2. Reduced family ideas from 3 to 2 max (less overwhelming)
+3. Added explicit "skip if nothing good" instruction
+4. Changed model references to aliases
+
+---
+
+*Updated: 2026-02-02*
 
 ## Content Curation Format (noted 2026-02-01)
 

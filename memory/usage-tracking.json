@@ -1,0 +1,16 @@
+{
+  "lastCheck": "2026-02-01T15:14:00Z",
+  "observations": [
+    {
+      "date": "2026-02-01",
+      "note": "Heavy setup day. Jon at ~23% Opus at 12:44 UTC, estimated ~35-40% by 15:12 UTC. Reset Saturday.",
+      "action": "Monitor. Suggest adjustments only if needed."
+    }
+  ],
+  "resetDay": "Saturday",
+  "thresholds": {
+    "suggest_caution": 60,
+    "suggest_conservation": 80
+  },
+  "currentMode": "normal"
+}

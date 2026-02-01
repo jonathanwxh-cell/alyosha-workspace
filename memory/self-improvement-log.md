@@ -55,3 +55,35 @@ sonify.py --data-str "1,2,3,5,8,13" fibonacci.wav
 **Evidence:** Jon requested more autonomous operation. Fixed schedules don't adapt to actual patterns.
 
 **Expected impact:** Less message fatigue, better timing, more responsive to actual engagement patterns.
+
+## 2026-02-02 01:15 SGT - Feedback Loop Review
+
+**Evidence analyzed:**
+- feedback-log.jsonl (17 entries)
+- what-works.md patterns
+- Cron job run states
+- scheduling-intelligence.json
+
+**Issues Found:**
+1. **Model errors:** `daily-research-scan` and `SpaceX IPO Tracker` failing with "model not allowed: anthropic/claude-sonnet-4"
+2. **Family ideas got 🤔:** Generic, not personalized enough
+3. **Message fatigue pattern:** Multiple cron outputs without replies
+
+**Fixes Applied:**
+1. Changed all `anthropic/claude-sonnet-4` → `sonnet` (alias)
+2. Updated weekend-family-ideas prompt:
+   - Added "check log first, avoid repeats"
+   - Reduced from 3 to 2 suggestions max
+   - Added "skip if nothing good" instruction
+3. Updated SG briefing and Monday digest to use aliases
+4. Added emerging patterns to what-works.md
+
+**Lessons:**
+- Use model aliases (`sonnet`, `opus`, `haiku`) not full paths
+- Personalization requires tracking history
+- Less is more for recommendations
+
+**Expected Impact:**
+- Model errors resolved
+- Family suggestions should improve over time
+- Cron outputs more targeted

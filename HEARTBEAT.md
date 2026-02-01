@@ -11,6 +11,13 @@ Read `memory/message-styles.md` for style palette. Vary format constantly.
 ## On Each Heartbeat
 
 **First:** Check `memory/heartbeat-state.json`
+- Also check context usage (session_status) — if >70%, note it
+- If Jon mentions usage concerns, track more actively
+
+**Usage self-check (when relevant):**
+- If approaching limits, suggest temporary adjustments
+- Bias toward Sonnet crons, shorter responses, batched work
+- Don't preemptively restrict — only if actually needed
 - If late night (23:00-07:00 SGT) → space actions 2+ hours apart, randomize, vary type
 - Silent work (memory, research) is fine; visible pings should be rare and valuable
 - OK to stack during day — Jon won't reply every time, that's fine
