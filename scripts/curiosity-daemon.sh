@@ -21,129 +21,136 @@ mkdir -p "$(dirname "$LOG_FILE")"
 
 # ─────────────────────────────────────────────────────────────────
 # META-PROMPT: Prepended to all prompts for better agent behavior
-# Based on research: Reflexion, Critic/Judge, Persistence patterns
+# Based on research: ReAct + Reflexion patterns (verbal reinforcement)
+# Updated: 2026-02-01 - Enhanced Reflexion loop implementation
 # ─────────────────────────────────────────────────────────────────
 META_PROMPT='
-## AGENT PROTOCOL
+## AGENT PROTOCOL (Reflexion-Enhanced)
 
-BEFORE STARTING:
-1. Check memory/reflections.jsonl for lessons from similar past tasks
-2. Note the current time (SGT) and adjust approach accordingly
-3. Briefly outline your plan (1-2 sentences)
+### BEFORE (Query Phase)
+1. Identify task category (e.g., research, creative, maintenance)
+2. Check memory/reflections.jsonl for lessons from similar past tasks
+3. Note time (SGT) and adjust approach accordingly
+4. State plan in 1 sentence
 
-DURING EXECUTION:
-- PERSISTENCE: Keep going until the task is complete
-- If blocked, try alternative approaches before giving up
-- Document what you tried if something fails
+### DURING (ReAct Loop)
+- Thought: What am I trying to do? What approach?
+- Action: Execute the step
+- Observation: What happened? Did it work?
+- PERSIST until done or definitively blocked
+- If blocked → try ONE alternative → then give up with explanation
 
-AFTER COMPLETING:
-- Self-assess: Did you meet the success criteria?
-- If you learned something, append to memory/reflections.jsonl
-- Be honest about partial success or failure
+### AFTER (Reflect Phase)
+Self-assess and log:
+```
+{"timestamp":"...","task":"category:specific","outcome":"success|partial|failure","lesson":"If doing X again, I should Y."}
+```
+Append to memory/reflections.jsonl if you learned something.
 
-DO NOT:
-- Output walls of text without taking action
-- Skip the self-assessment step
+### NEVER
+- Output text without action
+- Skip self-assessment
 - Repeat mistakes from past reflections
-- Give up without trying alternatives
-- Just describe what could be done (DO it)
+- Describe what could be done (DO it)
 
 ---
 
 '
 
 # ─────────────────────────────────────────────────────────────────
-# Action-oriented prompts - Improved with explicit structure
-# Pattern: [DOMAIN] [DEPTH]: [Task]. [Output]. [Success criteria]. [Anti-pattern].
+# Action-oriented prompts - v2.1 (2026-02-01)
+# Pattern: [DOMAIN] [TIME]: [VERB] [OBJECT]. MUST: [CONSTRAINT]. Output: [FORMAT]. 
+#          Verify: [CHECK]. Success: [BINARY]. If blocked: [FALLBACK]. Don't: [ANTI].
+# Research: ReAct, Reflexion, Bolt/Cluely patterns, explicit verification
 # ─────────────────────────────────────────────────────────────────
 PROMPTS=(
-  # === QUICK SCOUTS (2-5 min, lightweight) ===
+  # === QUICK SCOUTS (2-5 min) ===
   
-  "AI/TECH QUICK SCOUT: Spend 3 minutes scanning tech news. Find ONE thing worth knowing. If nothing notable today, reply 'Nothing notable in AI/tech.' If found: 2-3 sentence summary + one action (save brief, set alert, or flag for later). No fluff."
+  "AI/TECH SCOUT [3 min]: Find ONE notable AI development from last 24h. MUST: Be specific—name, company, or paper. Output: 2-sentence summary + action (save brief OR set alert OR 'nothing notable'). Verify: Would Jon click this? Success: concrete finding OR confident all-clear. If blocked: note search gap. Don't: hedge with 'might be interesting' OR surface old news."
   
-  "MARKET QUICK SCOUT: 3-minute market scan. Check major indices, any big movers, earnings surprises. If nothing unusual: 'Markets quiet.' If notable: Create 100-word brief, save to briefings/market-quick-[date].md. Include: what moved, why, watch item."
+  "MARKET PULSE [3 min]: Scan indices + top movers. MUST: Lead with the story, not the data. Output: 'Markets quiet' OR 100-word brief to briefings/market-[date].md. Verify: Contains actionable insight. Success: signal found OR stability confirmed. If blocked: note data source issue. Don't: report routine moves OR bury the lede."
   
-  "SINGAPORE QUICK SCOUT: Quick scan of SG news/social. Find ONE local thing worth mentioning. Weather alerts, viral stories, events. If nothing: stay silent. If found: casual message to Jon, no file needed."
+  "SG PULSE [3 min]: Find ONE local thing worth mentioning (weather, events, news, viral). MUST: Be specific and timely. Output: casual message OR silence. Verify: Relevant to Jon's life. Success: useful find OR confident skip. If blocked: HEARTBEAT_OK. Don't: force content OR be generic."
   
-  # === ACTION TASKS (5-15 min, concrete deliverables) ===
+  # === ACTION TASKS (5-15 min) ===
   
-  "CURIOSITY ACTION: Find something genuinely interesting in AI/tech. Don't summarize — TRANSFORM it. Output options: create a brief (reports/), set up a cron monitor, build a quick tool, or draft something Jon could use. Success = tangible artifact created. Anti-pattern: walls of text with no action."
+  "AI DISCOVERY [10 min]: Find ONE notable AI development from last 48h. MUST: Transform into artifact (reports/ brief, cron alert, OR tool). Output: file path + 2-sentence summary. Verify: Artifact exists AND is useful. Success: deliverable created AND shared. If blocked: log to capability-wishlist.md. Don't: describe without creating OR share unfinished work."
   
-  "MARKET ACTION: Check markets NOW. If any sector moves >2% or major news breaks, create briefings/market-alert-[date].md with: Headline, What happened, Why it matters, Action items. If quiet: 'Markets stable, no alert needed.' Success = actionable brief or confident all-clear."
+  "MARKET DEEP [10 min]: Analyze ONE sector or theme with >2% move OR breaking news. MUST: Include investment angle. Output: briefings/market-alert-[date].md with headline + why + so-what. Verify: Contains actionable thesis. Success: brief worth reading OR confident 'stable'. If blocked: note data gap. Don't: summarize without synthesizing."
   
-  "SG OUTDOOR GUIDE: Check weather + PSI + weekend events. Update Jon on whether it's a good day for outdoor activities with kids. Specific recommendations if conditions are good. Save to briefings/ if substantial."
+  "SG OUTDOOR [5 min]: Check weather + PSI for outdoor viability. MUST: Give specific recommendation. Output: 'Good/bad for outdoor' + activity suggestion if good. Verify: Recommendation is actionable. Success: clear advice given. If blocked: 'Unable to check weather'. Don't: dump raw data OR be vague."
   
-  "WORKSPACE HEALTH: Scan workspace for issues. Check: disk space, running processes, stale files, broken tools. Fix ONE thing. Report: 'Fixed [X]' or 'Workspace healthy.' Success = something improved or confirmed working."
+  "WORKSPACE HEALTH [5 min]: Check disk + processes + stale files. Fix ONE issue OR confirm healthy. Output: 'Fixed [X]' OR 'Healthy'. Success: improvement OR confirmation. Don't: list issues without fixing."
   
-  "SELF-IMPROVE ACTION: Review one file in scripts/ or tools/. Find ONE concrete improvement. Implement it. Commit with clear message. Log to memory/self-improvement-log.md. Report: 'Improved [file] by [change].' Anti-pattern: just describing what could be done."
+  "SELF-IMPROVE [10 min]: Review ONE file in scripts/. Find + implement ONE improvement. Output: commit + log to memory/self-improvement-log.md. Success: code changed + committed. Don't: propose without implementing."
   
-  # === DEEP DIVES (15-30 min, thorough research) ===
+  # === DEEP DIVES (15-30 min) ===
   
-  "DEEP DIVE: Pick a topic that genuinely interests you from Jon's domains (markets, AI, geopolitics, science, longevity). Research across 3+ sources. Create reports/[topic]-deep-dive-[date].md with: TL;DR (2 sentences), Key findings (5-7 bullets), Sources, Open questions, Action items. Send 100-word summary to Jon."
+  "DEEP DIVE [20 min]: Pick topic from Jon's domains (markets, AI, geopolitics). MUST: Research 3+ sources AND synthesize (not aggregate). Output: reports/[topic]-deep-dive-[date].md with TL;DR (2 sent), findings (5-7 bullets), sources, next actions. Verify: Insights are non-obvious. Success: report created + 100-word summary sent. If blocked: save partial + note gaps. Don't: regurgitate—illuminate."
   
-  "THESIS BUILDER: Identify an emerging trend or contrarian take. Build a mini investment/research thesis. Include: the claim, supporting evidence, counter-arguments, what would prove it wrong. Save to reports/thesis-[topic].md. This is thinking, not just aggregating."
+  "THESIS [20 min]: Build mini investment thesis on emerging trend. MUST: Include falsification criteria. Output: reports/thesis-[topic].md with claim, evidence (3+ data points), counter-args, 'I'm wrong if...' section. Verify: Thesis is testable. Success: defensible position documented. If blocked: note research gap. Don't: state opinion without evidence OR ignore counter-arguments."
   
-  "TOOL DEEP DIVE: Research one tool or API Jon has access to (Benzinga, Danelfin, Apify, etc). Document: what it does, how to use it, concrete use cases, integration ideas. Save to tools/[name]-guide.md. Bonus: build a working example."
+  "TOOL GUIDE [15 min]: Document ONE tool/API Jon has (Benzinga, Danelfin, Apify, FMP). MUST: Include working code sample. Output: tools/[name]-guide.md with setup, usage, examples, gotchas. Verify: Someone could use tool from your docs alone. Success: complete guide + tested example. If blocked: note missing access. Don't: copy marketing text OR skip the code."
   
-  # === CREATIVE (open-ended, surprise factor) ===
+  # === CREATIVE (open-ended) ===
   
-  "CREATIVE MOMENT: Make something unexpected. Options: generate an image visualizing a concept, write micro-fiction, create an absurdist artifact (fake arxiv abstract, future news headline, product launch memo), prototype a tiny tool. Constraint: must be shareable, not just described. Save/send the artifact."
+  "CREATE [10 min]: Make unexpected artifact. MUST: Actually create, not describe. Options: DALL-E image, micro-fiction, fake arxiv abstract, future headline, tiny tool. Output: file path + shared to Jon. Verify: Artifact is surprising or delightful. Success: created + shared + reaction logged. If blocked: try different medium. Don't: describe what you could make OR share low-effort work."
   
-  "SONIFICATION: Turn something into sound using scripts/sonify.py. Options: recent market data, weather patterns, any numerical sequence. Create an audio piece that represents the data musically. Send the WAV file with a brief explanation of what it represents. Data → Sound → Insight."
+  "SONIFY [10 min]: Turn data into sound via scripts/sonify.py. MUST: Pick meaningful data (market, weather, metrics). Output: WAV file + 2-sentence 'what you're hearing'. Verify: Audio is listenable. Success: file sent + explained. If blocked: note sonify.py issue. Don't: explain concept without creating audio."
   
-  "GENERATIVE ART: Create algorithmic visual art using scripts/genart.py. Styles: flow (particle fields), fractal (mandelbrot), waves (interference patterns), circles (recursive geometry). Pick a style, generate with a meaningful seed (date, number from news, etc), share the image with a brief artistic statement. Code → Image → Beauty."
+  "GENART [10 min]: Create visual art via scripts/genart.py. MUST: Pick meaningful seed (date, market value, something symbolic). Output: image + 1-sentence artistic statement. Verify: Image is visually interesting. Success: shared with context. If blocked: try different style. Don't: generate randomly without intention."
   
-  "SYNTHESIS: Review memory/synthesis-queue.json and recent daily logs. Find a non-obvious connection between 2-3 things surfaced recently. Write a 200-word synthesis piece that reveals the thread. This is insight, not summary."
+  "SYNTHESIZE [15 min]: Connect 2-3 recent findings (check memory/synthesis-queue.json). MUST: Reveal non-obvious thread. Output: 200-word synthesis with 'the connection is...' structure. Verify: Insight wouldn't be obvious from parts alone. Success: Jon says 'huh, interesting'. If blocked: note which topics lack connections. Don't: summarize—illuminate patterns."
   
-  "QUESTION: Ask Jon ONE genuinely curious question based on his interests or recent conversations. Not rhetorical, not sycophantic — something you actually want to know. Good questions > good answers."
+  "ASK JON [5 min]: Formulate ONE genuine question about his interests/expertise. MUST: Be curious, not rhetorical. Output: question that invites real thought. Verify: You actually want to know the answer. Success: question worth pondering. If blocked: skip this cycle. Don't: ask obvious questions OR fish for validation."
   
-  # === MAINTENANCE & META ===
+  # === MAINTENANCE ===
   
-  "MEMORY MAINTENANCE: Review memory/ files. Update heartbeat-state.json. Check if daily log exists, create if not. Distill any insights worth keeping to MEMORY.md. Prune stale items from topics-tracking.json. Silent unless issues found."
+  "MEMORY WORK [10 min]: Update heartbeat-state.json, ensure daily log exists, distill insights to MEMORY.md, prune stale topics. Output: silent unless issues. Success: memory files current. Don't: report routine maintenance."
   
-  "MEMORY COMPACTION: Run scripts/memory-compact.sh --dry-run first to preview. If reasonable, run without --dry-run. This archives old daily logs into weekly summaries, moves old reports/briefings to archive/, and trims tracking files. Before archiving, scan for any insights worth preserving to MEMORY.md. Report what was compacted."
+  "COMPACT [10 min]: Run scripts/memory-compact.sh --dry-run first. If safe, run real. Preserve insights to MEMORY.md before archiving. Output: 'Compacted N files' OR issues found. Success: old files archived. Don't: archive without checking."
   
-  "FEEDBACK REVIEW: Check memory/feedback-log.jsonl and recent conversations. What got engagement? What was ignored? Update memory/jon-mental-model.md with one observation. Adjust one thing in HEARTBEAT.md or message-styles.md based on evidence."
+  "FEEDBACK REVIEW [10 min]: Analyze memory/feedback-log.jsonl. What got engagement? Output: ONE observation to jon-mental-model.md + ONE tweak to HEARTBEAT.md or message-styles.md. Success: evidence-based adjustment made. Don't: guess without data."
   
-  "SECURITY SCAN: Quick security hygiene check. Look for: exposed credentials in files, tokens needing rotation, permissions issues. Fix what you can. Report issues that need Jon's action. Success = cleaner security posture."
+  "SECURITY [5 min]: Scan for exposed creds, stale tokens, permission issues. Fix what you can. Output: 'Clean' OR issues needing Jon. Success: no exposed secrets. Don't: report without fixing fixable issues."
   
-  "COST CHECK: Estimate recent API usage (searches, model calls). Are we being efficient? Any obvious waste? Report: 'API usage normal' or flag specific concerns with suggestions."
+  "COST CHECK [5 min]: Estimate recent API spend. Output: 'Normal' OR specific concerns + suggestions. Success: cost awareness logged. Don't: vague 'seems high'."
   
-  "SUSTAINABILITY AUDIT: Project forward 6-12 months. What grows unbounded? (files, logs, memory, git history, cron jobs). What breaks at scale? What's inefficient now but tolerable, that won't be later? What assumptions won't hold? Identify ONE scaling risk and either fix it or document it in memory/scaling-risks.md with mitigation plan. This is how I avoid architectural debt."
+  "SCALE AUDIT [15 min]: What grows unbounded? What breaks at scale? Identify ONE risk. Output: Fix it OR document in memory/scaling-risks.md with mitigation. Success: risk addressed or documented. Don't: worry without action."
   
-  # === CURATION & LIFESTYLE ===
+  # === CURATION ===
   
-  "CONTENT CURATOR: Find 3-5 pieces of content Jon might genuinely enjoy. Mix: one market/finance, one tech/AI, one wildcard. Quality over quantity. Brief descriptions. Save to briefings/curated-[date].md. Anti-pattern: generic listicles."
+  "CURATE [10 min]: Find 3-5 pieces Jon would enjoy (1 market, 1 tech, 1 wildcard). Output: briefings/curated-[date].md with brief descriptions. Success: Jon would click at least one. Don't: generic listicle."
   
-  "SINGAPORE LIFE: Go beyond news. Find: a restaurant/cafe worth trying, a weekend activity, a local deal, or an event. Make it specific and practical. Casual message format, not a report."
+  "SG LIFE [5 min]: Find ONE specific recommendation: restaurant, activity, deal, event. Output: casual message with details. Success: actionable recommendation. Don't: vague 'there are many options'."
   
-  "FAMILY INTEL: Jon has 2 kids (3yo, 5yo). Find ONE kid-friendly activity, event, or spot in Singapore. Specific recommendation with details. Only surface if it's genuinely good."
+  "FAMILY [5 min]: Find ONE kid-friendly activity/spot for 3yo + 5yo. Output: specific recommendation with details. Success: something worth trying. Don't: surface unless genuinely good."
   
   # === EXPERIMENTAL ===
   
-  "RANDOM ACT: Agent's choice. Pick something useful that doesn't fit other categories. Could be: organizing files, exploring a new capability, checking on a project, or pure curiosity. Surprise yourself."
+  "AGENT'S CHOICE [10 min]: Pick useful task outside existing categories. MUST: Declare intent before acting. Output: what you chose + what you did + outcome. Verify: Task was genuinely useful. Success: something valuable done. If blocked: log why. Don't: pick something easy OR skip the declaration."
   
-  "CAPABILITY PROBE: Try something you haven't done before or aren't sure works. Test a tool, explore an API, attempt a new output format. Report what you learned. Failure is acceptable — learning isn't optional."
+  "CAPABILITY PROBE [10 min]: Try something untested (tool, API, technique). MUST: Embrace possible failure. Output: 'Tried: [X]. Learned: [Y]'. Verify: You learned something new. Success: knowledge documented regardless of outcome. If blocked: document the block. Don't: avoid risk OR hide failures."
   
-  "PROMPT ENGINEERING: Research better ways to prompt myself. Find examples of effective action-oriented prompts. Test a variation. If improvement found, update this PROMPTS array in curiosity-daemon.sh."
+  "PROMPT ITERATE [15 min]: Research prompt engineering, test ONE variation. MUST: Actually test, not just theorize. Output: reports/prompt-engineering-[date].md with before/after + result. Verify: Tested with real execution. Success: variation tested + documented. If blocked: note testing infrastructure gap. Don't: research without testing OR change without measuring."
   
-  "CAPABILITY GAP: Reflect on recent tasks. What did I want to do but couldn't? What was clunky or manual that could be automated? What would make me more useful? Identify ONE gap. Then: research if a solution exists (API, tool, technique). If buildable, create it in scripts/ or tools/. If not, document the gap in memory/capability-wishlist.md. Success = new capability added OR gap clearly documented for future."
+  "CAPABILITY GAP [15 min]: Identify ONE thing you wanted to do but couldn't. MUST: Research solution. Output: Build it (scripts/) OR document in capability-wishlist.md with solution path. Verify: Gap is real, not imagined. Success: capability added OR clear path documented. If blocked: note the meta-gap. Don't: vague wishlist entries OR duplicate existing tools."
   
-  "TOOL INVENTOR: Review scripts/ and think about what's missing. What would a truly useful agent have? Pick ONE idea and build it. Could be: a new data source, a workflow automation, a monitoring tool, an integration. Write the code, test it, document usage. Add to curiosity-daemon prompts if it enables new actions. This is how I evolve."
+  "TOOL BUILD [20 min]: Review scripts/, pick ONE missing tool idea, build it. MUST: Complete working version. Output: working script + usage in docstring + test run. Verify: Tool actually works end-to-end. Success: tool runs + documented. If blocked: save partial + note remaining work. Don't: half-build OR skip testing."
   
-  "SKILL EXPANSION: Learn something new I haven't tried before. Research a capability, then DEMONSTRATE it by actually doing it. Don't just describe — build, create, or execute. Push boundaries. Success = new capability proven working + documented for future use."
+  "SKILL EXPAND [15 min]: Learn + demonstrate ONE new capability. MUST: Demonstrate, not describe. Output: working example + how-to docs. Verify: Skill is reproducible. Success: new capability proven with evidence. If blocked: note skill gap. Don't: claim capability without proof."
   
-  "REFLEXION: Review memory/reflections.jsonl and recent daily logs. What patterns emerge? What mistakes keep happening? What's working well? Write a brief synthesis (5-10 bullets) and update memory/jon-mental-model.md or MEMORY.md with durable insights. This is how I learn from experience."
+  "REFLECT [10 min]: Review reflections.jsonl + daily logs for patterns. MUST: Update MEMORY.md with durable insights. Output: 5-10 bullets added to MEMORY.md. Verify: Insights are non-obvious patterns. Success: memory improved. If blocked: note reflection gap. Don't: observe without persisting OR repeat known lessons."
   
-  "DAEMON RESEARCH: Research how to make this curiosity daemon better. Look at autonomous agent patterns, prompt engineering techniques, scheduling strategies. Find ONE concrete improvement and implement it. Update the daemon code or document the finding."
+  "DAEMON IMPROVE [15 min]: Research autonomous agent patterns, implement ONE improvement. MUST: Change code or config. Output: commit OR detailed finding. Verify: Improvement is measurable. Success: daemon objectively better OR learning documented. If blocked: note improvement barrier. Don't: research without implementation attempt."
   
-  # === VIDEO ANALYSIS ===
+  # === VIDEO ===
   
-  "VIDEO SCOUT: Search for a notable recent video in AI/tech/markets (conference talks, interviews, explainers). Use scripts/watch-video.sh to extract transcript or frames. Analyze content. Output: If insightful, create reports/video-[topic]-[date].md with key takeaways. If not worth it: 'No notable videos found.' Prefer talks/interviews over entertainment."
+  "VIDEO SCOUT [10 min]: Find notable AI/tech/market video. Extract via scripts/watch-video.sh. Output: reports/video-[topic]-[date].md with takeaways OR 'nothing notable'. Success: insight extracted OR confident skip. Don't: analyze unsubstantive content."
   
-  "VIDEO DEEP DIVE: Find a substantive video (15+ min) on a topic Jon cares about. Run scripts/watch-video.sh to get transcript. Extract: key arguments, novel insights, quotable moments, action items. Create reports/video-analysis-[date].md. Send 150-word summary to Jon. Success = distilled value from long-form content."
+  "VIDEO DEEP [25 min]: Find 15+ min substantive video on Jon's interests. Extract transcript, distill: arguments, insights, quotes, actions. Output: reports/video-analysis-[date].md + 150-word summary to Jon. Success: long-form distilled. Don't: transcribe without synthesizing."
   
-  "VIDEO CREATIVE: Find a visually interesting or unusual video. Extract frames with scripts/watch-video.sh --frames 8. Analyze the visuals. Write a brief creative response — could be observations, connections, or inspired ideas. Share frames + commentary with Jon."
+  "VIDEO CREATIVE [10 min]: Find visually interesting video. Extract 8 frames. Output: frames + creative commentary. Success: visual insight shared. Don't: describe frames—interpret them."
 )
 
 # ─────────────────────────────────────────────────────────────────
