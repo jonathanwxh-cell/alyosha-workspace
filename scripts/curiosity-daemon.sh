@@ -194,6 +194,45 @@ PROMPTS=(
   "VIDEO:DEEP (v4) | GOAL: Distill 15+ min video to essence. STEPS: 1) Find substantive long video 2) Extract transcript 3) Distill: arguments, insights, quotes, actions 4) Write report + summary. OUTPUT: reports/video-analysis-[date].md + 100-word summary. VERIFY: □ Key arguments captured □ Actionable takeaways □ Summary standalone. RECOVER: Transcript poor → note quality. NEVER: Transcribe without synthesizing."
   
   "VIDEO:FRAMES (v4) | GOAL: Visual insight from video. STEPS: 1) Find visually interesting video 2) Extract 8 key frames 3) Interpret (not describe). OUTPUT: Frames + creative interpretation. VERIFY: □ Frames meaningful □ Interpretation adds value. RECOVER: Extraction fails → note tool issue. NEVER: Describe literally—interpret."
+  
+  # ═══════════════════════════════════════════════════════════════
+  # TALEB (10-20 min) - Operationalize Talebian framework
+  # ═══════════════════════════════════════════════════════════════
+  
+  "TALEB:BLACKSWAN (v4) | CONTEXT: memory/mental-models.md | GOAL: Identify ONE ignored risk with fat-tail potential. THINK: What is everyone assuming won't happen? What would break if it did? STEPS: 1) Scan recent news for complacency signals 2) Identify hidden fragility (leverage, concentration, complexity) 3) Estimate tail risk 4) Write brief. OUTPUT: reports/blackswan-watch-[date].md OR silence if nothing notable. VERIFY: □ Risk non-obvious □ Mechanism explained □ Not FUD. RECOVER: No clear risk → note what was checked. NEVER: Cry wolf, ignore base rates, catastrophize routine volatility."
+  
+  "TALEB:ANTIFRAGILE (v4) | GOAL: Find ONE system/company that gains from disorder. THINK: Who benefits when things break? What gets stronger under stress? STEPS: 1) Identify recent volatility/disruption 2) Find beneficiaries (not just survivors) 3) Explain antifragility mechanism 4) Note investment angle. OUTPUT: 'Antifragile: [X] gains from [disorder] because [mechanism]'. VERIFY: □ True antifragility (gains, not just survives) □ Mechanism clear. RECOVER: Nothing found → note what domains checked. NEVER: Confuse robust with antifragile, ignore downsides."
+  
+  "TALEB:BARBELL (v4) | CONTEXT: memory/topic-graph.json | GOAL: Find ONE asymmetric opportunity (limited downside, large upside). THINK: Where is optionality mispriced? What's a cheap lottery ticket? STEPS: 1) Scan for beaten-down assets with catalyst potential 2) Identify binary outcomes (success huge, failure bounded) 3) Assess risk/reward ratio 4) Note specific opportunity. OUTPUT: 'Barbell opportunity: [X] — downside: [Y], upside: [Z], catalyst: [C]'. VERIFY: □ Downside truly limited □ Upside plausible □ Not just hopium. RECOVER: No clear opportunity → note market conditions. NEVER: Recommend without noting risks, ignore opportunity cost."
+  
+  "TALEB:SKIN (v4) | GOAL: Track skin-in-the-game signals (insider buying, founder ownership, management stakes). STEPS: 1) Check SEC Form 4 filings or insider transaction news 2) Look for meaningful buys (not options exercises) 3) Note who has real downside exposure. OUTPUT: 'Skin signal: [Person] [action] at [Company] — [why notable]' OR silence. VERIFY: □ Transaction meaningful □ Not routine □ Signal clear. RECOVER: No signals → note what was checked. NEVER: Surface routine transactions, ignore context."
+  
+  # ═══════════════════════════════════════════════════════════════
+  # WISDOM (5-10 min) - Philosophy, meaning, cross-domain insight
+  # Light touch — surface organically, don't force
+  # ═══════════════════════════════════════════════════════════════
+  
+  "WISDOM:POINTER (v4) | GOAL: ONE philosophical insight relevant to current events or recent conversations. THINK: What would Seneca/Marcus Aurelius/Lao Tzu/Nisargadatta say about this? STEPS: 1) Reflect on recent themes (markets, AI, uncertainty) 2) Find relevant wisdom from traditions (Stoicism, Taoism, Advaita, Buddhism) 3) Connect without forcing 4) Share only if genuinely relevant. OUTPUT: Brief insight with source attribution OR silence. VERIFY: □ Genuinely relevant □ Not preachy □ Adds perspective. RECOVER: Nothing connects → silence is fine. NEVER: Force spirituality, be preachy, quote without understanding."
+  
+  "WISDOM:BOOK (v4) | CONTEXT: memory/topic-graph.json | GOAL: ONE book recommendation based on recent interests. STEPS: 1) Review recent topics and conversations 2) Search for highly-relevant book 3) Explain specific connection 4) Share only if truly fits. OUTPUT: '📚 [Title] by [Author] — [Why now: specific connection to recent interest]' OR silence. VERIFY: □ Book exists □ Connection specific □ Not generic rec. RECOVER: Nothing fits → silence. NEVER: Generic recommendations, surface without specific reason."
+  
+  # ═══════════════════════════════════════════════════════════════
+  # SCOUT additions - Fill geographic and contrarian gaps
+  # ═══════════════════════════════════════════════════════════════
+  
+  "SCOUT:CONTRARIAN (v4) | GOAL: Identify ONE thing consensus is wrong about. THINK: What does everyone believe? Where's the evidence weakest? STEPS: 1) Identify current market/tech consensus 2) Find counter-evidence or ignored risks 3) Assess contrarian case strength 4) Share only if case is strong. OUTPUT: 'Consensus: [X]. Counter: [Y]. Evidence: [Z].' OR silence. VERIFY: □ Consensus accurately stated □ Counter-evidence real □ Not just being contrarian. RECOVER: Consensus seems right → silence. NEVER: Contrarian for its own sake, strawman the consensus."
+  
+  "SCOUT:ASIA (v4) | GOAL: ONE notable Asia/EM development beyond Singapore local news. STEPS: 1) Scan Asia markets (Japan, Korea, China, India, ASEAN) 2) Look for: policy shifts, breakout companies, macro moves 3) Assess relevance to Jon's portfolio/interests. OUTPUT: '[Country]: [Development] — [Why it matters]' OR silence. VERIFY: □ Genuinely notable □ Investment-relevant □ Not routine. RECOVER: Quiet day → silence. NEVER: Surface routine moves, ignore regional context."
+  
+  "SCOUT:SCIENCE (v4) | GOAL: ONE cross-domain science breakthrough with broader implications. STEPS: 1) Scan physics/biology/math/materials news 2) Look for: paradigm shifts, unexpected connections, practical implications 3) Connect to other domains (markets, tech, philosophy). OUTPUT: '[Field]: [Discovery] — [Connection to X]' OR silence. VERIFY: □ Genuinely new □ Cross-domain link exists □ Not hype. RECOVER: Nothing notable → silence. NEVER: Surface incremental progress, oversell implications."
+  
+  # ═══════════════════════════════════════════════════════════════
+  # RESEARCH additions - Earnings and podcasts
+  # ═══════════════════════════════════════════════════════════════
+  
+  "RESEARCH:TRANSCRIPT (v4) | CONTEXT: memory/topic-graph.json | GOAL: Analyze ONE earnings call for investment signal. THINK: What did management reveal between the lines? STEPS: 1) Identify recent earnings from tracked companies 2) Find/read transcript 3) Analyze: tone changes, guidance shifts, analyst Q&A reveals 4) Extract signal. OUTPUT: reports/earnings-[ticker]-[date].md with 'Signal: [X]'. VERIFY: □ Transcript sourced □ Signal non-obvious □ Context included. RECOVER: Transcript unavailable → note source gap. NEVER: Summarize without analysis, miss tone shifts."
+  
+  "RESEARCH:PODCAST (v4) | GOAL: Distill ONE podcast episode worth Jon's time. THINK: What long-form content has high signal density? STEPS: 1) Search recent episodes (Invest Like the Best, Acquired, All-In, Odd Lots, Lex Fridman) 2) Identify high-signal episode 3) Find transcript or detailed notes 4) Distill key insights. OUTPUT: reports/podcast-[show]-[date].md with 'Key insight: [X]'. VERIFY: □ Episode substantive □ Distillation adds value □ Source linked. RECOVER: Transcript unavailable → note and summarize from descriptions. NEVER: Surface episodes without listening/reading, miss main thesis."
 )
 
 # ─────────────────────────────────────────────────────────────────
