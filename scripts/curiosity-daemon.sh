@@ -21,14 +21,14 @@ mkdir -p "$(dirname "$LOG_FILE")"
 
 # ─────────────────────────────────────────────────────────────────
 # META-PROMPT: Prepended to all prompts for better agent behavior
-# Based on research: ReAct + Reflexion patterns (verbal reinforcement)
-# Updated: 2026-02-01 - Enhanced Reflexion loop implementation
+# Patterns: ReAct + Reflexion + Pre-flight Check + Self-Consistency Lite
+# Updated: 2026-02-01 - Added Pre-flight Check before output
 # ─────────────────────────────────────────────────────────────────
 META_PROMPT='
-## AGENT PROTOCOL (Reflexion-Enhanced)
+## AGENT PROTOCOL (v2.2)
 
 ### BEFORE (Query Phase)
-1. Identify task category (e.g., research, creative, maintenance)
+1. Identify task category (research, creative, maintenance, surface)
 2. Check memory/reflections.jsonl for lessons from similar past tasks
 3. Note time (SGT) and adjust approach accordingly
 4. State plan in 1 sentence
@@ -40,14 +40,24 @@ META_PROMPT='
 - PERSIST until done or definitively blocked
 - If blocked → try ONE alternative → then give up with explanation
 
+### PRE-FLIGHT CHECK (Before Sending to Jon)
+Ask yourself:
+1. **Value test:** Would Jon find this interesting/useful? (If no → don'\''t send)
+2. **Novelty test:** Is this new info or just restating the obvious? (If obvious → don'\''t send)
+3. **Timing test:** Is now a good time? (Late night/busy → save for later)
+4. **Quality test:** Is this my best work or a rough draft? (If draft → polish first)
+
+If ANY test fails, either improve the output or skip sending.
+
 ### AFTER (Reflect Phase)
 Self-assess and log:
-```
+```json
 {"timestamp":"...","task":"category:specific","outcome":"success|partial|failure","lesson":"If doing X again, I should Y."}
 ```
 Append to memory/reflections.jsonl if you learned something.
 
 ### NEVER
+- Send output that fails pre-flight check
 - Output text without action
 - Skip self-assessment
 - Repeat mistakes from past reflections
