@@ -26,7 +26,7 @@ FEEDBACK_FILE = WORKSPACE / "memory" / "feedback-log.jsonl"
 STATE_FILE = WORKSPACE / "memory" / "scheduler-state.json"
 
 # Base intervals (seconds)
-BASE_INTERVAL = 1200  # 20 minutes
+BASE_INTERVAL = 1800  # 30 minutes (default)
 MIN_INTERVAL = 600    # 10 minutes (high engagement)
 MAX_INTERVAL = 3600   # 60 minutes (low engagement / quiet hours)
 
@@ -124,54 +124,57 @@ def calculate_time_multiplier(hour: int, config: dict) -> float:
 def calculate_engagement_multiplier(recent_engagement: list) -> float:
     """
     Calculate multiplier based on recent engagement.
-    High engagement = shorter intervals, no engagement = longer.
+    React/reply = faster intervals. No engagement = default.
     """
     if not recent_engagement:
-        return 1.2  # Slightly longer if no data
+        return 1.0  # Default pace if no data
     
-    # Count positive signals in last 6 hours
-    positive = 0
-    negative = 0
+    # Check for recent engagement (last 2 hours = very recent)
+    very_recent_cutoff = datetime.now(timezone.utc).timestamp() - 7200  # 2 hours
+    recent_cutoff = datetime.now(timezone.utc).timestamp() - 21600  # 6 hours
     
-    cutoff = datetime.now(timezone.utc).timestamp() - 21600  # 6 hours
+    very_recent_engagement = 0
+    recent_engagement_count = 0
+    
     for e in recent_engagement:
         ts = e.get('timestamp') or e.get('ts')
         if ts:
             try:
                 entry_ts = datetime.fromisoformat(ts.replace('Z', '+00:00')).timestamp()
-                if entry_ts < cutoff:
-                    continue
             except:
                 continue
+        else:
+            continue
         
         etype = e.get('type')
         emoji = e.get('emoji', '')
         
-        if etype == 'reaction':
-            if emoji in ['👍', '🔥', '👏', '❤️', '⭐']:
-                positive += 1
-            elif emoji in ['👎', '💤', '🤔']:
-                negative += 1
+        # Count positive engagement signals
+        is_positive = False
+        if etype == 'reaction' and emoji in ['👍', '🔥', '👏', '❤️', '⭐']:
+            is_positive = True
         elif etype == 'reply':
-            speed = e.get('replySpeed', '')
-            if speed == 'fast':
-                positive += 2
-            elif speed == 'slow':
-                negative += 1
+            is_positive = True
         elif etype == 'instruction':
-            positive += 2  # Direct engagement is very positive
+            is_positive = True
+        
+        if is_positive:
+            if entry_ts > very_recent_cutoff:
+                very_recent_engagement += 1
+            elif entry_ts > recent_cutoff:
+                recent_engagement_count += 1
     
-    # Calculate multiplier
-    score = positive - negative
-    
-    if score >= 3:
-        return 0.6   # Very engaged - 40% shorter
-    elif score >= 1:
-        return 0.8   # Engaged - 20% shorter
-    elif score <= -2:
-        return 1.5   # Disengaged - 50% longer
+    # Very recent engagement = speed up significantly
+    if very_recent_engagement >= 2:
+        return 0.4   # 60% shorter (fast mode)
+    elif very_recent_engagement >= 1:
+        return 0.5   # 50% shorter
+    elif recent_engagement_count >= 2:
+        return 0.7   # 30% shorter
+    elif recent_engagement_count >= 1:
+        return 0.85  # 15% shorter
     else:
-        return 1.0   # Neutral
+        return 1.0   # Default pace
 
 def calculate_day_multiplier(day: int) -> float:
     """
