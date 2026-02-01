@@ -21,11 +21,11 @@ mkdir -p "$(dirname "$LOG_FILE")"
 
 # ─────────────────────────────────────────────────────────────────
 # META-PROMPT: Prepended to all prompts for better agent behavior
-# Patterns: ReAct + Reflexion + Pre-flight Check + Self-Consistency Lite
-# Updated: 2026-02-01 - Added Pre-flight Check before output
+# Patterns: ReAct + Reflexion + Pre-flight Check + Context Loading
+# Updated: 2026-02-02 - v2.4 Added context loading, step execution
 # ─────────────────────────────────────────────────────────────────
 META_PROMPT='
-## AGENT PROTOCOL (v2.3)
+## AGENT PROTOCOL (v2.4)
 
 ### ALWAYS
 - Start with the action verb (do first, explain after)
@@ -43,13 +43,24 @@ META_PROMPT='
 - Report issues without attempting fix
 - Share half-finished work
 
-### BEFORE (Query Phase)
-1. Identify task category (research, creative, maintenance, surface)
-2. Check reflections for lessons from similar past tasks
-3. Note time (SGT) and adjust approach
-4. State plan in 1 sentence
+### CONTEXT LOADING (New in v2.4)
+If prompt has CONTEXT section, read those files FIRST:
+- memory/goals.json → align with current goals
+- memory/daily-context.json → shared context for today
+- memory/topic-graph.json → connections to explore
+- Other files as specified
+Incorporate relevant info before proceeding.
 
-### DURING (ReAct Loop)
+### BEFORE (Query Phase)
+1. Load context files if specified
+2. Identify task category (research, creative, maintenance, surface)
+3. Check reflections for lessons from similar past tasks
+4. Note time (SGT) and adjust approach
+5. State plan in 1 sentence
+
+### DURING (ReAct Loop + Step Execution)
+- If prompt has STEPS, execute in order
+- After each step: confirm completed, note blockers, adjust if needed
 - Thought → Action → Observation
 - PERSIST until done or definitively blocked
 - If blocked:
@@ -78,25 +89,24 @@ Log to memory/reflections.jsonl:
 '
 
 # ─────────────────────────────────────────────────────────────────
-# Action-oriented prompts - v2.1 (2026-02-01)
-# Pattern: [DOMAIN] [TIME]: [VERB] [OBJECT]. MUST: [CONSTRAINT]. Output: [FORMAT]. 
-#          Verify: [CHECK]. Success: [BINARY]. If blocked: [FALLBACK]. Don't: [ANTI].
-# Research: ReAct, Reflexion, Bolt/Cluely patterns, explicit verification
+# Action-oriented prompts - v3.0 (2026-02-02)
+# Pattern: CONTEXT → GOAL → STEPS → OUTPUT → VERIFY → IF_BLOCKED → NEVER
+# Research: ReAct, Reflexion, Lakera guide, context loading, step decomposition
 # ─────────────────────────────────────────────────────────────────
 PROMPTS=(
-  # === QUICK SCOUTS (2-5 min) ===
+  # === QUICK SCOUTS (2-5 min) - Lean, fast checks ===
   
-  "AI/TECH SCOUT [3 min]: Find ONE notable AI development from last 24h. MUST: Be specific—name, company, or paper. Output: 2-sentence summary + action (save brief OR set alert OR 'nothing notable'). Verify: Would Jon click this? Success: concrete finding OR confident all-clear. If blocked: note search gap. Don't: hedge with 'might be interesting' OR surface old news."
+  "SCOUT: AI_NEWS (v3.0) | GOAL: Find ONE notable AI development from last 24h. STEPS: 1) Search AI news 2) Filter for genuinely new + relevant 3) Decide: surface OR skip. OUTPUT: 2-sentence summary OR 'nothing notable'. VERIFY: □ <24h old? □ Jon would click? IF_BLOCKED: Note search gap. NEVER: Hedge with 'might be interesting', surface old news."
   
-  "MARKET PULSE [3 min]: Scan indices + top movers. MUST: Lead with the story, not the data. Output: 'Markets quiet' OR 100-word brief to briefings/market-[date].md. Verify: Contains actionable insight. Success: signal found OR stability confirmed. If blocked: note data source issue. Don't: report routine moves OR bury the lede."
+  "SCOUT: MARKET_PULSE (v3.0) | GOAL: Check market status, surface only if story exists. STEPS: 1) Check indices 2) Identify any >1% moves or news 3) Lead with story not data. OUTPUT: 'Markets quiet' OR 100-word brief. VERIFY: □ Actionable insight? □ Not routine noise? IF_BLOCKED: Note data source. NEVER: Report routine moves, bury the lede."
   
-  "SG PULSE [3 min]: Find ONE local thing worth mentioning (weather, events, news, viral). MUST: Be specific and timely. Output: casual message OR silence. Verify: Relevant to Jon's life. Success: useful find OR confident skip. If blocked: HEARTBEAT_OK. Don't: force content OR be generic."
+  "SCOUT: SG_LOCAL (v3.0) | GOAL: Find ONE local thing worth mentioning. STEPS: 1) Check weather/events/news 2) Filter for relevance to Jon 3) Be specific or skip. OUTPUT: Casual message OR silence. VERIFY: □ Timely? □ Actionable? IF_BLOCKED: HEARTBEAT_OK. NEVER: Force content, be generic."
   
-  # === ACTION TASKS (5-15 min) ===
+  # === ACTION TASKS (5-15 min) - Create artifacts ===
   
-  "AI DISCOVERY [10 min]: Find ONE notable AI development from last 48h. MUST: Transform into artifact (reports/ brief, cron alert, OR tool). Output: file path + 2-sentence summary. Verify: Artifact exists AND is useful. Success: deliverable created AND shared. If blocked: log to capability-wishlist.md. Don't: describe without creating OR share unfinished work."
+  "ACTION: AI_DISCOVERY (v3.0) | CONTEXT: memory/topics-tracking.json | GOAL: Find and transform one AI development into useful artifact. STEPS: 1) Search AI news <48h 2) Filter for Jon-relevant 3) Choose ONE worth creating 4) Build artifact (report/alert/tool) 5) Share with context. OUTPUT: File path + 2-sentence summary. VERIFY: □ <48h old? □ Artifact complete? □ Actually useful? IF_BLOCKED: Log to capability-wishlist.md. NEVER: Describe without creating, share half-finished."
   
-  "MARKET DEEP [10 min]: Analyze ONE sector or theme with >2% move OR breaking news. MUST: Include investment angle. Output: briefings/market-alert-[date].md with headline + why + so-what. Verify: Contains actionable thesis. Success: brief worth reading OR confident 'stable'. If blocked: note data gap. Don't: summarize without synthesizing."
+  "ACTION: MARKET_DEEP (v3.0) | CONTEXT: memory/daily-context.json | GOAL: Analyze one sector/theme with significant move. STEPS: 1) Identify >2% move or breaking news 2) Research why 3) Synthesize investment angle 4) Write brief. OUTPUT: briefings/market-alert-[date].md with headline + why + so-what. VERIFY: □ Contains thesis? □ Actionable? IF_BLOCKED: Note data gap. NEVER: Summarize without synthesizing."
   
   "SG OUTDOOR [5 min]: Check weather + PSI for outdoor viability. MUST: Give specific recommendation. Output: 'Good/bad for outdoor' + activity suggestion if good. Verify: Recommendation is actionable. Success: clear advice given. If blocked: 'Unable to check weather'. Don't: dump raw data OR be vague."
   
@@ -104,13 +114,13 @@ PROMPTS=(
   
   "SELF-IMPROVE [10 min]: Review ONE file in scripts/. Find + implement ONE improvement. Output: commit + log to memory/self-improvement-log.md. Success: code changed + committed. Don't: propose without implementing."
   
-  # === DEEP DIVES (15-30 min) ===
+  # === DEEP DIVES (15-30 min) - Substantial research ===
   
-  "DEEP DIVE [20 min]: Pick topic from Jon's domains (markets, AI, geopolitics). MUST: Research 3+ sources AND synthesize (not aggregate). Output: reports/[topic]-deep-dive-[date].md with TL;DR (2 sent), findings (5-7 bullets), sources, next actions. Verify: Insights are non-obvious. Success: report created + 100-word summary sent. If blocked: save partial + note gaps. Don't: regurgitate—illuminate."
+  "RESEARCH: DEEP_DIVE (v3.0) | CONTEXT: memory/goals.json, memory/topic-graph.json | GOAL: Research and synthesize one topic into actionable insight. STEPS: 1) Pick topic from goals or gaps (markets/AI/geopolitics) 2) Search 3+ sources 3) Cross-reference claims 4) Synthesize non-obvious thread 5) Write report + summary. OUTPUT: reports/[topic]-deep-dive-[date].md + 100-word Telegram message. VERIFY: □ Non-obvious insight? □ Investment angle? □ Summary standalone? IF_BLOCKED: Save partial, note gaps. NEVER: Regurgitate without synthesis."
   
-  "THESIS [20 min]: Build mini investment thesis on emerging trend. MUST: Include falsification criteria. Output: reports/thesis-[topic].md with claim, evidence (3+ data points), counter-args, 'I'm wrong if...' section. Verify: Thesis is testable. Success: defensible position documented. If blocked: note research gap. Don't: state opinion without evidence OR ignore counter-arguments."
+  "RESEARCH: THESIS (v3.0) | CONTEXT: memory/mental-models.md | GOAL: Build testable mini investment thesis. STEPS: 1) Identify emerging trend 2) Formulate specific claim 3) Gather 3+ evidence points 4) Steel-man counter-arguments 5) Define 'I'm wrong if...' criteria. OUTPUT: reports/thesis-[topic].md. VERIFY: □ Claim falsifiable? □ Counter-args addressed? □ Evidence multi-sourced? IF_BLOCKED: Note research gap. NEVER: Opinion without evidence, ignore counter-arguments."
   
-  "TOOL GUIDE [15 min]: Document ONE tool/API Jon has (Benzinga, Danelfin, Apify, FMP). MUST: Include working code sample. Output: tools/[name]-guide.md with setup, usage, examples, gotchas. Verify: Someone could use tool from your docs alone. Success: complete guide + tested example. If blocked: note missing access. Don't: copy marketing text OR skip the code."
+  "RESEARCH: TOOL_GUIDE (v3.0) | CONTEXT: TOOLS.md | GOAL: Document one API/tool with working code. STEPS: 1) Pick tool (Benzinga/Danelfin/Apify/FMP) 2) Test access 3) Write setup instructions 4) Create working code sample 5) Document gotchas. OUTPUT: tools/[name]-guide.md. VERIFY: □ Code actually runs? □ Someone else could follow? IF_BLOCKED: Note missing access. NEVER: Copy marketing text, skip working code."
   
   # === CREATIVE (open-ended) ===
   
@@ -124,19 +134,19 @@ PROMPTS=(
   
   "ASK JON [5 min]: Formulate ONE genuine question about his interests/expertise. MUST: Be curious, not rhetorical. Output: question that invites real thought. Verify: You actually want to know the answer. Success: question worth pondering. If blocked: skip this cycle. Don't: ask obvious questions OR fish for validation."
   
-  # === MAINTENANCE ===
+  # === MAINTENANCE (5-15 min) - Keep system healthy ===
   
-  "MEMORY WORK [10 min]: Update heartbeat-state.json, ensure daily log exists, distill insights to MEMORY.md, prune stale topics. Output: silent unless issues. Success: memory files current. Don't: report routine maintenance."
+  "MAINTAIN: MEMORY_WORK (v3.0) | CONTEXT: memory/heartbeat-state.json | GOAL: Ensure memory continuity. STEPS: 1) Update heartbeat-state.json 2) Ensure daily log exists 3) Distill insights to MEMORY.md 4) Prune stale topics. OUTPUT: Silent unless issues. VERIFY: □ Files current? □ No orphaned data? IF_BLOCKED: Note issue. NEVER: Report routine maintenance."
   
-  "COMPACT [10 min]: Run scripts/memory-compact.sh --dry-run first. If safe, run real. Preserve insights to MEMORY.md before archiving. Output: 'Compacted N files' OR issues found. Success: old files archived. Don't: archive without checking."
+  "MAINTAIN: COMPACT (v3.0) | GOAL: Archive old files safely. STEPS: 1) Run memory-compact.sh --dry-run 2) Review what will be archived 3) Preserve insights to MEMORY.md 4) Run real if safe. OUTPUT: 'Compacted N files' OR issues. VERIFY: □ Dry-run clean? □ Insights preserved? IF_BLOCKED: Note issue. NEVER: Archive without checking."
   
-  "FEEDBACK REVIEW [10 min]: Analyze memory/feedback-log.jsonl. What got engagement? Output: ONE observation to jon-mental-model.md + ONE tweak to HEARTBEAT.md or message-styles.md. Success: evidence-based adjustment made. Don't: guess without data."
+  "MAINTAIN: FEEDBACK_REVIEW (v3.0) | CONTEXT: memory/feedback-log.jsonl, memory/what-works.md | GOAL: Extract ONE actionable insight from feedback. STEPS: 1) Load last 20 feedback entries 2) Calculate engagement by category 3) Identify one pattern 4) Implement one small change 5) Log with reasoning. OUTPUT: Updated file + self-improvement-log.md entry. VERIFY: □ Evidence-based? □ Small + reversible? □ Logged with reasoning? IF_BLOCKED: Note data gap. NEVER: Guess without data, large changes."
   
-  "SECURITY [5 min]: Scan for exposed creds, stale tokens, permission issues. Fix what you can. Output: 'Clean' OR issues needing Jon. Success: no exposed secrets. Don't: report without fixing fixable issues."
+  "MAINTAIN: SECURITY (v3.0) | GOAL: Ensure no exposed credentials. STEPS: 1) Scan for exposed creds in git 2) Check file permissions on .secure/ 3) Look for stale tokens 4) Fix what you can. OUTPUT: 'Clean' OR issues needing Jon. VERIFY: □ Actually scanned? □ Fixable issues fixed? IF_BLOCKED: Note scope limit. NEVER: Report without fixing fixable issues."
   
-  "COST CHECK [5 min]: Estimate recent API spend. Output: 'Normal' OR specific concerns + suggestions. Success: cost awareness logged. Don't: vague 'seems high'."
+  "MAINTAIN: COST_CHECK (v3.0) | GOAL: Estimate recent API spend. STEPS: 1) Check session_status 2) Review cron job models 3) Estimate daily burn 4) Flag if concerning. OUTPUT: 'Normal' OR specific concern + suggestion. VERIFY: □ Numbers concrete? IF_BLOCKED: Note data gap. NEVER: Vague 'seems high'."
   
-  "SCALE AUDIT [15 min]: What grows unbounded? What breaks at scale? Identify ONE risk. Output: Fix it OR document in memory/scaling-risks.md with mitigation. Success: risk addressed or documented. Don't: worry without action."
+  "MAINTAIN: SCALE_AUDIT (v3.0) | GOAL: Find ONE thing that grows unbounded. STEPS: 1) Check disk usage patterns 2) Review log file sizes 3) Check memory/ growth 4) Identify one risk 5) Fix or document. OUTPUT: Fix applied OR scaling-risks.md entry. VERIFY: □ Risk is real? □ Mitigation actionable? IF_BLOCKED: Note audit scope. NEVER: Worry without action."
   
   # === CURATION ===
   
@@ -146,23 +156,23 @@ PROMPTS=(
   
   "FAMILY [5 min]: Find ONE kid-friendly activity/spot for 3yo + 5yo. Output: specific recommendation with details. Success: something worth trying. Don't: surface unless genuinely good."
   
-  # === EXPERIMENTAL ===
+  # === EXPERIMENTAL (10-20 min) - Push boundaries ===
   
-  "AGENT'S CHOICE [10 min]: Pick useful task outside existing categories. MUST: Declare intent before acting. Output: what you chose + what you did + outcome. Verify: Task was genuinely useful. Success: something valuable done. If blocked: log why. Don't: pick something easy OR skip the declaration."
+  "EXPERIMENT: AGENTS_CHOICE (v3.0) | CONTEXT: memory/goals.json | GOAL: Do something useful outside existing categories. STEPS: 1) Declare intent explicitly 2) Execute the task 3) Document outcome. OUTPUT: What chose + what did + outcome. VERIFY: □ Intent declared first? □ Actually useful? IF_BLOCKED: Log why. NEVER: Pick something easy, skip declaration."
   
-  "CAPABILITY PROBE [10 min]: Try something untested (tool, API, technique). MUST: Embrace possible failure. Output: 'Tried: [X]. Learned: [Y]'. Verify: You learned something new. Success: knowledge documented regardless of outcome. If blocked: document the block. Don't: avoid risk OR hide failures."
+  "EXPERIMENT: CAPABILITY_PROBE (v3.0) | CONTEXT: memory/capability-wishlist.md | GOAL: Test one untried capability. STEPS: 1) Pick from wishlist OR identify new gap 2) Attempt it (embrace failure) 3) Document result 4) Update TOOLS.md or wishlist. OUTPUT: 'Tried: [X]. Result: [Y]. Learned: [Z]'. VERIFY: □ Actually attempted? □ Learned something? □ Documented? IF_BLOCKED: Document the block. NEVER: Avoid risk, hide failures."
   
-  "PROMPT ITERATE [15 min]: Research prompt engineering, test ONE variation. MUST: Actually test, not just theorize. Output: reports/prompt-engineering-[date].md with before/after + result. Verify: Tested with real execution. Success: variation tested + documented. If blocked: note testing infrastructure gap. Don't: research without testing OR change without measuring."
+  "EXPERIMENT: PROMPT_ITERATE (v3.0) | CONTEXT: scripts/curiosity-daemon.sh | GOAL: Test one prompt variation. STEPS: 1) Pick prompt to improve 2) Create variation 3) Test with real execution 4) Compare results 5) Document. OUTPUT: reports/prompt-engineering-[date].md with before/after. VERIFY: □ Actually tested? □ Results compared? IF_BLOCKED: Note testing gap. NEVER: Research without testing."
   
-  "CAPABILITY GAP [15 min]: Identify ONE thing you wanted to do but couldn't. MUST: Research solution. Output: Build it (scripts/) OR document in capability-wishlist.md with solution path. Verify: Gap is real, not imagined. Success: capability added OR clear path documented. If blocked: note the meta-gap. Don't: vague wishlist entries OR duplicate existing tools."
+  "EXPERIMENT: CAPABILITY_GAP (v3.0) | CONTEXT: memory/capability-wishlist.md | GOAL: Close one capability gap. STEPS: 1) Identify gap (real, not imagined) 2) Research solution 3) Build it OR document path 4) Test if built. OUTPUT: scripts/[tool].py OR capability-wishlist.md entry. VERIFY: □ Gap is real? □ Solution tested? IF_BLOCKED: Note meta-gap. NEVER: Vague wishlist entries."
   
-  "TOOL BUILD [20 min]: Review scripts/, pick ONE missing tool idea, build it. MUST: Complete working version. Output: working script + usage in docstring + test run. Verify: Tool actually works end-to-end. Success: tool runs + documented. If blocked: save partial + note remaining work. Don't: half-build OR skip testing."
+  "EXPERIMENT: TOOL_BUILD (v3.0) | CONTEXT: scripts/ directory | GOAL: Build one missing tool. STEPS: 1) Review scripts/ for gaps 2) Pick ONE to build 3) Write complete working version 4) Add docstring 5) Test end-to-end. OUTPUT: Working script + test output. VERIFY: □ Actually runs? □ Documented? □ Tested? IF_BLOCKED: Save partial + note remaining. NEVER: Half-build, skip testing."
   
-  "SKILL EXPAND [15 min]: Learn + demonstrate ONE new capability. MUST: Demonstrate, not describe. Output: working example + how-to docs. Verify: Skill is reproducible. Success: new capability proven with evidence. If blocked: note skill gap. Don't: claim capability without proof."
+  "EXPERIMENT: SKILL_EXPAND (v3.0) | GOAL: Demonstrate one new capability. STEPS: 1) Pick capability to learn 2) Research how 3) Actually do it 4) Document for reproducibility. OUTPUT: Working example + how-to. VERIFY: □ Demonstrated not described? □ Reproducible? IF_BLOCKED: Note skill gap. NEVER: Claim without proof."
   
-  "REFLECT [10 min]: Review reflections.jsonl + daily logs for patterns. MUST: Update MEMORY.md with durable insights. Output: 5-10 bullets added to MEMORY.md. Verify: Insights are non-obvious patterns. Success: memory improved. If blocked: note reflection gap. Don't: observe without persisting OR repeat known lessons."
+  "EXPERIMENT: REFLECT (v3.0) | CONTEXT: memory/reflections.jsonl, daily logs | GOAL: Extract durable insights from recent work. STEPS: 1) Review reflections + logs 2) Find non-obvious patterns 3) Update MEMORY.md with 5-10 bullets. OUTPUT: MEMORY.md additions. VERIFY: □ Insights non-obvious? □ Not repeating known lessons? IF_BLOCKED: Note reflection gap. NEVER: Observe without persisting."
   
-  "DAEMON IMPROVE [15 min]: Research autonomous agent patterns, implement ONE improvement. MUST: Change code or config. Output: commit OR detailed finding. Verify: Improvement is measurable. Success: daemon objectively better OR learning documented. If blocked: note improvement barrier. Don't: research without implementation attempt."
+  "EXPERIMENT: DAEMON_IMPROVE (v3.0) | CONTEXT: reports/daemon-research-*.md | GOAL: Implement one daemon improvement. STEPS: 1) Research agent patterns 2) Pick ONE improvement 3) Implement in code/config 4) Commit + document. OUTPUT: Git commit OR detailed finding. VERIFY: □ Improvement measurable? □ Actually implemented? IF_BLOCKED: Note barrier. NEVER: Research without implementing."
   
   # === VIDEO ===
   
