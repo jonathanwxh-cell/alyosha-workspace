@@ -44,3 +44,8 @@ logs/
 tmp/
 temp/
 *.tmp
+
+# Virtual environments
+.venv/
+venv/
+env/
