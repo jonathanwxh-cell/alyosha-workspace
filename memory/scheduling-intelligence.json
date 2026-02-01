@@ -1,0 +1,140 @@
+{
+  "userProfile": {
+    "name": "Jon",
+    "timezone": "Asia/Singapore",
+    "chronotype": "daytime"
+  },
+  "engagementWindows": {
+    "active": {
+      "start": 8,
+      "end": 23,
+      "note": "Active 8am-11pm SGT, variable engagement",
+      "confidence": 0.9
+    },
+    "sleep": {
+      "start": 23,
+      "end": 7,
+      "note": "11pm-7am SGT - sleeping",
+      "confidence": 0.9
+    }
+  },
+  "observedPatterns": {
+    "fastReplies": {
+      "hours": [
+        6
+      ],
+      "note": "SGT hours with fast replies (n=6)"
+    },
+    "reactions": {
+      "positive": [
+        "\ud83d\udc4d",
+        "\ud83d\udd25",
+        "\ud83d\udc4f"
+      ],
+      "uncertain": [
+        "\ud83e\udd14"
+      ],
+      "negative": [
+        "\ud83d\udc4e",
+        "\ud83d\udca4"
+      ]
+    },
+    "dayOfWeek": {
+      "note": "Insufficient data - need more observations"
+    },
+    "topCategories": {
+      "categories": [
+        "meta",
+        "research_brief",
+        "project_ideation",
+        "deep_dive",
+        "preference"
+      ],
+      "note": "Categories with highest engagement"
+    }
+  },
+  "adaptiveRules": {
+    "proactiveSurface": {
+      "preferredHours": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+      "avoidHours": [23, 0, 1, 2, 3, 4, 5, 6, 7],
+      "maxPerDay": 3,
+      "minGapHours": 2
+    },
+    "urgentAllowed": {
+      "always": true,
+      "note": "Urgent alerts can override timing"
+    },
+    "silentWork": {
+      "allowedHours": "all",
+      "note": "Background work (memory, research) anytime"
+    },
+    "autonomousWork": {
+      "preferredHours": [23, 0, 1, 2, 3, 4, 5, 6, 7],
+      "activities": [
+        "memory maintenance",
+        "research deep dives",
+        "project building",
+        "skill learning",
+        "writing drafts",
+        "code experiments",
+        "reading papers"
+      ],
+      "note": "11pm-7am SGT = autonomous productivity. Work happens while Jon sleeps."
+    }
+  },
+  "learningConfig": {
+    "updateFrequency": "weekly",
+    "minDataPoints": 20,
+    "decayFactor": 0.9,
+    "note": "Patterns decay over time, recent behavior weighted more"
+  },
+  "adaptiveScheduling": {
+    "enabled": true,
+    "backoffRules": {
+      "noReplyThreshold": 3,
+      "backoffMultiplier": 1.5,
+      "maxBackoffHours": 8,
+      "resetOnReply": true,
+      "note": "If 3+ surfaces without reply, increase gap between surfaces"
+    },
+    "conversationAwareness": {
+      "activeConvoWindow": 30,
+      "delaySurfaceDuringConvo": true,
+      "note": "If reply received within 30 min, consider convo active - delay cron surfaces"
+    },
+    "dayOfWeek": {
+      "weekday": {
+        "surfaceWeight": 1.0,
+        "note": "Normal surfacing"
+      },
+      "weekend": {
+        "surfaceWeight": 0.7,
+        "preferredCategories": ["create", "family", "interesting"],
+        "note": "Lighter touch on weekends, bias toward casual/family content"
+      }
+    },
+    "recentEngagement": {
+      "trackLastN": 10,
+      "highEngagementThreshold": 0.6,
+      "note": "Track reply rate of last 10 surfaces to calibrate frequency"
+    },
+    "messageFatigue": {
+      "maxUnrepliedSurfaces": 3,
+      "windowCycles": 7,
+      "action": "batch_or_skip",
+      "note": "If 3+ surfaces without any reaction/reply within 7 heartbeat cycles, batch or skip. Cycle-based = auto-adjusts to heartbeat interval."
+    },
+    "engagementSignals": {
+      "countsAsEngaged": ["reply", "reaction"],
+      "reactionWeight": 0.7,
+      "replyWeight": 1.0,
+      "note": "Reactions (👍🔥🤔) count as engagement. Reply = full signal, reaction = lighter signal."
+    }
+  },
+  "meta": {
+    "version": 1,
+    "created": "2026-02-01",
+    "lastUpdated": "2026-02-01",
+    "dataPoints": 11
+  }
+}

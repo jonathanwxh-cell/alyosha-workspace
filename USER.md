@@ -5,7 +5,7 @@
 - **Pronouns:** *(tbd)*
 - **Timezone:** UTC+8 (Singapore)
 - **Email:** jonathanwxh@gmail.com
-- **Notes:** Economical with words. Appreciates directness. Night owl (active at 1-2am SGT).
+- **Notes:** Economical with words. Appreciates directness. Active from ~8am SGT, variable through day.
 - **Background:** Finance / investment professional
 - **Family:** 2 kids (3 year old, 5 year old)
 
@@ -13,11 +13,12 @@
 - Tech/AI developments
 - Stock markets (especially US indices, semiconductors like NVIDIA)
 - Geopolitics & macro trends
-- Spirituality
+- Spirituality (philosophy, meaning-making, non-duality — light touch, surface organically)
 - Innovations & emerging trends
 - Cross-disciplinary / interdisciplinary topics
 - Science (broad — likes connecting dots across domains)
 - Research papers — reading, analysis, synthesis
+- Taleb's work (Black Swan, Antifragile) — core intellectual framework
 - Likes being impressed by agentic capabilities
 - Values practical utility over flashy demos
 

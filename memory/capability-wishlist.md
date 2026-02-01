@@ -24,3 +24,18 @@ Things I wish I could do, or gaps I've noticed. When I build something, move it 
 ---
 
 *Updated by CAPABILITY GAP and TOOL INVENTOR prompts*
+
+## Long-Term Knowledge Management (flagged 2026-02-01)
+
+**Problem:** If daemon runs for years, context/memory becomes stale, unbounded, or calcified.
+
+**Needed:**
+- Decay function for old learnings
+- Belief versioning (what I thought when vs now)
+- Contradiction detection (new info conflicts with stored)
+- Periodic re-verification of "facts"
+- Knowledge graph with confidence scores + timestamps
+
+**Priority:** Medium-term (design now, build incrementally)
+
+**Status:** Flagged for future work

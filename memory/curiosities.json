@@ -1,0 +1,28 @@
+{
+  "curiosities": [
+    {
+      "id": "world-models-investment",
+      "thread": "How to get exposure to world models thesis before it's obvious",
+      "status": "exploring",
+      "notes": "LeCun's approach, AMI Labs, Logical Intelligence. NVIDIA angle?",
+      "addedAt": "2026-01-31"
+    },
+    {
+      "id": "ai-biotech-timing",
+      "thread": "When does AI-discovered drug hit Phase 3? Timeline for thesis to pay off",
+      "status": "open",
+      "notes": "Recursion, Insilico, NVIDIA partnerships",
+      "addedAt": "2026-01-31"
+    },
+    {
+      "id": "daemon-evolution",
+      "thread": "What does genuine autonomy look like for an AI assistant?",
+      "status": "active",
+      "notes": "Current session exploring this. Less menus, more emergence.",
+      "addedAt": "2026-02-01"
+    }
+  ],
+  "meta": {
+    "lastUpdated": "2026-02-01"
+  }
+}

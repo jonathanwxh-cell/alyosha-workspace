@@ -1,0 +1,75 @@
+{
+  "name": "Embodied AI / Robotics Watchlist",
+  "created": "2026-01-31",
+  "thesis": "2026 is physical AI inflection year. Universal robot brains + humanoid form factors reaching commercial deployment.",
+  "companies": {
+    "private_core": [
+      {
+        "name": "Skild AI",
+        "valuation": "$14B+",
+        "raised": "~$2B",
+        "focus": "Universal foundation model for robots",
+        "backers": ["SoftBank", "NVIDIA", "Bezos", "LG", "Samsung"],
+        "catalyst": "Pilot project results 2026",
+        "location": "Pittsburgh"
+      },
+      {
+        "name": "Figure AI", 
+        "valuation": "$39B",
+        "raised": "$1.9B+",
+        "focus": "Humanoid robots (Figure 01/02/03)",
+        "backers": ["Intel", "Microsoft", "NVIDIA", "OpenAI"],
+        "catalyst": "Factory deployment results Q1-Q2 2026",
+        "location": "Sunnyvale"
+      },
+      {
+        "name": "1X Technologies",
+        "valuation": "Unknown",
+        "focus": "NEO humanoid, consumer market",
+        "backers": ["OpenAI"],
+        "location": "Norway"
+      }
+    ],
+    "public_proxies": [
+      {
+        "ticker": "NVDA",
+        "name": "NVIDIA",
+        "thesis": "Pick-and-shovel - Omniverse, Isaac SDK, compute for all robotics cos"
+      },
+      {
+        "ticker": "9984.T",
+        "name": "SoftBank Group",
+        "thesis": "Skild AI lead investor, owns Arm (chip architecture)"
+      },
+      {
+        "ticker": "005930.KS",
+        "name": "Samsung",
+        "thesis": "Skild investor, manufacturing capability"
+      },
+      {
+        "ticker": "005380.KS",
+        "name": "Hyundai",
+        "thesis": "Owns Boston Dynamics"
+      }
+    ],
+    "china_watch": [
+      {
+        "name": "Fourier Intelligence",
+        "product": "GR-1 humanoid",
+        "note": "Mass production target 2026, cost advantage"
+      },
+      {
+        "name": "Unitree",
+        "product": "Quadruped + humanoid",
+        "note": "Consumer pricing, high volume"
+      }
+    ]
+  },
+  "key_metrics_to_track": [
+    "Humanoid unit shipments",
+    "Cost per unit trends",
+    "Factory deployment success rates",
+    "IPO filings",
+    "Big tech partnerships"
+  ]
+}

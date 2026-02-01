@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+"""
+Generate daily daemon status report for email.
+Matches the full format shown in Telegram.
+"""
+
+import json
+import subprocess
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+
+WORKSPACE = Path("/home/ubuntu/.openclaw/workspace")
+
+def get_sgt_now():
+    return datetime.now(timezone.utc) + timedelta(hours=8)
+
+def count_lines(filepath):
+    try:
+        with open(filepath) as f:
+            return sum(1 for _ in f)
+    except:
+        return 0
+
+def count_files(pattern):
+    return len(list(WORKSPACE.glob(pattern)))
+
+def git_commits_today():
+    try:
+        result = subprocess.run(
+            ["git", "log", "--oneline", "--since=24 hours ago"],
+            cwd=WORKSPACE, capture_output=True, text=True
+        )
+        return len(result.stdout.strip().split('\n')) if result.stdout.strip() else 0
+    except:
+        return 0
+
+def load_json(path):
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except:
+        return {}
+
+def load_jsonl(path):
+    entries = []
+    try:
+        with open(path) as f:
+            for line in f:
+                if line.strip():
+                    entries.append(json.loads(line))
+    except:
+        pass
+    return entries
+
+def get_cron_count():
+    # Hardcoded for now, could query gateway
+    return {"total": 18, "delivers": 13, "silent": 5}
+
+def generate_report():
+    now = get_sgt_now()
+    date_str = now.strftime("%Y-%m-%d")
+    day_name = now.strftime("%A")
+    
+    # Gather metrics
+    commits = git_commits_today()
+    feedback_entries = count_lines(WORKSPACE / "memory/feedback-log.jsonl")
+    reflections = count_lines(WORKSPACE / "memory/reflections.jsonl")
+    scripts = count_files("scripts/*.py") + count_files("scripts/*.sh")
+    reports_count = count_files("reports/*.md")
+    memory_files = count_files("memory/*.json") + count_files("memory/*.jsonl")
+    images = count_files("images/*")
+    
+    # Load active projects
+    projects = load_json(WORKSPACE / "memory/active-projects.json")
+    project_list = projects.get("projects", [])
+    
+    # Load scheduling config
+    scheduling = load_json(WORKSPACE / "memory/scheduling-intelligence.json")
+    fatigue = scheduling.get("adaptiveScheduling", {}).get("messageFatigue", {})
+    
+    # Load MEMORY.md lesson count
+    memory_md = WORKSPACE / "MEMORY.md"
+    lesson_count = 0
+    if memory_md.exists():
+        content = memory_md.read_text()
+        lesson_count = content.count("**") // 2  # rough estimate
+    
+    # Load recent reflections
+    reflections_data = load_jsonl(WORKSPACE / "memory/reflections.jsonl")
+    recent_reflections = reflections_data[-3:] if reflections_data else []
+    
+    cron = get_cron_count()
+    
+    report = f"""CURIOSITY DAEMON STATUS REPORT
+{date_str} ({day_name}) | Generated 07:00 SGT
+
+{'='*50}
+
+🔴 NEEDS YOUR INPUT
+{'─'*50}
+"""
+    
+    # Action items
+    action_items = []
+    for p in project_list:
+        if p.get("status") == "in_progress":
+            action_items.append(f"• {p.get('name')}: {p.get('nextAction', 'Review needed')}")
+    
+    if not action_items:
+        action_items.append("• No immediate action items")
+    
+    report += "\n".join(action_items)
+    
+    # Blocked items
+    blocked = [p for p in project_list if p.get("status") == "blocked"]
+    if blocked:
+        report += f"\n\n🚫 BLOCKED ({len(blocked)})\n"
+        for p in blocked:
+            report += f"• {p.get('name')}: {p.get('description', '')[:60]}\n"
+    
+    report += f"""
+{'='*50}
+
+📊 TOTALS
+{'─'*50}
+| Metric              | Count |
+|---------------------|-------|
+| Heartbeat interval  | 30 min |
+| Cycles/day          | ~48    |
+| Cron jobs           | {cron['total']} ({cron['delivers']} deliver, {cron['silent']} silent) |
+| Git commits (24h)   | {commits} |
+| Scripts             | {scripts} |
+| Reports             | {reports_count} |
+| Memory files        | {memory_files} |
+| Feedback entries    | {feedback_entries} |
+| Reflections         | {reflections} |
+| Images created      | {images} |
+
+{'='*50}
+
+⚙️ DAEMON CONFIG
+{'─'*50}
+• Fatigue threshold: {fatigue.get('maxUnrepliedSurfaces', 3)} surfaces / {fatigue.get('windowCycles', 7)} cycles
+• Engagement signals: Replies + reactions both count
+• Weekend weight: 0.7x
+• Autonomous hours: 23:00-07:00 SGT
+
+{'='*50}
+
+🔄 CRON SCHEDULE (messages/week)
+{'─'*50}
+| Day | Expected |
+|-----|----------|
+| Mon | 5-6      |
+| Tue | 2        |
+| Wed | 3-4      |
+| Thu | 2-3      |
+| Fri | 3        |
+| Sat | 2        |
+| Sun | 3        |
+
+Total: ~20-23/week + heartbeat surfaces
+
+{'='*50}
+
+📝 RECENT LEARNINGS
+{'─'*50}
+"""
+    
+    if recent_reflections:
+        for r in recent_reflections:
+            lesson = r.get('lesson', '')[:80]
+            report += f"• {lesson}\n"
+    else:
+        report += "• No recent reflections logged\n"
+    
+    report += f"""
+{'='*50}
+
+Generated by Alyosha 🕯️
+"""
+    
+    return report.strip()
+
+if __name__ == "__main__":
+    print(generate_report())

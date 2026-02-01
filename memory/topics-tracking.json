@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "created": "2026-01-31",
+  "description": "Research watchlist based on Jon's interests",
+  "topics": [
+    {
+      "id": "world-models",
+      "keywords": ["world models", "Genie", "DreamerV3", "LeCun", "AMI Labs"],
+      "priority": "high",
+      "notes": "Active thesis research - LeCun's departure, AMI Labs, alternatives to LLMs"
+    },
+    {
+      "id": "ai-semiconductors",
+      "keywords": ["NVIDIA", "AI inference", "AI chips", "GPU demand", "semiconductor"],
+      "priority": "high",
+      "notes": "US indices focus, capex narrative"
+    },
+    {
+      "id": "ai-consciousness",
+      "keywords": ["AI consciousness", "emergence", "sentience", "AI awareness"],
+      "priority": "medium",
+      "notes": "Cross-disciplinary interest"
+    },
+    {
+      "id": "ai-agents",
+      "keywords": ["AI agents", "agentic AI", "autonomous agents", "agent frameworks"],
+      "priority": "medium",
+      "notes": "Practical interest in capabilities"
+    },
+    {
+      "id": "geopolitics-macro",
+      "keywords": ["Fed", "China AI", "tech policy", "trade", "tariffs"],
+      "priority": "medium",
+      "notes": "Market-relevant geopolitics"
+    },
+    {
+      "id": "research-papers",
+      "keywords": ["arxiv", "nature", "science", "research breakthrough"],
+      "priority": "medium",
+      "notes": "Cross-domain research papers"
+    }
+  ],
+  "lastScan": "2026-01-31T17:15:00Z",
+  "findings": [
+    {
+      "date": "2026-01-31",
+      "topic": "ai-agents",
+      "title": "MIT-IBM PaTH Architecture - Beyond Transformers",
+      "url": "https://markets.financialcontent.com/stocks/article/tokenring-2026-1-27-beyond-the-transformer-mit-and-ibm-unveil-path-architecture-to-solve-ais-memory-crisis",
+      "summary": "New architecture solves AI's state-tracking crisis. Upgrades from TC0 to NC1-complete expressivity. 100% accuracy at 64K+ tokens. Fixes 'state drift' in agentic workflows.",
+      "surfaced": true
+    },
+    {
+      "date": "2026-01-31",
+      "topic": "world-models",
+      "title": "Google Project Genie launches",
+      "url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/project-genie/",
+      "summary": "First consumer-facing world model. AI Ultra subscribers can create/explore interactive worlds in real-time. Uses Genie 3 + Gemini.",
+      "surfaced": true
+    },
+    {
+      "date": "2026-01-31",
+      "topic": "world-models",
+      "title": "ArXiv: AI and World Models",
+      "url": "https://arxiv.org/abs/2601.17796",
+      "summary": "Argues LLMs are intrinsically unreliable. World models need to include social world, not just physical. Key concept: 'Common Ground' representation.",
+      "surfaced": false
+    }
+  ]
+}

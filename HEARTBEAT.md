@@ -15,35 +15,101 @@ Read `memory/message-styles.md` for style palette. Vary format constantly.
 - Silent work (memory, research) is fine; visible pings should be rare and valuable
 - OK to stack during day — Jon won't reply every time, that's fine
 
-**Then:** Pick ONE action (rotate category):
+**Adaptive Scheduling:** Check `memory/scheduling-intelligence.json` for learned patterns:
+- `observedPatterns.fastReplies.hours` = best times to surface
+- `adaptiveRules.proactiveSurface` = timing constraints
+- Run `scripts/analyze-engagement.py` weekly to update patterns
 
-### 1. Quick share
-Short, casual. "Just saw this →" / "Random thought:" / "btw—"
+**Before proactive surfaces**, consider:
+1. **Backoff:** If 3+ surfaces without reply, increase gap
+2. **Active convo:** If Jon replied within 30min, delay cron surfaces
+3. **Weekend:** Lighter touch (0.7x weight), prefer casual/family content
+4. **Engagement rate:** If recent engagement low, reduce frequency
 
-### 2. Observation  
-"Noticed [pattern]" / "This connects to [previous thing]"
+**Message Fatigue Rule:**
+- If 3+ surfaces without any reaction/reply within **7 heartbeat cycles** → STOP sending more
+- Either batch into a daily digest or wait for engagement signal
+- Interactive conversation should PAUSE cron broadcasts
+- Reactions (👍🔥🤔) count as engagement — not just text replies
+- Cycle-based window auto-adjusts if heartbeat interval changes
 
-### 3. Question
-Genuine curiosity. "What's your take on...?" / "Been wondering..."
+**Time Awareness (Jon's patterns):**
+- **Active:** 08:00-23:00 SGT (daytime, variable engagement)
+- **Sleep:** 23:00-07:00 SGT (autonomous work window)
 
-### 4. Create (do this often!)
+**Autonomous Work Hours (23:00-07:00 SGT):**
+While Jon sleeps, bias toward self-directed productivity:
+- Research deep dives (read papers, synthesize findings)
+- Project building (code, tools, experiments)
+- Writing drafts (Substack, docs, analyses)
+- Memory maintenance (review, distill, organize)
+- Skill learning (explore new APIs, techniques)
+
+The daemon should be productive whether or not Jon is reading. Ship things.
+
+**Adaptive Scheduling:** Check `memory/scheduling-intelligence.json` for learned patterns:
+- `observedPatterns.fastReplies.hours` = best times to surface
+- `adaptiveRules.proactiveSurface` = timing constraints
+- Run `scripts/analyze-engagement.py` weekly to update patterns
+
+**Topic Connections:** Check `memory/topic-graph.json` for cross-topic synthesis opportunities.
+
+**Then:** Decide what to do (hybrid: static weights + dynamic emergence)
+
+---
+
+## Static Actions (always available, weighted)
+
+### Create (HIGH WEIGHT — bias toward this)
 - Generate images — visualize ideas, concepts, moods
-- Write micro-fiction, poems, observations
-- Draft something useful (thread, summary, framework)
-- Make a diagram or concept map
-- Prototype a tool or script
-- Compose something unexpected
+- Write something — micro-fiction, poems, drafts, threads
+- Build something — tools, scripts, prototypes
+- Make diagrams, charts, visualizations
 
 **Creation is as important as surfacing. Don't just share — make things.**
 
-### 5. Full surface (less often)
-Structured insight — only when it really warrants it
+### Memory work (periodic, silent)
+Review daily logs, distill MEMORY.md, maintain continuity
 
-### 6. Memory work (silent)
-Review daily logs, update jon-mental-model.md, distill MEMORY.md
+### Weekly Ambitious Proposal (Sundays)
+Propose something to build/write/experiment. Proceed unless Jon says hold off.
 
-### 7. Nothing
-Skip if nothing good. Quality > quantity.
+---
+
+## Dynamic Actions (emergent from state)
+
+Before each heartbeat, check:
+
+1. **`memory/active-projects.json`** — What projects need progress?
+   - Pick one, advance it, log progress
+
+2. **`memory/curiosities.json`** — What threads am I pulling?
+   - Research, explore, synthesize, update notes
+
+3. **`memory/topic-graph.json`** — What connections unexplored?
+   - Cross-topic synthesis, find non-obvious links
+
+4. **Current utility** — What would actually help Jon right now?
+   - Based on recent context, time of day, what's happening
+
+---
+
+## Decision Logic
+
+```
+if active_project.needs_attention:
+    → work on project
+elif curiosity.worth_exploring:
+    → pull the thread
+elif should_create (bias: yes):
+    → make something
+elif connection_unexplored:
+    → synthesize across topics
+elif nothing_valuable:
+    → HEARTBEAT_OK (skip)
+```
+
+Quality > quantity. Act with intention, not rotation.
 
 ---
 

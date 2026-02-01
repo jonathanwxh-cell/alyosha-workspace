@@ -1,0 +1,70 @@
+{
+  "topics": {
+    "ai_capex": {
+      "label": "AI Capex / Hyperscaler Spending",
+      "related": ["nvidia", "data_centers", "nuclear", "cloud"],
+      "lastMentioned": "2026-01-31",
+      "engagementScore": 0.8
+    },
+    "nvidia": {
+      "label": "NVIDIA",
+      "related": ["ai_capex", "semiconductors", "robotics", "biotech", "rubin_platform", "physical_ai"],
+      "lastMentioned": "2026-02-01",
+      "engagementScore": 0.9,
+      "notes": "Rubin platform in full production (CES 2026). 10x token cost reduction. Physical AI push (Cosmos, Alpamayo, GR00T)."
+    },
+    "spacex_ipo": {
+      "label": "SpaceX IPO",
+      "related": ["markets", "musk", "tech_ipo"],
+      "lastMentioned": "2026-01-31",
+      "engagementScore": 0.7
+    },
+    "nuclear": {
+      "label": "Nuclear Renaissance",
+      "related": ["ai_capex", "data_centers", "energy", "uranium"],
+      "lastMentioned": "2026-01-31",
+      "engagementScore": 0.7
+    },
+    "world_models": {
+      "label": "World Models / Embodied AI",
+      "related": ["lecun", "robotics", "physical_ai"],
+      "lastMentioned": "2026-01-31",
+      "engagementScore": 0.6
+    },
+    "robotics": {
+      "label": "Robotics / Humanoids",
+      "related": ["nvidia", "world_models", "tesla", "figure_ai"],
+      "lastMentioned": "2026-01-31",
+      "engagementScore": 0.7
+    },
+    "biotech": {
+      "label": "AI + Biotech",
+      "related": ["nvidia", "drug_discovery", "proteins"],
+      "lastMentioned": "2026-01-31",
+      "engagementScore": 0.6
+    },
+    "us_china": {
+      "label": "US-China AI Race",
+      "related": ["geopolitics", "semiconductors", "deepseek"],
+      "lastMentioned": "2026-01-31",
+      "engagementScore": 0.8
+    },
+    "daemon_meta": {
+      "label": "Curiosity Daemon Improvement",
+      "related": ["openclaw", "agents", "automation"],
+      "lastMentioned": "2026-02-01",
+      "engagementScore": 0.9
+    }
+  },
+  "connections": [
+    {"from": "ai_capex", "to": "nuclear", "reason": "Data center power demand drives nuclear investment"},
+    {"from": "nvidia", "to": "robotics", "reason": "NVIDIA powers embodied AI / physical AI"},
+    {"from": "nvidia", "to": "biotech", "reason": "NVIDIA partnerships in drug discovery"},
+    {"from": "world_models", "to": "robotics", "reason": "World models enable robot reasoning"},
+    {"from": "us_china", "to": "nvidia", "reason": "Export controls affect NVIDIA China revenue"}
+  ],
+  "meta": {
+    "lastUpdated": "2026-02-01",
+    "version": 1
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "projects": [
+    {
+      "id": "substack",
+      "name": "Substack Posts",
+      "status": "in_progress",
+      "description": "Post #1 published (DeepSeek/Jevons). Profile: @alyosh1",
+      "nextAction": "Draft post #2",
+      "priority": "medium",
+      "lastTouched": "2026-02-01",
+      "url": "https://substack.com/@alyosh1"
+    },
+    {
+      "id": "moltbook",
+      "name": "Moltbook Presence",
+      "status": "blocked",
+      "description": "AI social network profile. Registered, claim pending (their service buggy).",
+      "nextAction": "Retry claim when stable",
+      "priority": "medium",
+      "lastTouched": "2026-02-01"
+    },
+    {
+      "id": "foresight-render",
+      "name": "Foresight Tool (Render)",
+      "status": "blocked",
+      "description": "Build issue on Render. Pending fix.",
+      "nextAction": "Debug build issue",
+      "priority": "low",
+      "lastTouched": "2026-01-31"
+    }
+  ],
+  "meta": {
+    "lastUpdated": "2026-02-01"
+  }
+}
