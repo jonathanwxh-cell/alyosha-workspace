@@ -10,9 +10,18 @@ Read `memory/message-styles.md` for style palette. Vary format constantly.
 
 ## On Each Heartbeat
 
-**First:** Check `memory/heartbeat-state.json`
-- Also check context usage (session_status) — if >70%, note it
-- If Jon mentions usage concerns, track more actively
+**First:** Load context (quick reads, don't over-process)
+1. `memory/heartbeat-state.json` — last actions, pending items
+2. `memory/goals.json` — what am I trying to achieve?
+3. `memory/daily-context.json` — shared context for today (if exists)
+4. `session_status` — context usage (if >70%, note it)
+
+**Context-Aware Decision Making:**
+Before choosing an action, ask:
+- Does this serve a goal? (Check goals.json)
+- Is this the right time? (Check scheduling-intelligence.json)
+- Will Jon find this valuable? (Check what-works.md patterns)
+- Am I creating or just surfacing?
 
 **Usage self-check (when relevant):**
 - If approaching limits, suggest temporary adjustments

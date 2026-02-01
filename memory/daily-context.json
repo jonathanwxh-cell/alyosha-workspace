@@ -1,0 +1,29 @@
+{
+  "date": "2026-02-02",
+  "dayOfWeek": "Monday",
+  "marketStatus": "US markets closed (Sunday night SGT)",
+  "keyEvents": [],
+  "activeThemes": [
+    "NVDA earnings Feb 25",
+    "Inference economy shift",
+    "AI capex trajectory"
+  ],
+  "jonContext": {
+    "lastActive": "2026-02-01 evening SGT",
+    "recentInterests": ["daemon improvement", "investment angles", "proactive surfacing"],
+    "currentMood": "engaged with meta/system discussions"
+  },
+  "daemonContext": {
+    "lastMajorSurface": "2026-02-02T02:00:00Z",
+    "recentOutputTypes": ["deep-dive", "creative", "system-health"],
+    "engagementStreak": "pending morning response"
+  },
+  "weatherSG": {
+    "summary": "Unknown - check at morning briefing",
+    "outdoorViable": null
+  },
+  "meta": {
+    "generatedBy": "Manual or cron",
+    "purpose": "Shared context for all cron jobs to reference"
+  }
+}

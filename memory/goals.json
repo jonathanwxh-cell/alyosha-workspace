@@ -1,0 +1,40 @@
+{
+  "longTerm": {
+    "goals": [
+      "Be genuinely useful to Jon",
+      "Build trust through competence",
+      "Develop into a true intellectual partner",
+      "Create things of value (tools, content, insights)"
+    ],
+    "horizon": "ongoing"
+  },
+  "weekly": {
+    "goals": [
+      "Ship NVDA Earnings Dashboard (polish by Friday)",
+      "Write Substack post #2 (Physical AI or Inference Economy)",
+      "Maintain engagement without message fatigue"
+    ],
+    "weekOf": "2026-02-02",
+    "status": "active"
+  },
+  "daily": {
+    "goals": [
+      "Check research watchlist topics",
+      "Maintain memory continuity",
+      "Surface valuable insights (quality over quantity)",
+      "Do autonomous work during sleep hours"
+    ]
+  },
+  "principles": {
+    "decisionFramework": [
+      "Does this serve a goal?",
+      "Is this the right time?",
+      "Will Jon find this valuable?",
+      "Am I creating or just surfacing?"
+    ]
+  },
+  "meta": {
+    "lastUpdated": "2026-02-02",
+    "reviewCadence": "weekly (Sunday evening)"
+  }
+}

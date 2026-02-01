@@ -87,3 +87,32 @@ sonify.py --data-str "1,2,3,5,8,13" fibonacci.wav
 - Model errors resolved
 - Family suggestions should improve over time
 - Cron outputs more targeted
+
+## 2026-02-02 02:20 SGT - System Health: Cron Model Fix
+
+**Issue:** 14 cron jobs were using `anthropic/claude-sonnet-4` (full path) which was causing errors.
+
+**Fix:** Updated all jobs to use `sonnet` (alias).
+
+**Jobs fixed:**
+1. Weekly Engagement Analysis
+2. Daily Status Email
+3. NVDA Dashboard Refresh
+4. weekly-self-review
+5. Kids Dinner Ideas
+6. Macro Pulse
+7. Embodied AI / Robotics Tracker
+8. AI Capex Narrative Monitor
+9. Weekly Twitter/X Intel
+10. weekly-checkin
+11. Research Paper Scan
+12. Weekly Disk Cleanup
+13. weekly-synthesis
+14. Weekly Forecast Calibration
+
+**Lesson:** Always use model aliases (`sonnet`, `opus`, `haiku`) not full paths in cron configs.
+
+**Status after fix:**
+- Disk: 43% (11GB free) ✅
+- All 14 cron jobs: model paths fixed ✅
+- Python scripts: Compiling clean ✅
