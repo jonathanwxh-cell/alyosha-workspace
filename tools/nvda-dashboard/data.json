@@ -1,0 +1,740 @@
+{
+  "generated_at": "2026-02-01T14:36:47.533206",
+  "ticker": "NVDA",
+  "company": "NVIDIA Corporation",
+  "current": {
+    "price": 191.13,
+    "change_pct": -0.7168405,
+    "market_cap": 4653442400256,
+    "pe_ratio": 47.66334,
+    "forward_pe": 24.93913,
+    "fifty_two_week_high": 212.19,
+    "fifty_two_week_low": 86.62
+  },
+  "earnings": {
+    "next_date": "2026-02-25",
+    "eps_estimate": 7.66386,
+    "history": [
+      {
+        "epsActual": 0.89,
+        "epsEstimate": 0.84562,
+        "epsDifference": 0.04,
+        "surprisePercent": 0.0525
+      },
+      {
+        "epsActual": 0.81,
+        "epsEstimate": 0.74988,
+        "epsDifference": 0.06,
+        "surprisePercent": 0.0802
+      },
+      {
+        "epsActual": 1.05,
+        "epsEstimate": 1.00867,
+        "epsDifference": 0.04,
+        "surprisePercent": 0.040999997
+      },
+      {
+        "epsActual": 1.3,
+        "epsEstimate": 1.25647,
+        "epsDifference": 0.04,
+        "surprisePercent": 0.0346
+      }
+    ]
+  },
+  "price_history": [
+    {
+      "date": "2025-07-31",
+      "close": 177.85,
+      "volume": 221685400
+    },
+    {
+      "date": "2025-08-01",
+      "close": 173.7,
+      "volume": 204529000
+    },
+    {
+      "date": "2025-08-04",
+      "close": 179.98,
+      "volume": 148174600
+    },
+    {
+      "date": "2025-08-05",
+      "close": 178.24,
+      "volume": 156407600
+    },
+    {
+      "date": "2025-08-06",
+      "close": 179.4,
+      "volume": 137192300
+    },
+    {
+      "date": "2025-08-07",
+      "close": 180.75,
+      "volume": 151878400
+    },
+    {
+      "date": "2025-08-08",
+      "close": 182.68,
+      "volume": 123396700
+    },
+    {
+      "date": "2025-08-11",
+      "close": 182.04,
+      "volume": 138323200
+    },
+    {
+      "date": "2025-08-12",
+      "close": 183.14,
+      "volume": 145485700
+    },
+    {
+      "date": "2025-08-13",
+      "close": 181.57,
+      "volume": 179871700
+    },
+    {
+      "date": "2025-08-14",
+      "close": 182.0,
+      "volume": 129554000
+    },
+    {
+      "date": "2025-08-15",
+      "close": 180.43,
+      "volume": 156602200
+    },
+    {
+      "date": "2025-08-18",
+      "close": 181.99,
+      "volume": 132008000
+    },
+    {
+      "date": "2025-08-19",
+      "close": 175.62,
+      "volume": 185229200
+    },
+    {
+      "date": "2025-08-20",
+      "close": 175.38,
+      "volume": 215142700
+    },
+    {
+      "date": "2025-08-21",
+      "close": 174.96,
+      "volume": 140040900
+    },
+    {
+      "date": "2025-08-22",
+      "close": 177.97,
+      "volume": 172789400
+    },
+    {
+      "date": "2025-08-25",
+      "close": 179.79,
+      "volume": 163012800
+    },
+    {
+      "date": "2025-08-26",
+      "close": 181.75,
+      "volume": 168688200
+    },
+    {
+      "date": "2025-08-27",
+      "close": 181.58,
+      "volume": 235518900
+    },
+    {
+      "date": "2025-08-28",
+      "close": 180.15,
+      "volume": 281787800
+    },
+    {
+      "date": "2025-08-29",
+      "close": 174.16,
+      "volume": 243257900
+    },
+    {
+      "date": "2025-09-02",
+      "close": 170.76,
+      "volume": 231164900
+    },
+    {
+      "date": "2025-09-03",
+      "close": 170.6,
+      "volume": 164424900
+    },
+    {
+      "date": "2025-09-04",
+      "close": 171.64,
+      "volume": 141670100
+    },
+    {
+      "date": "2025-09-05",
+      "close": 167.0,
+      "volume": 224441400
+    },
+    {
+      "date": "2025-09-08",
+      "close": 168.29,
+      "volume": 163769100
+    },
+    {
+      "date": "2025-09-09",
+      "close": 170.74,
+      "volume": 157548400
+    },
+    {
+      "date": "2025-09-10",
+      "close": 177.31,
+      "volume": 226852000
+    },
+    {
+      "date": "2025-09-11",
+      "close": 177.16,
+      "volume": 151159300
+    },
+    {
+      "date": "2025-09-12",
+      "close": 177.81,
+      "volume": 124911000
+    },
+    {
+      "date": "2025-09-15",
+      "close": 177.74,
+      "volume": 147061600
+    },
+    {
+      "date": "2025-09-16",
+      "close": 174.87,
+      "volume": 140737800
+    },
+    {
+      "date": "2025-09-17",
+      "close": 170.28,
+      "volume": 211843800
+    },
+    {
+      "date": "2025-09-18",
+      "close": 176.23,
+      "volume": 191763300
+    },
+    {
+      "date": "2025-09-19",
+      "close": 176.66,
+      "volume": 237182100
+    },
+    {
+      "date": "2025-09-22",
+      "close": 183.6,
+      "volume": 269637000
+    },
+    {
+      "date": "2025-09-23",
+      "close": 178.42,
+      "volume": 192559600
+    },
+    {
+      "date": "2025-09-24",
+      "close": 176.96,
+      "volume": 143564100
+    },
+    {
+      "date": "2025-09-25",
+      "close": 177.68,
+      "volume": 191586700
+    },
+    {
+      "date": "2025-09-26",
+      "close": 178.18,
+      "volume": 148573700
+    },
+    {
+      "date": "2025-09-29",
+      "close": 181.84,
+      "volume": 193063500
+    },
+    {
+      "date": "2025-09-30",
+      "close": 186.57,
+      "volume": 236981000
+    },
+    {
+      "date": "2025-10-01",
+      "close": 187.23,
+      "volume": 173844900
+    },
+    {
+      "date": "2025-10-02",
+      "close": 188.88,
+      "volume": 136805800
+    },
+    {
+      "date": "2025-10-03",
+      "close": 187.61,
+      "volume": 137596900
+    },
+    {
+      "date": "2025-10-06",
+      "close": 185.53,
+      "volume": 157678100
+    },
+    {
+      "date": "2025-10-07",
+      "close": 185.03,
+      "volume": 140088000
+    },
+    {
+      "date": "2025-10-08",
+      "close": 189.1,
+      "volume": 130168900
+    },
+    {
+      "date": "2025-10-09",
+      "close": 192.56,
+      "volume": 182997200
+    },
+    {
+      "date": "2025-10-10",
+      "close": 183.15,
+      "volume": 268774400
+    },
+    {
+      "date": "2025-10-13",
+      "close": 188.31,
+      "volume": 153482800
+    },
+    {
+      "date": "2025-10-14",
+      "close": 180.02,
+      "volume": 205641400
+    },
+    {
+      "date": "2025-10-15",
+      "close": 179.82,
+      "volume": 214450500
+    },
+    {
+      "date": "2025-10-16",
+      "close": 181.8,
+      "volume": 179723300
+    },
+    {
+      "date": "2025-10-17",
+      "close": 183.21,
+      "volume": 173135200
+    },
+    {
+      "date": "2025-10-20",
+      "close": 182.63,
+      "volume": 128544700
+    },
+    {
+      "date": "2025-10-21",
+      "close": 181.15,
+      "volume": 124240200
+    },
+    {
+      "date": "2025-10-22",
+      "close": 180.27,
+      "volume": 162249600
+    },
+    {
+      "date": "2025-10-23",
+      "close": 182.15,
+      "volume": 111363700
+    },
+    {
+      "date": "2025-10-24",
+      "close": 186.25,
+      "volume": 131296700
+    },
+    {
+      "date": "2025-10-27",
+      "close": 191.48,
+      "volume": 153452700
+    },
+    {
+      "date": "2025-10-28",
+      "close": 201.02,
+      "volume": 297986200
+    },
+    {
+      "date": "2025-10-29",
+      "close": 207.03,
+      "volume": 308829600
+    },
+    {
+      "date": "2025-10-30",
+      "close": 202.88,
+      "volume": 178864400
+    },
+    {
+      "date": "2025-10-31",
+      "close": 202.48,
+      "volume": 179802200
+    },
+    {
+      "date": "2025-11-03",
+      "close": 206.87,
+      "volume": 180267300
+    },
+    {
+      "date": "2025-11-04",
+      "close": 198.68,
+      "volume": 188919300
+    },
+    {
+      "date": "2025-11-05",
+      "close": 195.2,
+      "volume": 171350300
+    },
+    {
+      "date": "2025-11-06",
+      "close": 188.07,
+      "volume": 223029800
+    },
+    {
+      "date": "2025-11-07",
+      "close": 188.14,
+      "volume": 264942300
+    },
+    {
+      "date": "2025-11-10",
+      "close": 199.04,
+      "volume": 198897100
+    },
+    {
+      "date": "2025-11-11",
+      "close": 193.15,
+      "volume": 176483300
+    },
+    {
+      "date": "2025-11-12",
+      "close": 193.79,
+      "volume": 154935300
+    },
+    {
+      "date": "2025-11-13",
+      "close": 186.85,
+      "volume": 207423100
+    },
+    {
+      "date": "2025-11-14",
+      "close": 190.16,
+      "volume": 186591900
+    },
+    {
+      "date": "2025-11-17",
+      "close": 186.59,
+      "volume": 173628900
+    },
+    {
+      "date": "2025-11-18",
+      "close": 181.35,
+      "volume": 213598900
+    },
+    {
+      "date": "2025-11-19",
+      "close": 186.51,
+      "volume": 247246400
+    },
+    {
+      "date": "2025-11-20",
+      "close": 180.63,
+      "volume": 343504800
+    },
+    {
+      "date": "2025-11-21",
+      "close": 178.87,
+      "volume": 346926200
+    },
+    {
+      "date": "2025-11-24",
+      "close": 182.54,
+      "volume": 256618300
+    },
+    {
+      "date": "2025-11-25",
+      "close": 177.81,
+      "volume": 320600300
+    },
+    {
+      "date": "2025-11-26",
+      "close": 180.25,
+      "volume": 183852000
+    },
+    {
+      "date": "2025-11-28",
+      "close": 176.99,
+      "volume": 121332800
+    },
+    {
+      "date": "2025-12-01",
+      "close": 179.91,
+      "volume": 188131000
+    },
+    {
+      "date": "2025-12-02",
+      "close": 181.45,
+      "volume": 182632200
+    },
+    {
+      "date": "2025-12-03",
+      "close": 179.58,
+      "volume": 165138000
+    },
+    {
+      "date": "2025-12-04",
+      "close": 183.38,
+      "volume": 167364900
+    },
+    {
+      "date": "2025-12-05",
+      "close": 182.41,
+      "volume": 143971100
+    },
+    {
+      "date": "2025-12-08",
+      "close": 185.55,
+      "volume": 204378100
+    },
+    {
+      "date": "2025-12-09",
+      "close": 184.97,
+      "volume": 144719700
+    },
+    {
+      "date": "2025-12-10",
+      "close": 183.78,
+      "volume": 162785400
+    },
+    {
+      "date": "2025-12-11",
+      "close": 180.93,
+      "volume": 182136600
+    },
+    {
+      "date": "2025-12-12",
+      "close": 175.02,
+      "volume": 204274900
+    },
+    {
+      "date": "2025-12-15",
+      "close": 176.29,
+      "volume": 164775600
+    },
+    {
+      "date": "2025-12-16",
+      "close": 177.72,
+      "volume": 148588100
+    },
+    {
+      "date": "2025-12-17",
+      "close": 170.94,
+      "volume": 222775500
+    },
+    {
+      "date": "2025-12-18",
+      "close": 174.14,
+      "volume": 176096000
+    },
+    {
+      "date": "2025-12-19",
+      "close": 180.99,
+      "volume": 324925900
+    },
+    {
+      "date": "2025-12-22",
+      "close": 183.69,
+      "volume": 129064400
+    },
+    {
+      "date": "2025-12-23",
+      "close": 189.21,
+      "volume": 174873600
+    },
+    {
+      "date": "2025-12-24",
+      "close": 188.61,
+      "volume": 65528500
+    },
+    {
+      "date": "2025-12-26",
+      "close": 190.53,
+      "volume": 139740300
+    },
+    {
+      "date": "2025-12-29",
+      "close": 188.22,
+      "volume": 120006100
+    },
+    {
+      "date": "2025-12-30",
+      "close": 187.54,
+      "volume": 97687300
+    },
+    {
+      "date": "2025-12-31",
+      "close": 186.5,
+      "volume": 120100500
+    },
+    {
+      "date": "2026-01-02",
+      "close": 188.85,
+      "volume": 148240500
+    },
+    {
+      "date": "2026-01-05",
+      "close": 188.12,
+      "volume": 183529700
+    },
+    {
+      "date": "2026-01-06",
+      "close": 187.24,
+      "volume": 176862600
+    },
+    {
+      "date": "2026-01-07",
+      "close": 189.11,
+      "volume": 153543200
+    },
+    {
+      "date": "2026-01-08",
+      "close": 185.04,
+      "volume": 172457000
+    },
+    {
+      "date": "2026-01-09",
+      "close": 184.86,
+      "volume": 131327500
+    },
+    {
+      "date": "2026-01-12",
+      "close": 184.94,
+      "volume": 137968500
+    },
+    {
+      "date": "2026-01-13",
+      "close": 185.81,
+      "volume": 160128900
+    },
+    {
+      "date": "2026-01-14",
+      "close": 183.14,
+      "volume": 159586100
+    },
+    {
+      "date": "2026-01-15",
+      "close": 187.05,
+      "volume": 206188600
+    },
+    {
+      "date": "2026-01-16",
+      "close": 186.23,
+      "volume": 187967200
+    },
+    {
+      "date": "2026-01-20",
+      "close": 178.07,
+      "volume": 223345300
+    },
+    {
+      "date": "2026-01-21",
+      "close": 183.32,
+      "volume": 200381000
+    },
+    {
+      "date": "2026-01-22",
+      "close": 184.84,
+      "volume": 139636600
+    },
+    {
+      "date": "2026-01-23",
+      "close": 187.67,
+      "volume": 142748100
+    },
+    {
+      "date": "2026-01-26",
+      "close": 186.47,
+      "volume": 124799600
+    },
+    {
+      "date": "2026-01-27",
+      "close": 188.52,
+      "volume": 143711600
+    },
+    {
+      "date": "2026-01-28",
+      "close": 191.52,
+      "volume": 148552700
+    },
+    {
+      "date": "2026-01-29",
+      "close": 192.51,
+      "volume": 171764400
+    },
+    {
+      "date": "2026-01-30",
+      "close": 191.13,
+      "volume": 178936900
+    }
+  ],
+  "analysts": {
+    "target_mean": 253.62138,
+    "target_high": 352.0,
+    "target_low": 140.0,
+    "recommendation": "strong_buy",
+    "num_analysts": 58,
+    "recent_recommendations": [
+      {
+        "period": "0m",
+        "strongBuy": 12,
+        "buy": 48,
+        "hold": 3,
+        "sell": 1,
+        "strongSell": 0
+      },
+      {
+        "period": "-1m",
+        "strongBuy": 11,
+        "buy": 49,
+        "hold": 3,
+        "sell": 1,
+        "strongSell": 0
+      },
+      {
+        "period": "-2m",
+        "strongBuy": 11,
+        "buy": 49,
+        "hold": 3,
+        "sell": 1,
+        "strongSell": 0
+      }
+    ]
+  },
+  "metrics": {
+    "revenue_growth": 0.625,
+    "earnings_growth": 0.667,
+    "profit_margin": 0.53007,
+    "roe": 1.07359
+  },
+  "thesis": {
+    "bull": [
+      "Rubin platform in production (10x cost reduction)",
+      "Physical AI expansion (Cosmos, Alpamayo, GR00T)",
+      "Data center demand remains strong",
+      "Jevons Paradox: efficiency \u2192 more demand"
+    ],
+    "bear": [
+      "China export restrictions impact",
+      "Customer concentration risk",
+      "Valuation stretched at current PE",
+      "Competition from AMD, custom silicon"
+    ],
+    "signals_to_watch": [
+      "Data center revenue growth rate",
+      "China revenue guidance",
+      "Gross margin trajectory",
+      "Hyperscaler capex commentary"
+    ]
+  }
+}

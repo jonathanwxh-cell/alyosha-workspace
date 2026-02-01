@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVDA Earnings Intelligence Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg: #0d1117;
+            --card-bg: #161b22;
+            --border: #30363d;
+            --text: #e6edf3;
+            --text-muted: #8b949e;
+            --green: #3fb950;
+            --red: #f85149;
+            --blue: #58a6ff;
+            --yellow: #d29922;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            padding: 20px;
+            line-height: 1.5;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .header h1 { font-size: 24px; }
+        .header .meta { color: var(--text-muted); font-size: 14px; }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .card h2 {
+            font-size: 14px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+        
+        .price-main {
+            font-size: 48px;
+            font-weight: 600;
+        }
+        
+        .price-change {
+            font-size: 18px;
+            margin-left: 12px;
+        }
+        
+        .positive { color: var(--green); }
+        .negative { color: var(--red); }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .stat-row:last-child { border-bottom: none; }
+        .stat-label { color: var(--text-muted); }
+        .stat-value { font-weight: 500; }
+        
+        .earnings-date {
+            font-size: 32px;
+            font-weight: 600;
+            color: var(--yellow);
+        }
+        
+        .countdown {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+        
+        .thesis-list {
+            list-style: none;
+        }
+        
+        .thesis-list li {
+            padding: 8px 0;
+            padding-left: 20px;
+            position: relative;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        .thesis-list li:last-child { border-bottom: none; }
+        
+        .thesis-list.bull li::before {
+            content: '🟢';
+            position: absolute;
+            left: 0;
+        }
+        
+        .thesis-list.bear li::before {
+            content: '🔴';
+            position: absolute;
+            left: 0;
+        }
+        
+        .thesis-list.watch li::before {
+            content: '👁️';
+            position: absolute;
+            left: 0;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin-top: 12px;
+        }
+        
+        .target-bar {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 8px 0;
+        }
+        
+        .target-bar .bar {
+            flex: 1;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            position: relative;
+        }
+        
+        .target-bar .marker {
+            position: absolute;
+            width: 4px;
+            height: 16px;
+            top: -4px;
+            border-radius: 2px;
+        }
+        
+        .marker.current { background: var(--blue); }
+        .marker.target { background: var(--green); }
+        
+        .full-width { grid-column: 1 / -1; }
+        
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .price-main { font-size: 36px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div>
+            <h1>📊 NVDA Earnings Intelligence</h1>
+            <div class="company-name" id="companyName">NVIDIA Corporation</div>
+        </div>
+        <div class="meta">
+            <div>Last updated: <span id="lastUpdated">-</span></div>
+            <div>Next refresh: Auto-daily</div>
+        </div>
+    </div>
+    
+    <div class="grid">
+        <!-- Current Price -->
+        <div class="card">
+            <h2>Current Price</h2>
+            <div>
+                <span class="price-main" id="currentPrice">-</span>
+                <span class="price-change" id="priceChange">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">52W High</span>
+                <span class="stat-value" id="high52">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">52W Low</span>
+                <span class="stat-value" id="low52">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Market Cap</span>
+                <span class="stat-value" id="marketCap">-</span>
+            </div>
+        </div>
+        
+        <!-- Earnings Countdown -->
+        <div class="card">
+            <h2>📅 Earnings Date</h2>
+            <div class="earnings-date" id="earningsDate">-</div>
+            <div class="countdown" id="countdown">-</div>
+            <div class="stat-row">
+                <span class="stat-label">EPS Estimate</span>
+                <span class="stat-value" id="epsEstimate">-</span>
+            </div>
+        </div>
+        
+        <!-- Valuation -->
+        <div class="card">
+            <h2>Valuation</h2>
+            <div class="stat-row">
+                <span class="stat-label">P/E (TTM)</span>
+                <span class="stat-value" id="peRatio">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Forward P/E</span>
+                <span class="stat-value" id="forwardPe">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Revenue Growth</span>
+                <span class="stat-value" id="revGrowth">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Profit Margin</span>
+                <span class="stat-value" id="profitMargin">-</span>
+            </div>
+        </div>
+        
+        <!-- Analyst Targets -->
+        <div class="card">
+            <h2>Analyst Targets</h2>
+            <div class="stat-row">
+                <span class="stat-label">Consensus</span>
+                <span class="stat-value" id="recommendation">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Target (Mean)</span>
+                <span class="stat-value" id="targetMean">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">Target Range</span>
+                <span class="stat-value" id="targetRange">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label"># Analysts</span>
+                <span class="stat-value" id="numAnalysts">-</span>
+            </div>
+        </div>
+        
+        <!-- Price Chart -->
+        <div class="card full-width">
+            <h2>Price History (6 Months)</h2>
+            <div class="chart-container">
+                <canvas id="priceChart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Bull Thesis -->
+        <div class="card">
+            <h2>🐂 Bull Thesis</h2>
+            <ul class="thesis-list bull" id="bullThesis"></ul>
+        </div>
+        
+        <!-- Bear Thesis -->
+        <div class="card">
+            <h2>🐻 Bear Thesis</h2>
+            <ul class="thesis-list bear" id="bearThesis"></ul>
+        </div>
+        
+        <!-- Signals to Watch -->
+        <div class="card full-width">
+            <h2>👁️ Signals to Watch (Earnings Call)</h2>
+            <ul class="thesis-list watch" id="watchSignals"></ul>
+        </div>
+    </div>
+    
+    <script>
+        // Load data and render
+        async function loadData() {
+            try {
+                const response = await fetch('data.json');
+                const data = await response.json();
+                renderDashboard(data);
+            } catch (e) {
+                console.error('Failed to load data:', e);
+                document.body.innerHTML += '<div style="color: var(--red); padding: 20px;">Error loading data. Run fetch_data.py first.</div>';
+            }
+        }
+        
+        function formatNumber(n, decimals = 2) {
+            if (n === null || n === undefined) return '-';
+            return n.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+        }
+        
+        function formatLargeNumber(n) {
+            if (n === null || n === undefined) return '-';
+            if (n >= 1e12) return (n / 1e12).toFixed(2) + 'T';
+            if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+            if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+            return n.toLocaleString();
+        }
+        
+        function formatPercent(n) {
+            if (n === null || n === undefined) return '-';
+            const pct = (n * 100).toFixed(2);
+            return (n >= 0 ? '+' : '') + pct + '%';
+        }
+        
+        function daysUntil(dateStr) {
+            const target = new Date(dateStr);
+            const now = new Date();
+            const diff = target - now;
+            return Math.ceil(diff / (1000 * 60 * 60 * 24));
+        }
+        
+        function renderDashboard(data) {
+            // Header
+            document.getElementById('companyName').textContent = data.company;
+            document.getElementById('lastUpdated').textContent = new Date(data.generated_at).toLocaleString();
+            
+            // Current price
+            const current = data.current;
+            document.getElementById('currentPrice').textContent = '$' + formatNumber(current.price);
+            
+            const changeEl = document.getElementById('priceChange');
+            if (current.change_pct !== null) {
+                const pct = formatPercent(current.change_pct / 100);
+                changeEl.textContent = pct;
+                changeEl.className = 'price-change ' + (current.change_pct >= 0 ? 'positive' : 'negative');
+            }
+            
+            document.getElementById('high52').textContent = '$' + formatNumber(current.fifty_two_week_high);
+            document.getElementById('low52').textContent = '$' + formatNumber(current.fifty_two_week_low);
+            document.getElementById('marketCap').textContent = '$' + formatLargeNumber(current.market_cap);
+            
+            // Earnings
+            const earnings = data.earnings;
+            document.getElementById('earningsDate').textContent = earnings.next_date || 'Feb 25, 2026';
+            const days = daysUntil(earnings.next_date || '2026-02-25');
+            document.getElementById('countdown').textContent = days + ' days away';
+            document.getElementById('epsEstimate').textContent = earnings.eps_estimate ? '$' + formatNumber(earnings.eps_estimate) : '-';
+            
+            // Valuation
+            document.getElementById('peRatio').textContent = formatNumber(current.pe_ratio, 1) + 'x';
+            document.getElementById('forwardPe').textContent = formatNumber(current.forward_pe, 1) + 'x';
+            document.getElementById('revGrowth').textContent = formatPercent(data.metrics.revenue_growth);
+            document.getElementById('profitMargin').textContent = formatPercent(data.metrics.profit_margin);
+            
+            // Analysts
+            const analysts = data.analysts;
+            document.getElementById('recommendation').textContent = (analysts.recommendation || '-').toUpperCase();
+            document.getElementById('targetMean').textContent = '$' + formatNumber(analysts.target_mean);
+            document.getElementById('targetRange').textContent = '$' + formatNumber(analysts.target_low) + ' - $' + formatNumber(analysts.target_high);
+            document.getElementById('numAnalysts').textContent = analysts.num_analysts || '-';
+            
+            // Thesis
+            renderList('bullThesis', data.thesis.bull);
+            renderList('bearThesis', data.thesis.bear);
+            renderList('watchSignals', data.thesis.signals_to_watch);
+            
+            // Chart
+            renderChart(data.price_history);
+        }
+        
+        function renderList(elementId, items) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = items.map(item => `<li>${item}</li>`).join('');
+        }
+        
+        function renderChart(priceHistory) {
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: priceHistory.map(p => p.date),
+                    datasets: [{
+                        label: 'NVDA',
+                        data: priceHistory.map(p => p.close),
+                        borderColor: '#58a6ff',
+                        backgroundColor: 'rgba(88, 166, 255, 0.1)',
+                        fill: true,
+                        tension: 0.1,
+                        pointRadius: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: '#30363d' },
+                            ticks: { color: '#8b949e', maxTicksLimit: 8 }
+                        },
+                        y: {
+                            grid: { color: '#30363d' },
+                            ticks: { color: '#8b949e', callback: v => '$' + v }
+                        }
+                    }
+                }
+            });
+        }
+        
+        loadData();
+    </script>
+</body>
+</html>
