@@ -162,6 +162,25 @@
         
         .full-width { grid-column: 1 / -1; }
         
+        .beat-history {
+            display: flex;
+            gap: 4px;
+            margin-top: 12px;
+        }
+        .beat-bar {
+            flex: 1;
+            height: 40px;
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+        .beat-bar.beat { background: rgba(63, 185, 80, 0.3); border: 1px solid var(--green); }
+        .beat-bar.miss { background: rgba(248, 81, 73, 0.3); border: 1px solid var(--red); }
+        .beat-bar .pct { font-weight: 600; }
+        
         @media (max-width: 768px) {
             .grid { grid-template-columns: 1fr; }
             .price-main { font-size: 36px; }
@@ -211,6 +230,31 @@
                 <span class="stat-label">EPS Estimate</span>
                 <span class="stat-value" id="epsEstimate">-</span>
             </div>
+            <div class="stat-row">
+                <span class="stat-label">Beat Streak</span>
+                <span class="stat-value" id="beatStreak">-</span>
+            </div>
+        </div>
+        
+        <!-- Upside Calculator -->
+        <div class="card">
+            <h2>🎯 Upside Analysis</h2>
+            <div class="stat-row">
+                <span class="stat-label">To Mean Target</span>
+                <span class="stat-value positive" id="upsideToMean">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">To High Target</span>
+                <span class="stat-value positive" id="upsideToHigh">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">To 52W High</span>
+                <span class="stat-value" id="upsideTo52wHigh">-</span>
+            </div>
+            <div class="stat-row">
+                <span class="stat-label">From 52W Low</span>
+                <span class="stat-value positive" id="from52wLow">-</span>
+            </div>
         </div>
         
         <!-- Valuation -->
@@ -252,6 +296,15 @@
             <div class="stat-row">
                 <span class="stat-label"># Analysts</span>
                 <span class="stat-value" id="numAnalysts">-</span>
+            </div>
+        </div>
+        
+        <!-- Earnings Beat History -->
+        <div class="card">
+            <h2>📈 Recent Earnings (Beat %)</h2>
+            <div class="beat-history" id="beatHistory"></div>
+            <div style="margin-top: 8px; font-size: 12px; color: var(--text-muted);">
+                Last 4 quarters: Est vs Actual EPS
             </div>
         </div>
         
@@ -361,10 +414,55 @@
             document.getElementById('targetRange').textContent = '$' + formatNumber(analysts.target_low) + ' - $' + formatNumber(analysts.target_high);
             document.getElementById('numAnalysts').textContent = analysts.num_analysts || '-';
             
+            // Beat streak calculation
+            let beatStreak = 0;
+            if (earnings.history) {
+                for (const q of earnings.history) {
+                    if (q.surprisePercent > 0) beatStreak++;
+                    else break;
+                }
+            }
+            document.getElementById('beatStreak').textContent = beatStreak + ' quarters 🔥';
+            
+            // Upside calculations
+            const price = current.price;
+            if (analysts.target_mean) {
+                const upsideMean = ((analysts.target_mean - price) / price * 100).toFixed(1);
+                document.getElementById('upsideToMean').textContent = '+' + upsideMean + '%';
+            }
+            if (analysts.target_high) {
+                const upsideHigh = ((analysts.target_high - price) / price * 100).toFixed(1);
+                document.getElementById('upsideToHigh').textContent = '+' + upsideHigh + '%';
+            }
+            if (current.fifty_two_week_high) {
+                const upside52h = ((current.fifty_two_week_high - price) / price * 100).toFixed(1);
+                const el = document.getElementById('upsideTo52wHigh');
+                el.textContent = '+' + upside52h + '%';
+                el.className = 'stat-value ' + (upside52h > 0 ? 'positive' : 'negative');
+            }
+            if (current.fifty_two_week_low) {
+                const from52l = ((price - current.fifty_two_week_low) / current.fifty_two_week_low * 100).toFixed(1);
+                document.getElementById('from52wLow').textContent = '+' + from52l + '%';
+            }
+            
             // Thesis
             renderList('bullThesis', data.thesis.bull);
             renderList('bearThesis', data.thesis.bear);
             renderList('watchSignals', data.thesis.signals_to_watch);
+            
+            // Beat history visualization
+            const beatHistoryEl = document.getElementById('beatHistory');
+            if (earnings.history && earnings.history.length > 0) {
+                const reversed = [...earnings.history].reverse();
+                beatHistoryEl.innerHTML = reversed.map((q, i) => {
+                    const pct = (q.surprisePercent * 100).toFixed(1);
+                    const isBeat = q.surprisePercent > 0;
+                    return `<div class="beat-bar ${isBeat ? 'beat' : 'miss'}">
+                        <div class="pct">${isBeat ? '+' : ''}${pct}%</div>
+                        <div>Q${i+1}</div>
+                    </div>`;
+                }).join('');
+            }
             
             // Chart
             renderChart(data.price_history);

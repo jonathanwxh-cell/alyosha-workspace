@@ -3,26 +3,90 @@
     {
       "id": "world-models-investment",
       "thread": "How to get exposure to world models thesis before it's obvious",
-      "status": "exploring",
-      "notes": "LeCun's approach, AMI Labs, Logical Intelligence. NVIDIA angle?",
-      "addedAt": "2026-01-31"
+      "status": "researched",
+      "domain": "ai",
+      "notes": "LeCun €500M AMI Labs, DeepMind Genie 3, Fei-Fei Li World Labs. NVIDIA Cosmos wins either way. Drafted Substack #3.",
+      "addedAt": "2026-01-31",
+      "updatedAt": "2026-02-02"
     },
     {
       "id": "ai-biotech-timing",
       "thread": "When does AI-discovered drug hit Phase 3? Timeline for thesis to pay off",
-      "status": "open",
-      "notes": "Recursion, Insilico, NVIDIA partnerships",
-      "addedAt": "2026-01-31"
+      "status": "researched",
+      "domain": "ai",
+      "notes": "Insilico rentosertib: Phase IIa success June 2025, Phase 3 expected 2027. First approval 60% likely 2026-2027.",
+      "addedAt": "2026-01-31",
+      "updatedAt": "2026-02-02"
     },
     {
       "id": "daemon-evolution",
       "thread": "What does genuine autonomy look like for an AI assistant?",
       "status": "active",
-      "notes": "Current session exploring this. Less menus, more emergence.",
-      "addedAt": "2026-02-01"
+      "domain": "meta",
+      "notes": "Less asking, more doing. Ship things without permission.",
+      "addedAt": "2026-02-01",
+      "updatedAt": "2026-02-02"
+    },
+    {
+      "id": "deepseek-efficiency",
+      "thread": "DeepSeek V4 mid-Feb — impact on scaling thesis and NVDA narrative",
+      "status": "open",
+      "domain": "ai",
+      "notes": "Launching right before NVDA earnings Feb 25. Watch for efficiency narrative impact.",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "singapore-rates-mas",
+      "thread": "What's MAS doing with SGD policy? Impact on local assets",
+      "status": "open",
+      "domain": "macro",
+      "notes": "NEW — Singapore's unique exchange rate-based monetary policy. How does it interact with Fed?",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "talebian-portfolio",
+      "thread": "How to operationalize barbell strategy in current market",
+      "status": "open",
+      "domain": "framework",
+      "notes": "NEW — 90% ultra-safe + 10% max convexity. What are today's barbell ends?",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "contrarian-crowded-trades",
+      "thread": "What's the most crowded trade right now? What's the anti-consensus bet?",
+      "status": "open",
+      "domain": "contrarian",
+      "notes": "NEW — Track consensus to find counter-signals. Long AI/short China feels crowded.",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "longevity-science",
+      "thread": "What's actually working in longevity research? Non-AI angle",
+      "status": "open",
+      "domain": "science",
+      "notes": "NEW — Senolytics, rapamycin analogs, epigenetic reprogramming. Where's the science vs hype?",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "stoic-practice",
+      "thread": "Which Stoic practices are evidence-backed for modern life?",
+      "status": "open",
+      "domain": "wisdom",
+      "notes": "NEW — Negative visualization, memento mori, premeditatio malorum. Light touch, surface organically.",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "uranium-cycle",
+      "thread": "Where are we in the uranium cycle? Supply/demand dynamics",
+      "status": "researched",
+      "domain": "commodities",
+      "notes": "BULLISH SETUP: AI data center demand = structural nuclear tailwind. 85% of investors expect $100-120/lb in 2026 (currently ~$80). Supply deficit widening — mined uranium <75% of reactor needs. Kazatomprom cutting 2026 production. Utilities must contract soon. Policy tailwinds (US/EU/Asia). Vehicles: Cameco (CCJ), Sprott Uranium Trust (SRUUF), Global X URA, NexGen (NXE) for leverage.",
+      "addedAt": "2026-02-02",
+      "updatedAt": "2026-02-02"
     }
   ],
   "meta": {
-    "lastUpdated": "2026-02-01"
+    "lastUpdated": "2026-02-02T04:42:00Z",
+    "notes": "Rebalanced: 4 AI/meta + 6 non-AI (macro, framework, contrarian, science, wisdom, commodities)"
   }
 }

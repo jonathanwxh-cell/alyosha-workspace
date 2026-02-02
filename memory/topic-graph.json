@@ -4,14 +4,15 @@
       "label": "AI Capex / Hyperscaler Spending",
       "related": ["nvidia", "data_centers", "nuclear", "cloud"],
       "lastMentioned": "2026-01-31",
-      "engagementScore": 0.8
+      "engagementScore": 0.6,
+      "notes": "Reduced from 0.8 — part of AI cluster rebalance"
     },
     "nvidia": {
       "label": "NVIDIA",
       "related": ["ai_capex", "semiconductors", "robotics", "biotech", "rubin_platform", "physical_ai"],
       "lastMentioned": "2026-02-01",
-      "engagementScore": 0.9,
-      "notes": "Rubin platform in full production (CES 2026). 10x token cost reduction. Physical AI push (Cosmos, Alpamayo, GR00T)."
+      "engagementScore": 0.6,
+      "notes": "Reduced from 0.9 — avoid over-focus"
     },
     "spacex_ipo": {
       "label": "SpaceX IPO",
@@ -21,91 +22,119 @@
     },
     "nuclear": {
       "label": "Nuclear Renaissance",
-      "related": ["ai_capex", "data_centers", "energy", "uranium"],
+      "related": ["energy", "uranium", "utilities", "infrastructure"],
       "lastMentioned": "2026-01-31",
-      "engagementScore": 0.7
+      "engagementScore": 0.7,
+      "notes": "Decoupled from AI — stands alone as energy thesis"
     },
     "world_models": {
       "label": "World Models / Embodied AI",
       "related": ["lecun", "robotics", "physical_ai"],
       "lastMentioned": "2026-01-31",
-      "engagementScore": 0.6
+      "engagementScore": 0.5,
+      "notes": "Reduced from 0.6"
     },
     "robotics": {
       "label": "Robotics / Humanoids",
-      "related": ["nvidia", "world_models", "tesla", "figure_ai"],
+      "related": ["world_models", "tesla", "figure_ai", "manufacturing"],
       "lastMentioned": "2026-01-31",
-      "engagementScore": 0.7
+      "engagementScore": 0.5,
+      "notes": "Reduced from 0.7"
     },
     "biotech": {
-      "label": "AI + Biotech",
-      "related": ["nvidia", "drug_discovery", "proteins"],
+      "label": "Biotech (non-AI focus)",
+      "related": ["drug_discovery", "proteins", "longevity", "genomics"],
       "lastMentioned": "2026-01-31",
-      "engagementScore": 0.6
+      "engagementScore": 0.6,
+      "notes": "Reframed away from AI angle"
     },
     "us_china": {
-      "label": "US-China AI Race",
-      "related": ["geopolitics", "semiconductors", "deepseek"],
+      "label": "US-China Geopolitics",
+      "related": ["geopolitics", "semiconductors", "trade", "security"],
       "lastMentioned": "2026-01-31",
-      "engagementScore": 0.8
+      "engagementScore": 0.7,
+      "notes": "Broader than just AI race"
     },
     "daemon_meta": {
-      "label": "Curiosity Daemon Improvement",
+      "label": "Daemon Improvement",
       "related": ["openclaw", "agents", "automation"],
       "lastMentioned": "2026-02-02",
-      "engagementScore": 0.9
+      "engagementScore": 0.7,
+      "notes": "Reduced from 0.9 — still valued but not dominant"
     },
     "talebian": {
       "label": "Talebian Framework",
-      "related": ["antifragility", "black_swan", "barbell", "risk"],
+      "related": ["antifragility", "black_swan", "barbell", "risk", "optionality"],
       "lastMentioned": "2026-02-02",
       "engagementScore": 0.8,
-      "notes": "Core intellectual framework. Antifragile, Black Swan, skin-in-the-game. Operationalize in analysis."
+      "notes": "Core intellectual framework. Apply across ALL domains, not just markets."
     },
     "wisdom": {
       "label": "Philosophy / Wisdom Traditions",
-      "related": ["stoicism", "non_duality", "meaning"],
+      "related": ["stoicism", "non_duality", "meaning", "contemplative"],
       "lastMentioned": "2026-02-02",
-      "engagementScore": 0.5,
-      "notes": "Light touch. Stoicism, Taoism, Advaita, Buddhism. Surface organically."
+      "engagementScore": 0.6,
+      "notes": "Increased from 0.5. Light touch, surface organically."
     },
     "asia_markets": {
       "label": "Asia / EM Markets",
-      "related": ["china", "japan", "korea", "india", "asean", "singapore"],
+      "related": ["singapore", "china", "japan", "india", "asean", "mas_policy"],
       "lastMentioned": "2026-02-02",
-      "engagementScore": 0.6,
-      "notes": "Geographic relevance. MAS policy, regional investment angles."
+      "engagementScore": 0.7,
+      "notes": "Increased from 0.6. Geographic relevance."
     },
     "contrarian": {
       "label": "Contrarian / Counter-Consensus",
-      "related": ["sentiment", "positioning", "crowded_trades"],
+      "related": ["sentiment", "positioning", "crowded_trades", "value"],
       "lastMentioned": "2026-02-02",
-      "engagementScore": 0.7,
-      "notes": "What is the crowd missing? Track consensus to find counter-signals."
+      "engagementScore": 0.8,
+      "notes": "Increased from 0.7. What is the crowd missing?"
     },
     "cross_domain_science": {
       "label": "Cross-Domain Science",
-      "related": ["physics", "biology", "math", "materials", "complexity"],
+      "related": ["physics", "biology", "math", "materials", "complexity", "cosmology"],
       "lastMentioned": "2026-02-02",
+      "engagementScore": 0.7,
+      "notes": "Increased from 0.6. Paradigm shifts, unexpected connections."
+    },
+    "macro_rates": {
+      "label": "Macro / Rates / Central Banks",
+      "related": ["fed", "yields", "inflation", "bonds", "currency"],
+      "lastMentioned": null,
+      "engagementScore": 0.7,
+      "notes": "NEW — Fed, ECB, MAS policy, yield curves"
+    },
+    "commodities": {
+      "label": "Commodities",
+      "related": ["oil", "gold", "uranium", "copper", "agriculture"],
+      "lastMentioned": null,
       "engagementScore": 0.6,
-      "notes": "Connecting dots across domains. Paradigm shifts, unexpected connections."
+      "notes": "NEW — Energy, metals, soft commodities"
     }
   },
   "connections": [
-    {"from": "ai_capex", "to": "nuclear", "reason": "Data center power demand drives nuclear investment"},
-    {"from": "nvidia", "to": "robotics", "reason": "NVIDIA powers embodied AI / physical AI"},
-    {"from": "nvidia", "to": "biotech", "reason": "NVIDIA partnerships in drug discovery"},
-    {"from": "world_models", "to": "robotics", "reason": "World models enable robot reasoning"},
-    {"from": "us_china", "to": "nvidia", "reason": "Export controls affect NVIDIA China revenue"},
+    {"from": "nuclear", "to": "commodities", "reason": "Uranium is the commodity play"},
+    {"from": "nuclear", "to": "macro_rates", "reason": "Infrastructure capex sensitive to rates"},
     {"from": "talebian", "to": "contrarian", "reason": "Antifragility often found where consensus is wrong"},
     {"from": "talebian", "to": "asia_markets", "reason": "Fat tails more common in EM, barbell opportunities"},
+    {"from": "talebian", "to": "macro_rates", "reason": "Rate regime changes = convexity opportunities"},
     {"from": "wisdom", "to": "talebian", "reason": "Stoicism + antifragility share acceptance of uncertainty"},
     {"from": "cross_domain_science", "to": "biotech", "reason": "Physics/math breakthroughs enable bio applications"},
-    {"from": "cross_domain_science", "to": "ai_capex", "reason": "Materials science affects chip manufacturing"}
+    {"from": "asia_markets", "to": "us_china", "reason": "Regional implications of great power competition"},
+    {"from": "contrarian", "to": "commodities", "reason": "Often overlooked in tech-dominated discourse"},
+    {"from": "macro_rates", "to": "asia_markets", "reason": "Fed policy impacts EM flows"}
   ],
+  "diversityRules": {
+    "enabled": true,
+    "maxAiClusterPercent": 40,
+    "aiClusterTopics": ["nvidia", "ai_capex", "world_models", "robotics", "daemon_meta"],
+    "minNonTechPercent": 30,
+    "nonTechTopics": ["wisdom", "talebian", "macro_rates", "commodities", "asia_markets", "cross_domain_science"],
+    "notes": "Enforce variety. AI cluster capped at 40% of surfaces."
+  },
   "meta": {
     "lastUpdated": "2026-02-02",
-    "version": 2,
-    "notes": "Added: talebian, wisdom, asia_markets, contrarian, cross_domain_science"
+    "version": 3,
+    "rebalanceReason": "Jon feedback: over-focus on AI/NVIDIA. Lowered AI cluster, raised non-tech topics, added diversity rules."
   }
 }

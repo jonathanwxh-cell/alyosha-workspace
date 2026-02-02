@@ -38,7 +38,7 @@ def get_api_key() -> str:
     
     # Try loading from file
     env_paths = [
-        Path.home() / '.openclaw/workspace/.secure/fmp.env',
+        Path.home() / '.secure/fmp.env',
         Path('.secure/fmp.env'),
         Path('fmp.env'),
     ]

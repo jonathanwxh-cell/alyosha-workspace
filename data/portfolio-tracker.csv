@@ -1,0 +1,5 @@
+date,app_name,type,url,status,notes
+2026-02-01,nvda-dashboard,static,https://nvda-dashboard.onrender.com,live,NVDA earnings tracker
+2026-02-01,ember-calibration,static,https://ember-calibration.onrender.com,live,Temperature calibration tool  
+2026-02-01,sg-outdoor-guide,web,https://sg-outdoor-guide.onrender.com,live,Singapore outdoor activities
+2026-02-02,alyosha-dashboard,web,https://alyosha-dashboard.onrender.com,deploying,Self-assessment tracker

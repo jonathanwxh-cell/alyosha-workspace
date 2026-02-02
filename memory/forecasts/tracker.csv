@@ -1,1 +1,2 @@
 date,domain,prediction,confidence_pct,direction,time_horizon,outcome,outcome_date,accuracy_notes
+2026-02-01,energy,Brent stays 8-75 through Feb; spike to 0+ if US strikes Iran,medium,neutral,1 month,,,

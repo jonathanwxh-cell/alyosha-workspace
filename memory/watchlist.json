@@ -1,0 +1,46 @@
+{
+  "tickers": [
+    "NVDA",
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "META",
+    "AMZN",
+    "TSLA"
+  ],
+  "thresholds": {
+    "daily_move_pct": 3.0,
+    "weekly_move_pct": 10.0
+  },
+  "last_prices": {
+    "NVDA": {
+      "price": 191.13,
+      "timestamp": "2026-02-02T04:14:59.186580"
+    },
+    "AAPL": {
+      "price": 259.48,
+      "timestamp": "2026-02-02T04:14:59.186600"
+    },
+    "MSFT": {
+      "price": 430.29,
+      "timestamp": "2026-02-02T04:14:59.186603"
+    },
+    "GOOGL": {
+      "price": 338.233,
+      "timestamp": "2026-02-02T04:14:59.186605"
+    },
+    "META": {
+      "price": 716.5,
+      "timestamp": "2026-02-02T04:14:59.186607"
+    },
+    "AMZN": {
+      "price": 239.3,
+      "timestamp": "2026-02-02T04:14:59.186609"
+    },
+    "TSLA": {
+      "price": 430.41,
+      "timestamp": "2026-02-02T04:14:59.186622"
+    }
+  },
+  "updated": "2026-02-02T04:14:59.186625"
+}

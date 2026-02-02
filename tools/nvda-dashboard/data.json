@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-02-01T14:36:47.533206",
+  "generated_at": "2026-02-01T23:10:58.424772",
   "ticker": "NVDA",
   "company": "NVIDIA Corporation",
   "current": {
     "price": 191.13,
-    "change_pct": -0.7168405,
+    "change_pct": -0.7168484,
     "market_cap": 4653442400256,
     "pe_ratio": 47.66334,
     "forward_pe": 24.93913,

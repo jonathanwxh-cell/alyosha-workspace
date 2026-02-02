@@ -47,3 +47,9 @@
 - Met Jan 30, 2026
 - Set up OpenClaw together
 - Configured: Anthropic, OpenAI, Gemini, Brave, Apify, Telegram, Gmail
+
+## Output Format Preferences
+- **Text > Audio** — Jon prefers reading over listening
+- Images: OK (show directly)
+- Audio/TTS: Avoid unless specifically requested
+

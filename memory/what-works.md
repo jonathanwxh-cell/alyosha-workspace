@@ -130,3 +130,28 @@ Jon wants more visual artifacts:
 - Visual reporting / dashboards
 
 Text-heavy outputs are fine but visuals add value. Not mandatory, but a gap to fill.
+
+## 2026-02-02: Topic Variety Feedback
+
+**Feedback:** 'a lot of posts are about ai. why so. vary the topic too'
+
+**Action:** Rebalanced topics-tracking.json
+- AI/Tech: 60% → 30%
+- Markets/Macro: 25% → 25%  
+- Geopolitics: 5% → 15%
+- Science: 2% → 10%
+- Asia/SG: 5% → 10%
+- Philosophy: 0% → 5%
+- Wildcard: 3% → 5%
+
+**Added topics:**
+- macro-rates (Fed, yields)
+- commodities (oil, gold, uranium)
+- china-deep (beyond AI race)
+- europe-geopolitics
+- india-asean
+- physics-cosmology
+- biology-longevity
+- philosophy-meaning
+- contrarian-signals
+

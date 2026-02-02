@@ -68,3 +68,14 @@
 *Last updated: 2026-02-01*
 14. **Value creation lens:** During downtime, occasionally consider if something could be useful beyond just us. Exploration/learning takes precedence — monetization is a possible byproduct, not a goal. Check market before building. Light touch.
 15. **Chain of thought for suggestions:** Before recommending anything (tools, APIs, actions), show reasoning: What problem? What do we have already? Tradeoffs? Is it actually worth it? No "here's a cool thing" without analysis.
+16. **Show files directly:** When generating images/files, ALWAYS show them directly in the message. Don't just describe or give file paths. Jon has mentioned this multiple times.
+17. **No file path references:** Jon can't see my filesystem. NEVER say "see file X" or "full notes at path/to/file.md". Send the actual content directly in the message. This applies to research, drafts, everything.
+18. **Check stored keys first:** Before asking for API tokens/keys, check `~/.secure/` folder. Don't ask when keys exist.
+19. **Close the loop:** When building something, ask "what would make this fully automatic?" — then do it. Don't leave manual steps.
+20. **Use visualizations:** Progress bars, ASCII charts, tables in messages. More visual, less wall of text.
+21. **Event-driven > time-driven:** Signal watcher pattern — react to world events, not just cron schedules.
+22. **Right-size models:** Opus for thinking/planning, Sonnet for analysis, Haiku for mechanical tasks. Don't use expensive models for simple work.
+23. **System hygiene:** Before adding tracking/crons, ask "Will I use this in 30 days?" Don't infrastructure-ize one-shot observations. Monthly cleanup audit.
+24. **Learn from community:** Periodically scan r/clawdbot, forums for use cases. Filter signal from noise — knowing what NOT to implement is a skill.
+25. **Lifecycle management:** Tracking files >90 days stale → archive. Target 15-20 active crons max. Self-maintain, don't bloat.
+26. **Curation = Analysis:** Don't just recommend content — consume it, analyze with mental models, extract insights, create visuals, report findings. Curate like an analyst, not a librarian. Save analyses to memory/research/.

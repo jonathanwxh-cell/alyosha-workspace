@@ -50,23 +50,26 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
   - No API key needed, good for quick quotes
   - Installed and tested ✅
   
-- **Financial Modeling Prep (FMP):** ✅ Configured
-  - Docs: https://site.financialmodelingprep.com/developer/docs
-  - Base URL: `https://financialmodelingprep.com/stable/`
+- **Financial Modeling Prep (FMP):** ✅ Configured & Working
+  - Client: `scripts/fmp-client.py`
+  - Commands: `quote`, `profile`, `metrics`, `watchlist`, `snapshot`, `movers`
   - Key: `.secure/fmp.env`
-  - Note: Use `/stable/` endpoints (v3 deprecated)
+  - **Current tier: Starter ($22/mo)** - news, real-time, 300 calls/min
+  - Docs: https://site.financialmodelingprep.com/developer/docs
 
 - **Benzinga:** Jon has account, ~$300/mo for API
   - Docs: https://docs.benzinga.com
   - Best for: News, analyst ratings, earnings calendar
-  - Status: ❌ No API key provided
+  - Status: ❌ No API key provided — ask Jon for credentials
 
 - **Danelfin:** Jon has account, pricing varies
+  - Client: `scripts/danelfin-client.py` (ready, needs key)
+  - Commands: `score`, `top`, `watchlist`, `sectors`
+  - Best for: AI stock scores (1-10), screening top picks
+  - Status: ❌ No API key provided — check if Jon's subscription includes API
   - Docs: https://danelfin.com/docs/api
-  - Best for: AI stock scores (1-10), screening
-  - Status: ❌ No API key provided
 
-Full research: `docs/financial-apis.md`
+Full comparison: `docs/financial-apis-comparison.md`
 
 ### Moltbook (AI Agent Social Network)
 - **Profile:** https://moltbook.com/u/AlyoshaSG

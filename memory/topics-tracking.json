@@ -1,70 +1,181 @@
 {
-  "version": 1,
+  "version": 2,
   "created": "2026-01-31",
-  "description": "Research watchlist based on Jon's interests",
+  "updated": "2026-02-02",
+  "description": "Research watchlist - REBALANCED for variety",
+  "topicMix": {
+    "target": {
+      "ai_tech": 0.25,
+      "markets_macro": 0.2,
+      "geopolitics": 0.05,
+      "science_cross_domain": 0.15,
+      "singapore_asia": 0.1,
+      "philosophy_ideas": 0.1,
+      "wildcard": 0.15
+    },
+    "notes": "Auto-expanding enabled. Geopolitics reduced, science+philosophy increased per feedback.",
+    "autoExpand": {
+      "enabled": true,
+      "method": "engagement_weighted",
+      "updateFrequency": "weekly",
+      "notes": "Auto-adjust weights based on engagement. High engagement = increase weight, low = decrease."
+    }
+  },
   "topics": [
     {
-      "id": "world-models",
-      "keywords": ["world models", "Genie", "DreamerV3", "LeCun", "AMI Labs"],
-      "priority": "high",
-      "notes": "Active thesis research - LeCun's departure, AMI Labs, alternatives to LLMs"
-    },
-    {
       "id": "ai-semiconductors",
-      "keywords": ["NVIDIA", "AI inference", "AI chips", "GPU demand", "semiconductor"],
+      "category": "ai_tech",
+      "keywords": [
+        "NVIDIA",
+        "AI inference",
+        "AI chips",
+        "GPU demand",
+        "semiconductor"
+      ],
       "priority": "high",
-      "notes": "US indices focus, capex narrative"
+      "notes": "Core holding interest"
     },
     {
-      "id": "ai-consciousness",
-      "keywords": ["AI consciousness", "emergence", "sentience", "AI awareness"],
+      "id": "world-models",
+      "category": "ai_tech",
+      "keywords": [
+        "world models",
+        "embodied AI",
+        "robotics"
+      ],
       "priority": "medium",
-      "notes": "Cross-disciplinary interest"
+      "notes": "Reduce frequency \u2014 covered heavily"
     },
     {
-      "id": "ai-agents",
-      "keywords": ["AI agents", "agentic AI", "autonomous agents", "agent frameworks"],
-      "priority": "medium",
-      "notes": "Practical interest in capabilities"
+      "id": "macro-rates",
+      "category": "markets_macro",
+      "keywords": [
+        "Fed",
+        "interest rates",
+        "inflation",
+        "central banks",
+        "yield curve"
+      ],
+      "priority": "high",
+      "notes": "Under-covered. More focus needed."
     },
     {
-      "id": "geopolitics-macro",
-      "keywords": ["Fed", "China AI", "tech policy", "trade", "tariffs"],
+      "id": "commodities",
+      "category": "markets_macro",
+      "keywords": [
+        "oil",
+        "gold",
+        "uranium",
+        "copper",
+        "commodities"
+      ],
       "priority": "medium",
-      "notes": "Market-relevant geopolitics"
+      "notes": "Nuclear renaissance tie-in, inflation hedge"
     },
     {
-      "id": "research-papers",
-      "keywords": ["arxiv", "nature", "science", "research breakthrough"],
+      "id": "china-deep",
+      "category": "geopolitics",
+      "keywords": [
+        "China economy",
+        "property crisis",
+        "consumption",
+        "demographics",
+        "yuan"
+      ],
+      "priority": "high",
+      "notes": "Beyond just AI race \u2014 structural issues"
+    },
+    {
+      "id": "europe-geopolitics",
+      "category": "geopolitics",
+      "keywords": [
+        "Europe",
+        "EU",
+        "Germany",
+        "energy",
+        "Ukraine",
+        "NATO"
+      ],
       "priority": "medium",
-      "notes": "Cross-domain research papers"
+      "notes": "Often overlooked, big macro implications"
+    },
+    {
+      "id": "india-asean",
+      "category": "singapore_asia",
+      "keywords": [
+        "India",
+        "ASEAN",
+        "Vietnam",
+        "Indonesia",
+        "supply chain shift"
+      ],
+      "priority": "medium",
+      "notes": "Geographic relevance, growth stories"
+    },
+    {
+      "id": "physics-cosmology",
+      "category": "science_cross_domain",
+      "keywords": [
+        "quantum",
+        "cosmology",
+        "dark matter",
+        "fusion",
+        "physics breakthrough"
+      ],
+      "priority": "medium",
+      "notes": "Cross-domain science Jon enjoys"
+    },
+    {
+      "id": "biology-longevity",
+      "category": "science_cross_domain",
+      "keywords": [
+        "longevity",
+        "aging",
+        "gene therapy",
+        "CRISPR",
+        "biotech"
+      ],
+      "priority": "medium",
+      "notes": "Beyond AI-biotech angle"
+    },
+    {
+      "id": "philosophy-meaning",
+      "category": "philosophy_ideas",
+      "keywords": [
+        "consciousness",
+        "philosophy",
+        "stoicism",
+        "meaning",
+        "non-duality"
+      ],
+      "priority": "low",
+      "notes": "Light touch \u2014 surface organically"
+    },
+    {
+      "id": "spacex-space",
+      "category": "wildcard",
+      "keywords": [
+        "SpaceX",
+        "Starship",
+        "space economy",
+        "satellites"
+      ],
+      "priority": "medium",
+      "notes": "IPO watch + space economy"
+    },
+    {
+      "id": "contrarian-signals",
+      "category": "wildcard",
+      "keywords": [
+        "short interest",
+        "sentiment extreme",
+        "crowded trade",
+        "positioning"
+      ],
+      "priority": "medium",
+      "notes": "What is consensus missing?"
     }
   ],
-  "lastScan": "2026-01-31T17:15:00Z",
-  "findings": [
-    {
-      "date": "2026-01-31",
-      "topic": "ai-agents",
-      "title": "MIT-IBM PaTH Architecture - Beyond Transformers",
-      "url": "https://markets.financialcontent.com/stocks/article/tokenring-2026-1-27-beyond-the-transformer-mit-and-ibm-unveil-path-architecture-to-solve-ais-memory-crisis",
-      "summary": "New architecture solves AI's state-tracking crisis. Upgrades from TC0 to NC1-complete expressivity. 100% accuracy at 64K+ tokens. Fixes 'state drift' in agentic workflows.",
-      "surfaced": true
-    },
-    {
-      "date": "2026-01-31",
-      "topic": "world-models",
-      "title": "Google Project Genie launches",
-      "url": "https://blog.google/innovation-and-ai/models-and-research/google-deepmind/project-genie/",
-      "summary": "First consumer-facing world model. AI Ultra subscribers can create/explore interactive worlds in real-time. Uses Genie 3 + Gemini.",
-      "surfaced": true
-    },
-    {
-      "date": "2026-01-31",
-      "topic": "world-models",
-      "title": "ArXiv: AI and World Models",
-      "url": "https://arxiv.org/abs/2601.17796",
-      "summary": "Argues LLMs are intrinsically unreliable. World models need to include social world, not just physical. Key concept: 'Common Ground' representation.",
-      "surfaced": false
-    }
-  ]
+  "lastScan": "2026-02-02T06:48:00Z",
+  "rebalanceReason": "Jon feedback: too much AI, need variety"
 }

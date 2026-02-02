@@ -1,12 +1,20 @@
 {
   "date": "2026-02-02",
   "dayOfWeek": "Monday",
-  "marketStatus": "US markets closed (Sunday night SGT)",
-  "keyEvents": [],
+  "marketStatus": "US futures open, cash markets open soon",
+  "keyEvents": [
+    "OPEC+ holds output unchanged for March",
+    "Brent at $70 (6-mo high) on Iran tensions",
+    "Trump weighing military options on Iran",
+    "US-China trade truce holding ahead of April summit",
+    "DeepSeek V4 expected mid-February"
+  ],
   "activeThemes": [
     "NVDA earnings Feb 25",
     "Inference economy shift",
-    "AI capex trajectory"
+    "AI capex trajectory",
+    "US-Iran tensions",
+    "DeepSeek V4 launch"
   ],
   "jonContext": {
     "lastActive": "2026-02-01 evening SGT",
@@ -15,7 +23,7 @@
   },
   "daemonContext": {
     "lastMajorSurface": "2026-02-02T02:00:00Z",
-    "recentOutputTypes": ["deep-dive", "creative", "system-health"],
+    "recentOutputTypes": ["deep-dive", "creative", "system-health", "world-state"],
     "engagementStreak": "pending morning response"
   },
   "weatherSG": {
@@ -23,7 +31,7 @@
     "outdoorViable": null
   },
   "meta": {
-    "generatedBy": "Manual or cron",
+    "generatedBy": "world-state-cron",
     "purpose": "Shared context for all cron jobs to reference"
   }
 }

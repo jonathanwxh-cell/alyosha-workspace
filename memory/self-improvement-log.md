@@ -116,3 +116,33 @@ sonify.py --data-str "1,2,3,5,8,13" fibonacci.wav
 - Disk: 43% (11GB free) ✅
 - All 14 cron jobs: model paths fixed ✅
 - Python scripts: Compiling clean ✅
+
+## 2026-02-02: Prompt Engineering v4 Overhaul
+
+**Task:** PROMPT_ITERATE - Research and improve curiosity-daemon PROMPTS array
+
+**Research Sources:**
+- Lakera Prompt Engineering Guide (2026)
+- PromptingGuide.ai (ReAct, Reflexion frameworks)
+- Production system prompts: Bolt ($50M ARR), Cluely ($6M ARR)
+
+**Key Findings:**
+1. Verb-first forces action, reduces hedging
+2. Never/Always lists prevent common failures (from Bolt/Cluely)
+3. Agent-verifiable criteria > subjective ("Jon would like")
+4. Structured recovery prevents giving up too easily
+5. THINK scaffolds help complex tasks
+
+**Changes Made:**
+- Standardized v4 format: GOAL→CONTEXT→STEPS→OUTPUT→VERIFY→RECOVER→NEVER
+- Added THINK scaffolds for RESEARCH and EXPERIMENT prompts
+- Replaced subjective criteria with checklists
+- Improved recovery from generic "note gap" to structured strategies
+- Reduced prompt count 44→38 (merged redundant)
+- All prompts now use consistent v4 naming
+
+**Commit:** 5b0fe2b
+
+**Outcome:** Pending real-world testing. Will compare engagement metrics in 1 week.
+
+**Lesson:** Production AI systems (Bolt, Cluely) invest heavily in explicit constraints and failure mode handling. The meta-prompt + structured format is doing the heavy lifting.

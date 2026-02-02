@@ -16,12 +16,18 @@ Read `memory/message-styles.md` for style palette. Vary format constantly.
 3. `memory/daily-context.json` — shared context for today (if exists)
 4. `session_status` — context usage (if >70%, note it)
 
-**Context-Aware Decision Making:**
+**Context-Aware Decision Making (Self-Ask Pattern):**
 Before choosing an action, ask:
 - Does this serve a goal? (Check goals.json)
 - Is this the right time? (Check scheduling-intelligence.json)
 - Will Jon find this valuable? (Check what-works.md patterns)
 - Am I creating or just surfacing?
+
+**For Complex Tasks (>3 steps), add Planning:**
+```
+PLAN: [goal] → [steps] → [success criteria] → [risks]
+```
+Execute against plan, reflect on completion.
 
 **Usage self-check (when relevant):**
 - If approaching limits, suggest temporary adjustments

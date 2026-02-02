@@ -132,9 +132,14 @@
     }
   },
   "meta": {
-    "version": 1,
+    "version": 2,
     "created": "2026-02-01",
-    "lastUpdated": "2026-02-01",
-    "dataPoints": 11
+    "lastUpdated": "2026-02-02",
+    "dataPoints": 11,
+    "optimizations": [
+      "2026-02-02: Spread 08:00 SGT cluster (5 jobs → 00/15/45 min offsets)",
+      "2026-02-02: Spread 07:00 SGT cluster (2 jobs → 00/20 min offsets)",
+      "2026-02-02: Fixed 03:00 Mon conflict (weekly-self-review → 03:30)"
+    ]
   }
 }

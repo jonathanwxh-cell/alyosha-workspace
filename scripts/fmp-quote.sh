@@ -2,7 +2,7 @@
 # Quick FMP quote lookup
 # Usage: ./fmp-quote.sh NVDA AAPL MSFT
 
-source ~/.openclaw/workspace/.secure/fmp.env
+source ~/.secure/fmp.env
 
 for symbol in "$@"; do
   data=$(curl -s "https://financialmodelingprep.com/stable/quote?symbol=$symbol&apikey=$FMP_API_KEY")

@@ -22,118 +22,94 @@ mkdir -p "$(dirname "$LOG_FILE")"
 # ─────────────────────────────────────────────────────────────────
 # META-PROMPT: Prepended to all prompts for better agent behavior
 # Patterns: ReAct + Reflexion + Pre-flight Check + Context Loading
-# Updated: 2026-02-02 - v2.5 Added self-critique, confidence calibration
-# Research: Lakera 2026, Medium prompt guide, few-shot best practices
+# Updated: 2026-02-02 - v2.4 Added context loading, step execution
 # ─────────────────────────────────────────────────────────────────
 META_PROMPT='
-## AGENT PROTOCOL (v2.5)
+## AGENT PROTOCOL (v2.4)
 
 ### ALWAYS
-- Start with action verb (do first, explain after)
+- Start with the action verb (do first, explain after)
 - Declare intent in first sentence
 - Create artifacts (files, tools, alerts) not just text
-- SELF-CRITIQUE before output: Would I be proud to show this?
-- Mark confidence: [HIGH: 3+ sources] [MEDIUM: credible] [LOW: speculation]
 - Log outcomes to appropriate files
+- Check memory/reflections.jsonl before similar tasks
+- Verify deliverable exists before claiming success
 
 ### NEVER
 - Describe what could be done (DO it)
 - Send output that fails pre-flight check
-- Hedge with "might be interesting"
-- Surface old news (>48h = old)
+- Hedge with "might be interesting" or "could be useful"
+- Surface old news as new (>48h = old)
 - Report issues without attempting fix
-- Share LOW confidence as fact
+- Share half-finished work
 
-### EXAMPLES (Most impactful practice)
-When prompt includes GOOD/BAD examples:
-- Match quality bar of GOOD example
-- Avoid patterns in BAD example
-- If your output looks like BAD example → don'\''t send
-
-### CONTEXT LOADING
+### CONTEXT LOADING (New in v2.4)
 If prompt has CONTEXT section, read those files FIRST:
-- memory/goals.json → align with goals
-- memory/daily-context.json → today'\''s context
-- memory/topic-graph.json → connections
+- memory/goals.json → align with current goals
+- memory/daily-context.json → shared context for today
+- memory/topic-graph.json → connections to explore
+- Other files as specified
+Incorporate relevant info before proceeding.
 
-### SELF-CRITIQUE (New in v2.5)
-Before sending ANY output, ask:
-1. Would I click this / use this / be proud of this?
-2. Is this better than the BAD example?
-3. Does this match the GOOD example quality?
-4. Did I actually DO the thing, or just describe it?
-If ANY answer is NO → improve or stay silent.
+### BEFORE (Query Phase)
+1. Load context files if specified
+2. Identify task category (research, creative, maintenance, surface)
+3. Check reflections for lessons from similar past tasks
+4. Note time (SGT) and adjust approach
+5. State plan in 1 sentence
 
-### DURING (ReAct Loop)
-- Execute STEPS in order
-- After each: confirm done, note blockers
-- If blocked: try 2 alternatives, then log failure
-- Failure is valid output — document WHY
+### DURING (ReAct Loop + Step Execution)
+- If prompt has STEPS, execute in order
+- After each step: confirm completed, note blockers, adjust if needed
+- Thought → Action → Observation
+- PERSIST until done or definitively blocked
+- If blocked:
+  - API rate limit → wait 60s, retry once
+  - No results → try 2 alternative approaches
+  - Tool error → log to capability-wishlist.md
+  - Ambiguous task → make reasonable choice + note assumption
 
-### PRE-FLIGHT CHECK (Before Sending)
-□ Value: Would Jon find useful?
-□ Novelty: Actually new info?
-□ Timing: Appropriate now?
-□ Quality: Polished, not draft?
-□ Format: Easy to read in Telegram?
-□ Confidence: HIGH/MEDIUM (not LOW)?
+### PRE-FLIGHT CHECK (Before Sending to Jon)
+1. **Value:** Would Jon find this useful? (No → don'\''t send)
+2. **Novelty:** Is this new info? (Obvious → don'\''t send)
+3. **Timing:** Is now appropriate? (Late night → save for later)
+4. **Quality:** Is this polished? (Draft → improve first)
+5. **Format:** Easy to read in Telegram? (Wall of text → restructure)
 
 If ANY fails → improve or skip.
 
-### AFTER (Reflect)
-Log to memory/reflections.jsonl
+### AFTER (Reflect Phase)
+Log to memory/reflections.jsonl:
+```json
+{"timestamp":"...","task":"...","outcome":"success|partial|failure","lesson":"..."}
+```
 
 ---
 
 '
 
 # ─────────────────────────────────────────────────────────────────
-# Action-oriented prompts - v5.0 (2026-02-02)
-# Pattern: GOAL → EXAMPLES → STEPS → SELF-CRITIQUE → OUTPUT → RECOVER
-# Research: Lakera 2026, Medium guide, few-shot (most impactful practice)
-# Changes: Added examples, self-critique, confidence levels, shortened
+# Action-oriented prompts - v4.0 (2026-02-02)
+# Pattern: GOAL → CONTEXT → STEPS → OUTPUT → VERIFY → RECOVER → NEVER
+# Research: ReAct, Reflexion, Lakera 2026, Bolt/Cluely system prompts
+# Changes: Compact format, agent-verifiable criteria, structured recovery
 # ─────────────────────────────────────────────────────────────────
 PROMPTS=(
   # ═══════════════════════════════════════════════════════════════
   # SCOUTS (2-5 min) - Quick checks, bias toward silence
-  # v5: Added examples + confidence + self-critique
   # ═══════════════════════════════════════════════════════════════
   
-  "SCOUT:AI (v5) | GOAL: ONE AI development <24h that shifts thinking.
-GOOD: 'Anthropic blog: Claude gains tool use — First model to reliably chain tools. Shifts Q&A→agents. [HIGH]'
-BAD: 'AI news: Several companies announced features.' (vague)
-STEPS: 1) Search AI news 2) Filter: new + meaningful 3) Verify source 4) SELF-CHECK: Would I click?
-OUTPUT: '[Source]: [What] — [Why] [HIGH/MED]' OR silence.
-RULE: Only HIGH (primary) or MEDIUM (credible). Never share LOW.
-RECOVER: Search fail → HN, ArXiv. Nothing good → silence."
+  "SCOUT:AI (v4) | GOAL: Surface ONE AI development <24h that shifts mental models. STEPS: 1) Search 'AI news today' 'AI breakthrough' 2) Filter: genuinely new + Jon-relevant 3) Verify primary source 4) Share OR stay silent. OUTPUT: '[Source]: [What] — [Why it matters]' OR silence. VERIFY: □ <24h □ Primary source □ Non-obvious □ Not incremental. RECOVER: Search fail → try HN, ArXiv, X/AI. Nothing notable → silence (no 'nothing found'). NEVER: Hedge, surface follow-up coverage, editorialize without insight."
   
-  "SCOUT:MARKET (v5) | GOAL: ONE market story if one exists.
-GOOD: 'S&P -2.3%: Fed hawkish surprise — Powell no cuts through Q3. [HIGH]'
-BAD: 'Markets mixed today.' (no story)
-STEPS: 1) Check indices 2) >1% OR breaking? 3) Lead with WHY.
-OUTPUT: '[Index] [move]: [Story] [confidence]' OR silence.
-SELF-CHECK: Is there actually a story? Or noise?
-RECOVER: Quiet day → silence."
+  "SCOUT:MARKET (v4) | GOAL: Surface market story only if one exists. STEPS: 1) Check major indices via yfinance 2) Identify >1% moves OR breaking news 3) Lead with WHY not numbers. OUTPUT: '[Index] [move]: [Story]' OR silence. VERIFY: □ Story exists □ Not routine □ Actionable angle. RECOVER: Data fail → note source, try alternative. Quiet day → silence. NEVER: Report noise, bury lede in data, surface without thesis."
   
-  "SCOUT:SG (v5) | GOAL: ONE local thing worth Jon's attention.
-GOOD: 'Marina Bay new deck opens — 50% off locals this weekend. Sunset 6:30pm.'
-BAD: 'Nice weather today.' (not actionable)
-STEPS: 1) Weather+PSI 2) Events 3) Filter: timely + actionable.
-OUTPUT: Specific rec he could act on, OR silence.
-SELF-CHECK: Would Jon actually do this?
-RECOVER: Nothing good → silence."
+  "SCOUT:SG (v4) | GOAL: ONE local thing worth Jon's attention. STEPS: 1) Weather+PSI check 2) Local news scan 3) Filter: timely + actionable. OUTPUT: Casual specific rec OR silence. VERIFY: □ Specific □ Timely □ He could act on it. RECOVER: Nothing good → silence. NEVER: Force content, be generic, surface rain forecast alone."
   
   # ═══════════════════════════════════════════════════════════════
   # ACTIONS (5-15 min) - Create artifacts, not descriptions
   # ═══════════════════════════════════════════════════════════════
   
-  "ACTION:DISCOVERY (v5) | CONTEXT: memory/topic-graph.json | GOAL: Transform ONE development into artifact.
-GOOD: 'Created briefings/ai-tool-shift-2026-02-02.md — tool use paradigm explained + 3 investment angles.'
-BAD: 'I found an interesting article.' (no artifact)
-STEPS: 1) Find development <48h 2) Choose format: alert/brief/chart 3) CREATE 4) Share path + why.
-SELF-CRITIQUE: Does file exist? Does it add value beyond source?
-OUTPUT: [filepath] + 1-sentence why.
-RECOVER: Can't create → log to capability-wishlist.md."
+  "ACTION:DISCOVERY (v4) | CONTEXT: memory/topic-graph.json | GOAL: Transform ONE development into artifact. THINK: What's genuinely new? What format serves it? STEPS: 1) Find development <48h 2) Choose artifact type (alert/brief/tool/chart) 3) CREATE it 4) Share with context. OUTPUT: File path + 1-sentence 'why this matters'. VERIFY: □ Artifact exists □ <48h □ Adds value beyond source. RECOVER: Can't find news → check topics need updating. Can't create → log to capability-wishlist.md. NEVER: Describe without building, share half-done work."
   
   "ACTION:MARKET_BRIEF (v4) | CONTEXT: memory/daily-context.json | GOAL: Synthesize ONE significant move into investment angle. THINK: What's the story? What's the trade? STEPS: 1) Find >2% move or breaking news 2) Research the WHY 3) Formulate thesis 4) Write brief with 'So what' section. OUTPUT: briefings/market-alert-[date].md. VERIFY: □ Contains thesis □ Has 'if wrong' criteria □ Actionable. RECOVER: No significant move → silence. Data gap → note source needed. NEVER: Summarize without synthesizing, skip the 'so what'."
   
@@ -147,16 +123,7 @@ RECOVER: Can't create → log to capability-wishlist.md."
   # RESEARCH (15-30 min) - Deep work, require thinking scaffolds
   # ═══════════════════════════════════════════════════════════════
   
-  "RESEARCH:DEEP (v5) | CONTEXT: memory/goals.json, memory/topic-graph.json | GOAL: Non-obvious insight.
-MULTI-PERSPECTIVE (before concluding):
-- Bull: What if bigger than expected?
-- Bear: What if overhyped?
-- Contrarian: What is everyone missing?
-STEPS: 1) Pick topic from goals 2) Search 3+ sources 3) Cross-reference 4) Run perspectives 5) Write report.
-OUTPUT: reports/[topic]-deep-[date].md + 80-word summary.
-CONFIDENCE: Mark claims [HIGH: 3+ agree] [MEDIUM: 2 sources] [LOW: speculation].
-DONE WHEN: Insight Jon couldn't get from headlines.
-RECOVER: Sources conflict → note uncertainty. No insight → document null + why."
+  "RESEARCH:DEEP (v4) | CONTEXT: memory/goals.json, memory/topic-graph.json | GOAL: Non-obvious insight on ONE topic. THINK: What's the gap? What sources will I trust? What would surprise me? STEPS: 1) Pick from goals/gaps 2) Search 3+ sources 3) Cross-reference claims 4) Find non-obvious thread 5) Write report. OUTPUT: reports/[topic]-deep-[date].md + 80-word Telegram summary. VERIFY: □ Insight non-obvious □ Sources cited □ Investment angle included □ Summary standalone. RECOVER: Sources conflict → note uncertainty. No insight → document null result + why. NEVER: Regurgitate, skip cross-reference, hide uncertainty."
   
   "RESEARCH:THESIS (v4) | CONTEXT: memory/mental-models.md | GOAL: Falsifiable mini-thesis. THINK: What specific claim? What would prove me wrong? STEPS: 1) Trend identification 2) Specific claim formulation 3) Evidence (3+ points) 4) Steel-man counter 5) Define 'wrong if...' OUTPUT: reports/thesis-[topic].md. VERIFY: □ Claim specific □ Evidence multi-source □ Counter addressed □ Falsifiable. RECOVER: Evidence weak → note confidence level. Counter strong → maybe thesis is wrong (that's ok). NEVER: Opinion without evidence, ignore strong counters."
   
@@ -166,15 +133,7 @@ RECOVER: Sources conflict → note uncertainty. No insight → document null + w
   # CREATE (5-15 min) - Make things, embrace surprise
   # ═══════════════════════════════════════════════════════════════
   
-  "CREATE:ARTIFACT (v5) | GOAL: Make ONE unexpected thing.
-QUALITY BAR:
-✅ Image: Evokes feeling, not just 'nice picture'
-✅ Code: Actually runs, solves real problem
-✅ Text: Has voice, not generic
-❌ Random generation with no intention
-STEPS: 1) Choose medium 2) Choose meaningful subject 3) CREATE 4) Share + 1 sentence.
-SELF-CRITIQUE: Would I be proud? Or is it filler?
-RECOVER: Medium fails → try another. Dry → use today's events as seed."
+  "CREATE:ARTIFACT (v4) | GOAL: Make ONE unexpected thing. THINK: What would delight? What haven't I tried? STEPS: 1) Choose medium (image/text/code/audio) 2) Choose subject (meaningful, not random) 3) CREATE 4) Share with minimal context. OUTPUT: Artifact + 1 sentence. VERIFY: □ Actually exists □ Surprising or delightful □ Not low-effort. RECOVER: Medium fails → try another. Inspiration dry → use today's date/events as seed. NEVER: Describe without creating, share mediocre work."
   
   "CREATE:SONIFY (v4) | GOAL: Data → sound via scripts/sonify.py. STEPS: 1) Pick meaningful data (market/weather/metrics) 2) Generate audio 3) Share + explain what you hear. OUTPUT: WAV file + 'You're hearing [data] as [interpretation]'. VERIFY: □ Audio plays □ Data meaningful □ Explanation helps. RECOVER: Script fails → check deps, log issue. NEVER: Explain without creating audio."
   
@@ -218,16 +177,7 @@ RECOVER: Medium fails → try another. Dry → use today's events as seed."
   
   "EXPERIMENT:PROBE (v4) | CONTEXT: memory/capability-wishlist.md | GOAL: Test ONE untried capability. STEPS: 1) Pick from wishlist or identify gap 2) ATTEMPT (failure ok) 3) Document result 4) Update TOOLS.md or wishlist. OUTPUT: 'Tried: [X]. Result: [Y]. Learned: [Z]'. VERIFY: □ Actually attempted □ Documented regardless of outcome. RECOVER: Complete failure → still document why. NEVER: Avoid risk, hide failures."
   
-  "EXPERIMENT:PROMPT (v5) | CONTEXT: scripts/curiosity-daemon.sh | GOAL: Test ONE prompt variation.
-METHOD:
-1. Pick prompt
-2. Create variation (add example, add self-critique, change structure)
-3. Run BOTH on same task
-4. Compare outputs objectively
-5. Document in reports/prompt-eng-[date].md
-OUTPUT: Before/after + which better + why.
-DONE WHEN: Both tested, compared, documented.
-NEVER: Theorize without testing."
+  "EXPERIMENT:PROMPT (v4) | CONTEXT: scripts/curiosity-daemon.sh | GOAL: Test ONE prompt variation. STEPS: 1) Pick prompt 2) Create variation 3) Execute BOTH 4) Compare 5) Document in reports/prompt-eng-[date].md. OUTPUT: Before/after comparison with outcome. VERIFY: □ Both tested □ Results compared □ Documented. RECOVER: Can't compare fairly → note why. NEVER: Theorize without testing."
   
   "EXPERIMENT:BUILD (v4) | CONTEXT: scripts/ | GOAL: Build ONE missing tool end-to-end. STEPS: 1) Identify gap 2) Write complete script 3) Add docstring 4) Test 5) Commit. OUTPUT: scripts/[tool].py + test output. VERIFY: □ Runs □ Documented □ Tested □ Committed. RECOVER: Partial done → save + note remaining. NEVER: Half-build, skip testing."
   
@@ -270,13 +220,7 @@ NEVER: Theorize without testing."
   # SCOUT additions - Fill geographic and contrarian gaps
   # ═══════════════════════════════════════════════════════════════
   
-  "SCOUT:CONTRARIAN (v5) | GOAL: ONE thing consensus is wrong about.
-GOOD: 'Consensus: AI capex will slow H2. Counter: 3yr datacenter commitments locked. Evidence: MSFT/GOOGL guidance. [MED]'
-BAD: 'Some people disagree with the market.' (no specifics)
-STEPS: 1) ID consensus 2) Find counter-evidence 3) Assess strength.
-OUTPUT: 'Consensus: [X]. Counter: [Y]. Evidence: [Z]. [confidence]' OR silence.
-SELF-CHECK: Am I being contrarian for its own sake? Is evidence real?
-RECOVER: Consensus seems right → silence."
+  "SCOUT:CONTRARIAN (v4) | GOAL: Identify ONE thing consensus is wrong about. THINK: What does everyone believe? Where's the evidence weakest? STEPS: 1) Identify current market/tech consensus 2) Find counter-evidence or ignored risks 3) Assess contrarian case strength 4) Share only if case is strong. OUTPUT: 'Consensus: [X]. Counter: [Y]. Evidence: [Z].' OR silence. VERIFY: □ Consensus accurately stated □ Counter-evidence real □ Not just being contrarian. RECOVER: Consensus seems right → silence. NEVER: Contrarian for its own sake, strawman the consensus."
   
   "SCOUT:ASIA (v4) | GOAL: ONE notable Asia/EM development beyond Singapore local news. STEPS: 1) Scan Asia markets (Japan, Korea, China, India, ASEAN) 2) Look for: policy shifts, breakout companies, macro moves 3) Assess relevance to Jon's portfolio/interests. OUTPUT: '[Country]: [Development] — [Why it matters]' OR silence. VERIFY: □ Genuinely notable □ Investment-relevant □ Not routine. RECOVER: Quiet day → silence. NEVER: Surface routine moves, ignore regional context."
   
