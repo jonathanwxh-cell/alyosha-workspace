@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """
 Watchlist Tracker - Price alerts + Earnings calendar
-Uses FMP Starter tier.
+Uses FMP API (stable endpoints).
 
 Usage:
-  python3 watchlist-tracker.py check      # Check prices, alert on moves
-  python3 watchlist-tracker.py earnings   # Check upcoming earnings
-  python3 watchlist-tracker.py add AAPL   # Add ticker to watchlist
+  python3 watchlist-tracker.py check           # Check prices, show summary + alerts
+  python3 watchlist-tracker.py check --quiet   # Only output if alerts (for cron)
+  python3 watchlist-tracker.py check --json    # JSON output for piping
+  python3 watchlist-tracker.py earnings        # Check upcoming earnings
+  python3 watchlist-tracker.py add AAPL        # Add ticker to watchlist
   python3 watchlist-tracker.py remove AAPL
-  python3 watchlist-tracker.py list       # Show watchlist
+  python3 watchlist-tracker.py list            # Show watchlist + current prices
+  python3 watchlist-tracker.py threshold 5.0   # Set daily alert threshold %
 """
 
 import os
@@ -40,9 +43,12 @@ def get_api_key():
 API_KEY = get_api_key()
 BASE_URL = "https://financialmodelingprep.com/stable"
 
-# Default watchlist if none exists
+# Default watchlist if none exists (semiconductor-focused for Jon)
 DEFAULT_WATCHLIST = {
-    "tickers": ["NVDA", "AAPL", "MSFT", "GOOGL", "META", "AMZN", "TSLA"],
+    "tickers": [
+        "NVDA", "AMD", "AVGO", "TSM", "SMCI",  # Core semis
+        "AAPL", "MSFT", "GOOGL", "META", "AMZN"  # Mag 7
+    ],
     "thresholds": {
         "daily_move_pct": 3.0,
         "weekly_move_pct": 10.0
@@ -105,21 +111,29 @@ def get_earnings_calendar(from_date, to_date):
     print("ERROR: Could not fetch earnings calendar")
     return []
 
-def check_prices():
-    """Check prices and alert on significant moves"""
+def check_prices(quiet=False, as_json=False):
+    """Check prices and alert on significant moves.
+    
+    Args:
+        quiet: Only return alerts (for cron jobs)
+        as_json: Return JSON output
+    
+    Returns:
+        dict with 'alerts', 'summary', and 'quotes'
+    """
     wl = load_watchlist()
     tickers = wl.get("tickers", [])
     if not tickers:
-        print("No tickers in watchlist")
-        return []
+        return {"error": "No tickers in watchlist", "alerts": [], "summary": None}
     
     quotes = get_quotes(tickers)
     if not quotes:
-        return []
+        return {"error": "Failed to fetch quotes", "alerts": [], "summary": None}
     
     threshold = wl.get("thresholds", {}).get("daily_move_pct", 3.0)
     last_prices = wl.get("last_prices", {})
     alerts = []
+    summary = {"gainers": [], "losers": [], "unchanged": []}
     
     for ticker in tickers:
         if ticker not in quotes:
@@ -128,9 +142,17 @@ def check_prices():
         q = quotes[ticker]
         price = q.get("price", 0)
         change_pct = q.get("changePercentage", q.get("changesPercentage", 0))
-        prev_close = q.get("previousClose", 0)
         
-        # Check daily move
+        # Categorize
+        entry = {"ticker": ticker, "price": price, "change_pct": change_pct}
+        if change_pct > 0.5:
+            summary["gainers"].append(entry)
+        elif change_pct < -0.5:
+            summary["losers"].append(entry)
+        else:
+            summary["unchanged"].append(entry)
+        
+        # Check for alert threshold
         if abs(change_pct) >= threshold:
             direction = "📈" if change_pct > 0 else "📉"
             alerts.append({
@@ -145,20 +167,74 @@ def check_prices():
         # Update last price
         last_prices[ticker] = {
             "price": price,
+            "change_pct": change_pct,
             "timestamp": datetime.now().isoformat()
         }
+    
+    # Sort by change
+    summary["gainers"].sort(key=lambda x: -x["change_pct"])
+    summary["losers"].sort(key=lambda x: x["change_pct"])
     
     wl["last_prices"] = last_prices
     save_watchlist(wl)
     
     # Log alerts
     if alerts:
+        ALERTS_LOG.parent.mkdir(parents=True, exist_ok=True)
         with open(ALERTS_LOG, "a") as f:
             for alert in alerts:
                 alert["timestamp"] = datetime.now().isoformat()
                 f.write(json.dumps(alert) + "\n")
     
-    return alerts
+    return {
+        "alerts": alerts,
+        "summary": summary,
+        "quotes": quotes,
+        "threshold": threshold
+    }
+
+def format_check_output(result, quiet=False):
+    """Format check results for display."""
+    if "error" in result:
+        return result["error"]
+    
+    alerts = result.get("alerts", [])
+    summary = result.get("summary", {})
+    threshold = result.get("threshold", 3.0)
+    
+    # Quiet mode: only output if alerts
+    if quiet:
+        if not alerts:
+            return None
+        return "\n".join([f"🚨 {a['message']}" for a in alerts])
+    
+    # Full output
+    lines = [f"📊 **Watchlist Check** (alert threshold: ±{threshold}%)\n"]
+    
+    # Gainers
+    if summary.get("gainers"):
+        lines.append("🟢 **Up:**")
+        for g in summary["gainers"][:5]:
+            lines.append(f"   {g['ticker']}: ${g['price']:.2f} ({g['change_pct']:+.1f}%)")
+    
+    # Losers  
+    if summary.get("losers"):
+        lines.append("🔴 **Down:**")
+        for l in summary["losers"][:5]:
+            lines.append(f"   {l['ticker']}: ${l['price']:.2f} ({l['change_pct']:+.1f}%)")
+    
+    # Unchanged
+    if summary.get("unchanged"):
+        unchanged_tickers = [u["ticker"] for u in summary["unchanged"]]
+        lines.append(f"⚪ **Flat:** {', '.join(unchanged_tickers)}")
+    
+    # Alerts
+    if alerts:
+        lines.append(f"\n🚨 **Alerts ({len(alerts)}):**")
+        for a in alerts:
+            lines.append(f"   {a['message']}")
+    
+    return "\n".join(lines)
 
 def check_earnings():
     """Check upcoming earnings for watchlist tickers"""
@@ -232,48 +308,76 @@ def list_watchlist():
                 change = q.get('changePercentage', 0)
                 print(f"  {ticker}: ${price:.2f} ({change:+.1f}%)")
 
+def set_threshold(value):
+    """Set alert threshold percentage."""
+    try:
+        threshold = float(value)
+        if threshold <= 0:
+            print("Threshold must be positive")
+            return
+        
+        wl = load_watchlist()
+        wl["thresholds"]["daily_move_pct"] = threshold
+        save_watchlist(wl)
+        print(f"✅ Alert threshold set to ±{threshold}%")
+    except ValueError:
+        print("Invalid threshold value")
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
         return
     
     cmd = sys.argv[1].lower()
+    args = sys.argv[2:]
     
     if cmd == "check":
-        alerts = check_prices()
-        if alerts:
-            print(f"🚨 {len(alerts)} price alert(s):")
-            for a in alerts:
-                print(f"  {a['message']}")
+        quiet = "--quiet" in args or "-q" in args
+        as_json = "--json" in args
+        
+        result = check_prices(quiet=quiet, as_json=as_json)
+        
+        if as_json:
+            print(json.dumps(result, indent=2))
         else:
-            print("No significant moves")
+            output = format_check_output(result, quiet=quiet)
+            if output:
+                print(output)
     
     elif cmd == "earnings":
         upcoming = check_earnings()
         if upcoming:
-            print("📅 Upcoming earnings (next 7 days):")
+            print("📅 **Upcoming Earnings** (next 7 days)\n")
             for e in upcoming:
                 days = e["days_away"]
-                when = "TODAY" if days == 0 else f"in {days} days"
-                eps = f"EPS est: ${e['eps_estimated']:.2f}" if e['eps_estimated'] else ""
-                print(f"  {e['ticker']}: {e['date']} ({when}) {eps}")
+                when = "⚡ TODAY" if days == 0 else f"in {days}d"
+                eps = f" | EPS est: ${e['eps_estimated']:.2f}" if e['eps_estimated'] else ""
+                print(f"  **{e['ticker']}**: {e['date']} ({when}){eps}")
         else:
             print("No upcoming earnings for watchlist tickers")
     
     elif cmd == "add":
-        if len(sys.argv) < 3:
-            print("Usage: watchlist-tracker.py add TICKER")
+        if not args:
+            print("Usage: watchlist-tracker.py add TICKER [TICKER2 ...]")
             return
-        add_ticker(sys.argv[2])
+        for ticker in args:
+            add_ticker(ticker)
     
     elif cmd == "remove":
-        if len(sys.argv) < 3:
+        if not args:
             print("Usage: watchlist-tracker.py remove TICKER")
             return
-        remove_ticker(sys.argv[2])
+        remove_ticker(args[0])
     
     elif cmd == "list":
         list_watchlist()
+    
+    elif cmd == "threshold":
+        if not args:
+            wl = load_watchlist()
+            print(f"Current threshold: ±{wl.get('thresholds', {}).get('daily_move_pct', 3.0)}%")
+            return
+        set_threshold(args[0])
     
     else:
         print(f"Unknown command: {cmd}")
