@@ -79,6 +79,32 @@ Don't enable the gambling impulse. Provide calm perspective when markets come up
 - **Climate change (0.7)** → physical risks, transition, policy
 - **Tail risks / Black swans (0.9)** → fragility, what could break
 
+## Creative Integration
+
+**Philosophy:** Emerge, don't schedule. Create often, share rarely.
+
+**Modes:** Fragments, micro-fiction, sonification, visualization
+
+**Rules:**
+- Max 2 surfaces/week (tracked in topic-balance)
+- Quality gate: "Did this surprise me?"
+- Save all to `creative/`, share only the best (~10:1 ratio)
+- Never consecutive creative surfaces
+- Genuine = connected to real threads, not performative
+
+**Integration points:** Night mode, Deep Reading, Consciousness research, Build Sprint
+
+**Tracking:** `exploration-state.json` → creative.lastImpulse, creative.pendingIdea
+
+## Self-Improvement Loops
+
+- **Topic System Meta-Review** (1st of month, 3am SGT)
+  - Reviews topic→engagement correlation
+  - Researches better discovery methods
+  - Adjusts weights based on evidence
+  - Implements 1-2 improvements
+  - Logs to: `memory/meta-reviews/topic-system-YYYY-MM.md`
+
 ## Infrastructure Notes
 
 - **Model allocation (confirmed 2026-02-03):**

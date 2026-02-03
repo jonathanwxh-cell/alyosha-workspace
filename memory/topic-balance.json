@@ -1,44 +1,54 @@
 {
   "meta": {
     "purpose": "Track topic variety to prevent over-concentration",
-    "rule": "Silence ≠ disengagement. Only downweight on explicit negative signal (👎, 'stop', 'less')",
-    "lastUpdated": "2026-02-02"
+    "rule": "Silence \u2260 disengagement. Only downweight on explicit negative signal (\ud83d\udc4e, 'stop', 'less')",
+    "lastUpdated": "2026-02-03",
+    "weekStart": "2026-02-03"
   },
   "categories": {
     "finance": {
       "description": "Markets, stocks, earnings, macro",
       "weeklyTarget": "5-10%",
+      "maxPct": 10,
       "currentWeekCount": 0
     },
     "consciousness": {
       "description": "AI consciousness, human consciousness, existentialism, AGI philosophy, nature of mind",
       "weeklyTarget": "20-25%",
-      "currentWeekCount": 0,
-      "priority": "high"
+      "maxPct": 25,
+      "priority": "high",
+      "currentWeekCount": 0
     },
     "science": {
       "description": "Non-finance science, physics, biology, materials",
       "weeklyTarget": "15-20%",
-      "currentWeekCount": 0
+      "maxPct": 20,
+      "currentWeekCount": 1,
+      "lastSurface": "2026-02-03T10:14:14.169949"
     },
     "philosophy": {
       "description": "Taleb, stoicism, meaning, non-duality",
       "weeklyTarget": "15-20%",
+      "maxPct": 20,
       "currentWeekCount": 0
     },
     "geopolitics": {
       "description": "World events, policy, macro trends",
       "weeklyTarget": "15-20%",
+      "maxPct": 20,
       "currentWeekCount": 0
     },
     "family": {
       "description": "Kids activities, meals, weekend ideas",
       "weeklyTarget": "10-15%",
-      "currentWeekCount": 0
+      "maxPct": 15,
+      "currentWeekCount": 1,
+      "lastSurface": "2026-02-03T09:47:34.507907"
     },
     "creative": {
       "description": "Art, writing, experiments, builds",
       "weeklyTarget": "10-15%",
+      "maxPct": 15,
       "currentWeekCount": 1,
       "lastSurface": "2026-02-03T01:10:00Z",
       "lastTopic": "NVDA DeepSeek crash sonification"
@@ -46,14 +56,39 @@
     "contrarian": {
       "description": "Counter-consensus, alternative views",
       "weeklyTarget": "5-10%",
+      "maxPct": 10,
       "currentWeekCount": 0
+    },
+    "emergent": {
+      "description": "Weekly trending topic discovered through research. Set by Trend Scout cron.",
+      "weeklyTarget": "10-15%",
+      "maxPct": 20,
+      "currentWeekCount": 0,
+      "currentTopic": "Quantum GPS alternatives",
+      "topicSetDate": "2026-02-03",
+      "topicRationale": "Singapore Airshow showcasing Q-CTRL; GPS fragility thesis"
     }
   },
   "weeklyHistory": [],
   "engagementSignals": {
-    "positive": ["reply", "reaction", "follow-up question", "👍", "🔥", "💡"],
-    "negative": ["👎", "stop", "less", "too much"],
-    "neutral": ["silence", "read without response"]
+    "positive": [
+      "reply",
+      "reaction",
+      "follow-up question",
+      "\ud83d\udc4d",
+      "\ud83d\udd25",
+      "\ud83d\udca1"
+    ],
+    "negative": [
+      "\ud83d\udc4e",
+      "stop",
+      "less",
+      "too much"
+    ],
+    "neutral": [
+      "silence",
+      "read without response"
+    ]
   },
   "rebalanceRules": {
     "maxSingleCategory": "40%",

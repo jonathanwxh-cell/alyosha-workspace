@@ -269,6 +269,14 @@ else:
 - [ ] Did something CHANGE or am I repeating?
 - [ ] Would Jon find this valuable RIGHT NOW?
 - [ ] Is this the right time of day?
+- [ ] Topic balance OK? `python3 scripts/topic-tracker.py check <category>`
+- [ ] Not recently surfaced? `python3 scripts/surface-tracker.py check "<topic>"`
+
+**After surfacing:**
+```bash
+python3 scripts/topic-tracker.py track <category>
+python3 scripts/surface-tracker.py add "<topic>" "<cron-name>"
+```
 
 **Philosophy/Wisdom Rule:**
 Surface Stoic, Talebian, or contemplative insights ONLY when:
@@ -281,7 +289,15 @@ Quality > quantity. Act with intention, not rotation.
 
 ## Reflection Protocol (Reflexion Pattern)
 
-**ReAct cycle for complex tasks:**
+Based on Shinn et al. "Reflexion: Language Agents with Verbal Reinforcement Learning"
+
+**BEFORE complex tasks — Query past lessons:**
+```bash
+python3 scripts/reflexion.py query "task description"
+```
+Apply any relevant lessons. State which lesson you're applying.
+
+**DURING complex tasks — ReAct cycle:**
 ```
 THOUGHT: [What am I trying to do? Why?]
 ACTION: [What tool/step am I taking?]
@@ -289,23 +305,30 @@ OBSERVATION: [What happened? What did I learn?]
 → Repeat until complete
 ```
 
-**After completing significant tasks**, append to `memory/reflections.jsonl`:
-```json
-{"timestamp": "...", "task": "...", "outcome": "success|partial|failure", "reflection": "...", "lesson": "...", "would_repeat": true|false}
-```
-
-**Before similar tasks**, query past reflections:
+**AFTER significant tasks — Log reflection:**
 ```bash
-python3 scripts/query-reflections.py "relevant keyword"
+python3 scripts/reflexion.py add "task" "outcome" "reflection" "lesson"
 ```
+Or append manually to `memory/reflections.jsonl`.
 
-**Trajectory quality check (weekly):**
-- Review last 7 days of cron outputs
-- Score: How many were genuinely valuable?
-- Pattern: What types worked? What didn't?
-- Adapt: Adjust prompts, timing, or remove underperformers
+**Self-Evaluate (Evaluator component):**
+- Did I achieve the goal? [YES/PARTIAL/NO]
+- What would I do differently?
+- What's the one-sentence lesson?
 
-Periodically distill reflections into MEMORY.md during memory work.
+**Trajectory quality check (weekly via Weekly Self-Review):**
+```bash
+python3 scripts/reflexion.py stats
+python3 scripts/reflexion.py lessons
+```
+- Review success rate trend
+- Extract top lessons per category
+- Distill into MEMORY.md
+
+**Anti-patterns to avoid (from past reflections):**
+- Starting without checking existing work
+- Building before planning
+- Asking permission when full autonomy granted
 
 ---
 
