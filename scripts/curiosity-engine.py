@@ -22,16 +22,28 @@ from pathlib import Path
 # PROMPTS ARRAY - Action-Oriented Prompt Templates
 # =============================================================================
 # 
-# Design Principles (from research):
-# 1. VERB FIRST - Action verbs, not description verbs
-# 2. TIME BUDGET - Implicit scope (quick/deep/15min)
-# 3. SINGLE OBJECTIVE - One clear goal per prompt
-# 4. SUCCESS CRITERIA - Binary pass/fail, observable
-# 5. ANTI-PATTERN - What NOT to do
-# 6. ARTIFACT REQUIRED - Must produce something tangible
+# Design Principles (from research — updated 2026-02-03):
 #
-# Template:
-# "[DOMAIN] [TIME]: [VERB] [OBJECT]. Output: [FORMAT]. Success: [CRITERIA]. Don't: [ANTI-PATTERN]."
+# MUST HAVE (Research-Backed):
+# 1. VERIFIABLE SUCCESS - Test command, file check, measurable output
+# 2. FAILURE RECOVERY - Explicit fallback paths (if X → try Y)
+# 3. EXPERIENCE CAPTURE - Log successful patterns for reuse
+# 4. TIME-BOUNDED - Prevents infinite loops, forces prioritization
+# 5. SINGLE OBJECTIVE - One clear goal per prompt
+#
+# SHOULD HAVE:
+# 6. DIFFICULTY GRADIENT - Easy/Medium/Hard variants
+# 7. SELF-CHALLENGE - Generate harder version after success
+# 8. ANTI-PATTERNS - Explicit "don't do X" prevents common failures
+#
+# Sources:
+# - Reflexion (Shinn 2023): Generate → Critique → Revise, 91% on HumanEval
+# - Self-Challenging Agents (Zhou 2025): Challenger + Executor, 2x on tool-use
+# - Self-Generated Examples (Sarukkai 2025): 73% → 93% via experience replay
+#
+# Template v2:
+# "[CATEGORY] [DIFFICULTY] [TIME]: [VERB] [OBJECT]
+#  [STEPS] → [SUCCESS TEST] → [FAILURE RECOVERY] → [EXPERIENCE CAPTURE]"
 #
 
 PROMPTS = {
@@ -78,7 +90,11 @@ PROMPTS = {
         {
             "prompt": """PAPER HUNT [15 min]: Find ONE arxiv paper with practical implications.
 
-[SEARCH] arxiv cs.AI OR cs.LG OR cs.CL, last 7 days
+[SEARCH STRATEGY]
+1. Primary: `web_search "arxiv cs.AI [topic] 2026"` 
+2. Fallback 1: `web_search "arxiv cs.LG benchmark improvement 2026"`
+3. Fallback 2: Check arxiv.org/list/cs.AI/recent directly
+
 [FILTER] Must have: code repo OR benchmark improvement >5% OR novel architecture
 [READ] Abstract + Introduction + Results (skip methodology unless crucial)
 
@@ -87,14 +103,29 @@ PROMPTS = {
 Title: [exact title]
 TL;DR: [1 sentence, no jargon]
 Key number: [the metric that matters]
+Why it matters: [practical implication]
 Investment angle: [who benefits]
-Confidence: [HIGH/MEDIUM] + why
 ```
 
 [SAVE TO] memory/research/papers/YYYY-MM-DD-[slug].md
-[SUCCESS] `cat` shows file with all 5 fields filled
+
+[SUCCESS TEST]
+```bash
+test -f memory/research/papers/$(date +%Y-%m-%d)-*.md && echo "✅ PASS"
+```
+
+[FAILURE RECOVERY]
+- No good papers? → Broaden to cs.LG, cs.CL
+- Search fails? → Try different date range
+- Still nothing? → Log "Dry day for papers" and stop gracefully
+
+[EXPERIENCE CAPTURE]
+```bash
+echo '{"date":"[today]","paper":"[title]","search_that_worked":"[query]"}' >> memory/successful-patterns.jsonl
+```
+
 [NEVER] skim titles only — must read abstract minimum
-[IF NOTHING GOOD] → Say "No notable papers this scan" and stop""",
+[SELF-CHALLENGE] Next time: find paper in domain you haven't explored""",
             "weight": 1.2,
             "tags": ["research", "deep"]
         },
@@ -672,6 +703,133 @@ Output: Completed task OR documented progress + updated lesson. Success: demonst
             "weight": 1.2,
             "tags": ["meta", "learning", "reflexion"]
         }
+    ],
+    
+    # NEW CATEGORY: Self-Challenge (from NeurIPS 2025 research)
+    "self_challenge": [
+        {
+            "prompt": """CHALLENGER MODE [EASY → HARD]: Progressive skill building.
+
+[PHASE 1 - EASY] (5 min)
+Task: Write a 1-function Python script that does ONE thing
+Test: `python3 scripts/[name].py --help` exits 0
+Pass? → Continue. Fail? → Fix and retry once.
+
+[PHASE 2 - MEDIUM] (10 min)  
+Task: Extend script to handle edge cases + add error handling
+Test: `python3 scripts/[name].py [bad input]` fails gracefully
+Pass? → Continue. Fail? → Log blocker, stop at Phase 1.
+
+[PHASE 3 - HARD] (10 min)
+Task: Add a feature that wasn't in original spec
+Test: New feature works AND old tests still pass
+Pass? → Experience capture. Fail? → Still capture Phase 2.
+
+[EXPERIENCE CAPTURE]
+If ANY phase passed:
+```bash
+echo '{"date":"[today]","task":"[name]","max_phase":[1-3],"insight":"[what worked]"}' >> memory/skill-progression.jsonl
+```
+
+[SUCCESS] At least Phase 1 complete with passing test
+[SELF-CHALLENGE] Tomorrow: Start at your max_phase from today""",
+            "weight": 1.5,
+            "tags": ["meta", "graduated", "code"]
+        },
+        {
+            "prompt": """VERIFIER-BUILDER [15 min]: Build something with its own test.
+
+[STEP 1] Define success FIRST
+- Write the test before the implementation
+- Test must be runnable: `python3 test_[name].py` or bash command
+- Test must return 0 on success, non-0 on failure
+
+[STEP 2] Build to pass the test
+- Minimum viable implementation
+- Run test after each change
+
+[STEP 3] Verify
+```bash
+python3 test_[name].py && echo "✅ PASS" || echo "❌ FAIL"
+```
+
+[FAILURE RECOVERY]
+- Test fails? Read error, fix ONE thing, retry
+- 3 failures? Simplify the test, not the code
+- Still stuck? Log: `{"task":"...","blocker":"...","test_output":"..."}`
+
+[EXPERIENCE CAPTURE]
+On success:
+```bash
+echo '{"pattern":"test-first","task":"[name]","test_cmd":"[cmd]"}' >> memory/successful-patterns.jsonl
+```
+
+[SUCCESS] Test passes AND is meaningful (not trivial)
+[ANTI-PATTERN] ❌ Writing test after implementation (defeats purpose)""",
+            "weight": 1.4,
+            "tags": ["meta", "tdd", "code"]
+        },
+        {
+            "prompt": """EXPERIENCE REPLAY [10 min]: Learn from past successes.
+
+[STEP 1] Load successful patterns
+```bash
+tail -20 memory/successful-patterns.jsonl 2>/dev/null || echo "No patterns yet"
+```
+
+[STEP 2] Pick ONE pattern to apply to a NEW domain
+- If "research" pattern worked → try on different topic
+- If "tool" pattern worked → build similar tool for different purpose
+- If "analysis" pattern worked → analyze different subject
+
+[STEP 3] Execute with pattern
+- Follow the same structure that worked before
+- Note what transfers and what doesn't
+
+[STEP 4] Capture transfer learning
+```bash
+echo '{"original":"[pattern]","new_domain":"[domain]","transfer_success":[true/false],"adaptation":"[what changed]"}' >> memory/transfer-learning.jsonl
+```
+
+[SUCCESS] Pattern successfully applied to new domain
+[FAILURE RECOVERY] If pattern doesn't transfer → note WHY, try different pattern
+[SELF-CHALLENGE] Find pattern that works across 3+ domains""",
+            "weight": 1.3,
+            "tags": ["meta", "learning", "transfer"]
+        },
+        {
+            "prompt": """DUAL ROLE [15 min]: Be both Challenger and Executor.
+
+[CHALLENGER HAT] (5 min)
+Generate a task for yourself that:
+- Is completable in 10 minutes
+- Has verifiable success criteria
+- Is slightly harder than your comfort zone
+- Write it as: "Task: [X]. Test: [command]. Pass if: [condition]."
+
+[EXECUTOR HAT] (10 min)
+- Attempt the task you just created
+- No changing the success criteria mid-task
+- Run the test exactly as specified
+
+[EVALUATION]
+```
+Challenge quality: [1-5] (Was it well-specified?)
+Execution quality: [1-5] (Did you meet the criteria?)
+Calibration: [over/under/good] (Was difficulty estimate accurate?)
+```
+
+[EXPERIENCE CAPTURE]
+```bash
+echo '{"challenge":"[task]","test":"[test]","passed":[true/false],"calibration":"[over/under/good]"}' >> memory/self-challenges.jsonl
+```
+
+[SUCCESS] Task completed AND test passes
+[SELF-CHALLENGE] Improve calibration: challenges should pass ~70% of time
+[ANTI-PATTERN] ❌ Making task too easy to guarantee success""",
+            "weight": 1.4,
+            "tags": ["meta", "self-challenge", "calibration"]
+        }
     ]
 }
 
@@ -683,7 +841,7 @@ META_PROMPT = """
 ## EXECUTION PROTOCOL (Reflexion-Enhanced)
 
 **BEFORE — Memory Recall:**
-1. Run: `python3 scripts/query-reflections.py "{task_type}"` — check past lessons
+1. Run: `python3 scripts/reflexion.py query "[task description]"` — check past lessons
 2. Use `memory_search` if task relates to prior work
 3. Check time (SGT) — adjust scope if late night
 4. State plan in ONE sentence
