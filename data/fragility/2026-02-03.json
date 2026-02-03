@@ -1,0 +1,38 @@
+Fetching fragility signals...
+
+1. VIX/VVIX...
+2. Credit spreads...
+3. Concentration...
+4. Treasury curve...
+{
+  "timestamp": "2026-02-03T04:20:57.678670",
+  "signals": {
+    "volatility": {
+      "vix": {
+        "current": 16.34,
+        "5d_ago": 16.35,
+        "change_pct": -0.1
+      },
+      "vvix": {
+        "current": 98.77,
+        "5d_ago": 101.26,
+        "change_pct": -2.5
+      },
+      "signal": "\u2705 Normal"
+    },
+    "credit": {
+      "note": "Need FRED API key for credit spreads"
+    },
+    "concentration": {
+      "top7_weight_pct": 47.2,
+      "signal": "\u26a0\ufe0f CONCENTRATED",
+      "note": "Top 7 stocks as % of S&P 500"
+    },
+    "curve": {
+      "10y_yield": 4.28,
+      "3m_yield": 3.58,
+      "spread": 0.7,
+      "signal": "\u2705 Normal"
+    }
+  }
+}
