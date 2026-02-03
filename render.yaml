@@ -1,14 +1,8 @@
-# Render Blueprint - Auto-deploy web apps
-
 services:
   - type: web
     name: fragility-signals
     runtime: python
     rootDir: apps/fragility-dashboard
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
-    envVars:
-      - key: PYTHON_VERSION
-        value: "3.11"
-    healthCheckPath: /health
+    startCommand: gunicorn app:app
     plan: free
