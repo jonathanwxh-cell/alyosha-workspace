@@ -12,20 +12,8 @@ import os
 
 app = Flask(__name__)
 
-# Try multiple data locations (handles different deployment setups)
-def find_data_dir():
-    candidates = [
-        Path(__file__).parent.parent.parent / 'data' / 'fragility',  # From app dir
-        Path('/opt/render/project/src/data/fragility'),  # Render absolute
-        Path.cwd() / 'data' / 'fragility',  # From working dir
-        Path(__file__).parent / 'data',  # Local to app
-    ]
-    for p in candidates:
-        if p.exists():
-            return p
-    return None
-
-DATA_DIR = find_data_dir()
+# Data directory (local dev only - Render uses embedded SAMPLE_DATA)
+DATA_DIR = Path(__file__).parent.parent.parent / 'data' / 'fragility'
 
 # Embedded sample data for when local data unavailable (Render deployment)
 # Updated: 2026-02-03
@@ -131,15 +119,15 @@ TEMPLATE = """
 def get_latest_data():
     """Load most recent fragility data, fallback to sample"""
     try:
-        if DATA_DIR and DATA_DIR.exists():
+        if DATA_DIR.exists():
             files = sorted(DATA_DIR.glob('*.json'), reverse=True)
             if files:
                 with open(files[0]) as f:
                     return json.load(f), files[0].stem, False
-    except Exception as e:
-        app.logger.error(f"Error loading data: {e}")
+    except:
+        pass  # Fall through to sample
     
-    # Fallback to sample data
+    # Fallback to embedded sample data (used on Render)
     return SAMPLE_DATA, SAMPLE_DATA["timestamp"][:10], True
 
 def format_signals(data):

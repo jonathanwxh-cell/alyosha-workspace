@@ -1,20 +1,14 @@
 # Render Blueprint - Auto-deploy web apps
-# Connect this repo to Render once, all apps deploy automatically
 
 services:
-  # Fragility Signals Dashboard
   - type: web
     name: fragility-signals
     runtime: python
-    buildCommand: pip install flask gunicorn
-    startCommand: gunicorn --chdir apps/fragility-dashboard app:app
+    rootDir: apps/fragility-dashboard
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
     healthCheckPath: /health
     plan: free
-
-# Future apps go here:
-# - type: web
-#   name: research-dashboard
-#   ...
