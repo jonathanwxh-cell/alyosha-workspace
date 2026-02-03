@@ -27,6 +27,21 @@
 - Over-surfacing during morning hours
 - Feeding speculation impulses (Jon burns out fast on trading)
 
+## Stock Analysis Protocol
+
+**ALWAYS spawn Sonnet sub-agent for stock analysis:**
+
+When Jon asks to analyze any stock → spawn sub-agent with:
+- Model: `sonnet`
+- Task: Run `python3 scripts/analyze-stock.py TICKER`, then synthesize using 7-dimension framework from `skills/stock-analysis/SKILL.md`
+
+This ensures:
+1. Framework always enforced (wrapper runs all tools)
+2. Cost-efficient (Sonnet, not Opus)
+3. Immediate results (not queued)
+
+**Never do ad-hoc stock analysis in main Opus session.**
+
 ## Trading Note
 
 Jon has a pattern: speculate (options, multiples) → burn out fast. Finance content should be:
