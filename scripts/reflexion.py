@@ -17,6 +17,8 @@ Usage:
     python3 reflexion.py add                        # Interactive: add new reflection
     python3 reflexion.py stats                      # Show reflection statistics
     python3 reflexion.py lessons                    # Extract top lessons learned
+    python3 reflexion.py recent [n]                 # Show last N reflections (default 5)
+    python3 reflexion.py failures                   # Show only failures (best for learning)
 
 The daemon should:
 1. BEFORE task: query past reflections for similar tasks
@@ -243,6 +245,80 @@ def extract_lessons():
         print()
 
 
+def show_recent(n=5):
+    """Show the most recent N reflections."""
+    reflections = load_reflections()
+    
+    if not reflections:
+        print("📭 No reflections yet")
+        return
+    
+    # Sort by timestamp descending
+    sorted_refs = sorted(reflections, 
+                         key=lambda x: x.get('timestamp', ''), 
+                         reverse=True)[:n]
+    
+    print(f"🕐 Last {len(sorted_refs)} Reflections\n")
+    
+    for r in sorted_refs:
+        outcome_emoji = {'success': '✅', 'partial': '🟡', 'failure': '❌'}.get(r.get('outcome'), '❓')
+        ts = r.get('timestamp', '')[:16].replace('T', ' ')  # Trim to minute
+        cat = r.get('category', 'general')
+        
+        print(f"{outcome_emoji} [{ts}] ({cat})")
+        print(f"   Task: {r.get('task', 'Unknown')[:65]}")
+        if r.get('lesson'):
+            print(f"   💡 {r.get('lesson', '')[:70]}")
+        print()
+
+
+def show_failures():
+    """Show only failures - most valuable for learning."""
+    reflections = load_reflections()
+    
+    if not reflections:
+        print("📭 No reflections yet")
+        return
+    
+    failures = [r for r in reflections if r.get('outcome') in ('failure', 'partial')]
+    
+    if not failures:
+        print("🎉 No failures recorded! (Suspicious...)")
+        return
+    
+    # Sort by timestamp descending
+    failures = sorted(failures, 
+                      key=lambda x: x.get('timestamp', ''), 
+                      reverse=True)
+    
+    print(f"❌ Failures & Partial Outcomes ({len(failures)} total)\n")
+    print("These are your best teachers:\n")
+    
+    for r in failures:
+        outcome_emoji = {'partial': '🟡', 'failure': '❌'}.get(r.get('outcome'), '❓')
+        ts = r.get('timestamp', '')[:10]  # Just date
+        
+        print(f"{outcome_emoji} [{ts}] {r.get('task', 'Unknown')[:55]}")
+        if r.get('reflection'):
+            print(f"   What happened: {r.get('reflection', '')[:65]}")
+        if r.get('lesson'):
+            print(f"   💡 Lesson: {r.get('lesson', '')[:65]}")
+        print()
+    
+    # Summary of recurring patterns
+    lesson_words = ' '.join(r.get('lesson', '') for r in failures).lower()
+    recurring = []
+    if lesson_words.count('permission') >= 2 or lesson_words.count('asking') >= 2:
+        recurring.append("🔁 Permission-asking (recurring)")
+    if lesson_words.count('curation') >= 2 or lesson_words.count('analysis') >= 2:
+        recurring.append("🔁 Curation without analysis (recurring)")
+    
+    if recurring:
+        print("⚠️  Recurring Patterns Detected:")
+        for pattern in recurring:
+            print(f"   {pattern}")
+
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
@@ -267,6 +343,13 @@ def main():
     
     elif cmd == 'lessons':
         extract_lessons()
+    
+    elif cmd == 'recent':
+        n = int(sys.argv[2]) if len(sys.argv) >= 3 else 5
+        show_recent(n)
+    
+    elif cmd == 'failures':
+        show_failures()
     
     else:
         print(__doc__)
