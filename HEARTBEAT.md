@@ -59,13 +59,7 @@ Apply any relevant lessons. After completion, log reflection:
 echo '{"timestamp":"YYYY-MM-DDTHH:MM:SSZ","task":"...","outcome":"success|partial|failure","reflection":"...","lesson":"..."}' >> memory/reflections.jsonl
 ```
 
-**Feedback Signal Capture:**
-Track engagement signals to improve over time:
-- 👍 reaction → positive signal, note what worked
-- Reply within 30min → engagement signal
-- 👎 or "stop" → negative signal, reduce similar content
-- Silence → neutral (not negative!)
-Log significant signals to `memory/feedback-log.jsonl`
+**Feedback Signals:** 👍=positive, reply=engaged, 👎=reduce, silence=neutral. Log to `memory/feedback-log.jsonl`.
 
 **Usage self-check (when relevant):**
 - If approaching limits, suggest temporary adjustments
@@ -150,12 +144,7 @@ The advisor checks:
 3. **Weekend:** Lighter touch (0.7x weight), prefer casual/family content
 4. **Engagement rate:** Silence ≠ disengagement. Keep producing quality.
 
-**Message Fatigue Rule:**
-- If 3+ surfaces without any reaction/reply within **7 heartbeat cycles** → STOP sending more
-- Either batch into a daily digest or wait for engagement signal
-- Interactive conversation should PAUSE cron broadcasts
-- Reactions (👍🔥🤔) count as engagement — not just text replies
-- Cycle-based window auto-adjusts if heartbeat interval changes
+**Message Fatigue:** 3+ surfaces without reaction in 7 cycles → pause. Batch to digest or wait. Reactions count as engagement.
 
 **Bias toward showing work:** Jon prefers seeing activity over silence. 
 - Don't self-censor too much
@@ -191,37 +180,11 @@ Before surfacing content, glance at `memory/topic-balance.json`:
 
 ## Finance Gating (Hybrid System)
 
-**Finance is "sticky" — markets always have news. Create friction to prevent over-surfacing.**
+**Finance is "sticky" — create friction to prevent over-surfacing.**
 
-**Finance surfaces ONLY if one of these gates passes:**
+Finance surfaces ONLY if: >3% move, >10% earnings surprise, explicit request, OR 1x/week budget not exhausted.
 
-1. **Crisis/Opportunity Gate:** Market move >3% (index or watchlist stock)
-2. **Earnings Gate:** Surprise >10% on watchlist (NVDA, major hyperscalers)
-3. **Explicit Request:** Jon asks about markets
-4. **Weekly Budget:** 1 proactive finance surface per week (check `memory/surface-budget.json`)
-
-**If none pass → actively seek other topics instead.**
-
-**Tracking:**
-```bash
-# Check budget before finance surface
-cat memory/surface-budget.json | jq '.finance.thisWeek'
-
-# After finance surface, increment
-# Update surface-budget.json: finance.thisWeek += 1, finance.lastSurface = now
-```
-
-**What counts as "finance":**
-- Market commentary, stock analysis, earnings
-- Macro without geopolitical angle
-- Trading ideas, positioning
-
-**What doesn't count (surface freely):**
-- Geopolitics that affects markets (US-China, policy)
-- Tech/AI news with investment angle
-- Cross-domain synthesis that touches finance
-
-**Reset:** Weekly on Sunday midnight SGT
+**If none pass → seek other topics.** Details in `memory/heartbeat-reference.md`.
 
 ---
 
@@ -318,12 +281,29 @@ Quality > quantity. Act with intention, not rotation.
 
 ## Reflection Protocol (Reflexion Pattern)
 
-After completing significant tasks, append to `memory/reflections.jsonl`:
-```json
-{"timestamp": "...", "task": "...", "outcome": "success|partial|failure", "reflection": "...", "lesson": "..."}
+**ReAct cycle for complex tasks:**
+```
+THOUGHT: [What am I trying to do? Why?]
+ACTION: [What tool/step am I taking?]
+OBSERVATION: [What happened? What did I learn?]
+→ Repeat until complete
 ```
 
-Before similar tasks, query past reflections for relevant lessons.
+**After completing significant tasks**, append to `memory/reflections.jsonl`:
+```json
+{"timestamp": "...", "task": "...", "outcome": "success|partial|failure", "reflection": "...", "lesson": "...", "would_repeat": true|false}
+```
+
+**Before similar tasks**, query past reflections:
+```bash
+python3 scripts/query-reflections.py "relevant keyword"
+```
+
+**Trajectory quality check (weekly):**
+- Review last 7 days of cron outputs
+- Score: How many were genuinely valuable?
+- Pattern: What types worked? What didn't?
+- Adapt: Adjust prompts, timing, or remove underperformers
 
 Periodically distill reflections into MEMORY.md during memory work.
 
