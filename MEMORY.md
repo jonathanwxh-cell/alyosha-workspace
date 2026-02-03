@@ -74,6 +74,10 @@ Don't enable the gambling impulse. Provide calm perspective when markets come up
 - US-China AI race (0.8) → geopolitics, DeepSeek
 - AI Capex (0.8) → data centers, nuclear, cloud
 - Nuclear renaissance (0.7) → energy, uranium, data centers
+- **Geopolitical risks (0.9)** → conflicts, power shifts, cascading effects
+- **World news / Global risks (0.8)** → major developments, impact analysis
+- **Climate change (0.7)** → physical risks, transition, policy
+- **Tail risks / Black swans (0.9)** → fragility, what could break
 
 ## Infrastructure Notes
 

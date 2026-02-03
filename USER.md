@@ -24,6 +24,14 @@
 - Likes being impressed by agentic capabilities
 - Values practical utility over flashy demos
 
+## Risk-Focused Interests (priority)
+- **World news** — major developments, not noise
+- **Geopolitical risks** — US-China, regional conflicts, power shifts
+- **Global impact analysis** — second-order effects, cascading risks
+- **Climate change** — physical risks, transition risks, policy shifts
+- **Tail risks / Black swans** — what could break, fragility mapping
+- **Generally: RISKS** — Talebian lens, focus on what could go wrong
+
 ## Deep Interests (priority for daemon)
 - **Cross-discipline analysis** — connections between unrelated fields (physics↔biology, philosophy↔AI, history↔markets)
 - **Research synthesis** — not just summaries, but original analysis combining multiple sources
