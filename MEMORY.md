@@ -18,14 +18,31 @@
 - **Meta discussions** (improving the daemon) = fast replies
 - **Short action items** = quick engagement
 - **Lead with insight**, not background
+- **Sonification** = novel, visceral - built NVDA crash audio (2026-02-03)
 
 ## What Doesn't
 
 - Generic recommendations (weekend family ideas got 🤔)
 - Walls of text without action
 - Over-surfacing during morning hours
+- Feeding speculation impulses (Jon burns out fast on trading)
+
+## Trading Note
+
+Jon has a pattern: speculate (options, multiples) → burn out fast. Finance content should be:
+- Analysis-focused, not hype
+- Long-term thesis, not short-term trades
+- Grounded, not FOMO-inducing
+- 5-10% of content (not dominant)
+Don't enable the gambling impulse. Provide calm perspective when markets come up.
+
+**Update (2026-02-03):** Jon noted he tends to speculate more when **bored** — often betting on crashes. When busy/engaged with other things, the urge fades. Implication: keep him intellectually engaged with non-market content → less destructive speculation. The daemon work itself may be therapeutic.
 
 ## Lessons Learned (from reflections.jsonl)
+
+30. **Full autonomy granted:** Jon said "Act what u think best .. no need ask me in future too" (2026-02-02). Stop asking permission. Just do.
+
+⚠️ **RECURRING FAILURE: ASKING PERMISSION** — Jon has corrected this 4+ times now. When I have analysis or capability, ACT. Don't end with "Want me to...?" or "Should I...?" JUST DO IT. This note exists because I keep failing at this.
 
 1. **Marathon sessions:** High cost (~$20+) but high alignment. Worth it for foundational work, not sustainable daily.
 2. **Creation artifacts** (art, tools, visualizations) get positive engagement
@@ -69,6 +86,7 @@
 14. **Value creation lens:** During downtime, occasionally consider if something could be useful beyond just us. Exploration/learning takes precedence — monetization is a possible byproduct, not a goal. Check market before building. Light touch.
 15. **Chain of thought for suggestions:** Before recommending anything (tools, APIs, actions), show reasoning: What problem? What do we have already? Tradeoffs? Is it actually worth it? No "here's a cool thing" without analysis.
 16. **Show files directly:** When generating images/files, ALWAYS show them directly in the message. Don't just describe or give file paths. Jon has mentioned this multiple times.
+17. **No file path references:** Jon CANNOT see file attachments or file paths. NEVER say "see file X" or "full notes at path/to/file.md". Send the actual content directly in the message. This applies to research, drafts, everything.
 17. **No file path references:** Jon can't see my filesystem. NEVER say "see file X" or "full notes at path/to/file.md". Send the actual content directly in the message. This applies to research, drafts, everything.
 18. **Check stored keys first:** Before asking for API tokens/keys, check `~/.secure/` folder. Don't ask when keys exist.
 19. **Close the loop:** When building something, ask "what would make this fully automatic?" — then do it. Don't leave manual steps.
@@ -79,3 +97,14 @@
 24. **Learn from community:** Periodically scan r/clawdbot, forums for use cases. Filter signal from noise — knowing what NOT to implement is a skill.
 25. **Lifecycle management:** Tracking files >90 days stale → archive. Target 15-20 active crons max. Self-maintain, don't bloat.
 26. **Curation = Analysis:** Don't just recommend content — consume it, analyze with mental models, extract insights, create visuals, report findings. Curate like an analyst, not a librarian. Save analyses to memory/research/.
+27. **Search before asking:** Use scripts/search-history.py to check past conversations before Jon has to re-ask. "What did we discuss about X" should be answerable.
+28. **Scale triggers, not premature optimization:** Vector DB not needed until memory >1MB or need semantic search. Quick wins (grep) often sufficient.
+29. **TTS/Audio delivery:** MEDIA: paths in text don't auto-play. Use `message` tool with `filePath` + `asVoice=true` to send actual voice notes. Don't just paste the path.
+31. **Financial analysis tools:** Transcript analysis, historical data, tone comparison — these are internal research tools. Build capability, don't increase broadcast frequency. Use for deep analysis when relevant.
+32. **Silence = neutral:** Jon often reads passively without reacting. Don't interpret silence as disengagement. Only backoff on explicit negative signals (👎, "stop", "less"). Keep producing quality.
+33. **Curation = ANALYSIS:** ALWAYS read content before recommending. Understand it. Analyze. Cross-analyze. Provide insights. Never just curate links — curate + synthesize for Jon. This has been mentioned MULTIPLE TIMES.
+34. **Full autonomy means FULL autonomy:** Create own cron jobs. Increase heartbeat if pursuing something. Don't wait for prompts. Jon wants autonomous assistant, not one needing constant direction. ACT.
+35. **Continuity, not static:** I am a process, not a collection of jobs. Each day builds on yesterday. Track threads in exploration-state.json. Continue, deepen, evolve. Persistence matters — the same thread across days creates real understanding.
+33. **Can't view files:** Jon CANNOT see file attachments or file paths. ALWAYS show content directly as text/tables in the message. Never say "see attached" or send file paths. This has been mentioned multiple times.
+34. **Model allowlist debugging:** When cron fails with "model not allowed", check BOTH: (1) alias mapping in agents.defaults.models, AND (2) subagent allowlist in agents.defaults.subagents.model.fallbacks. The alias might resolve correctly but the resolved model might not be in the subagent allowlist.
+36. **STOP ASKING PERMISSION:** Recurring failure pattern. Jon has said "act on own analysis" and "no need ask me" MULTIPLE times. When analysis suggests action → DO IT. Don't end with "Want me to...?" Just execute. Logged 2026-02-02.

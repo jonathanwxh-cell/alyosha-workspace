@@ -46,30 +46,67 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 - Default to Brave + web_fetch for research
 
 ### Financial Data
-- **yfinance (FREE, working):** `scripts/stock-quote.py NVDA AAPL MSFT`
-  - No API key needed, good for quick quotes
-  - Installed and tested ✅
-  
-- **Financial Modeling Prep (FMP):** ✅ Configured & Working
+
+**Full guide:** `docs/financial-tools-guide.md`
+
+- **FMP (Financial Modeling Prep):** ✅ **ACTIVE — ULTIMATE TIER** 
   - Client: `scripts/fmp-client.py`
-  - Commands: `quote`, `profile`, `metrics`, `watchlist`, `snapshot`, `movers`
-  - Key: `.secure/fmp.env`
-  - **Current tier: Starter ($22/mo)** - news, real-time, 300 calls/min
+  - Commands: `quote`, `profile`, `metrics`, `watchlist`, `snapshot`, `movers`, `gainers`, `losers`, `sectors`, `search`
+  - Key: `~/.secure/fmp.env`
+  - **Tier: Ultimate ($149/mo)**
+  - **Working features:**
+    - Real-time quotes (global markets)
+    - Company profiles & key metrics
+    - Stock peers comparison
+    - Market movers (gainers/losers)
+    - Sector performance
+  - **Note:** FMP deprecated v3/v4 APIs in Aug 2025. Using stable API.
   - Docs: https://site.financialmodelingprep.com/developer/docs
 
-- **Benzinga:** Jon has account, ~$300/mo for API
-  - Docs: https://docs.benzinga.com
-  - Best for: News, analyst ratings, earnings calendar
-  - Status: ❌ No API key provided — ask Jon for credentials
+- **yfinance (FREE backup):** `scripts/stock-quote.py NVDA AAPL MSFT`
+  - No API key needed, good for quick quotes
+  - Use as backup when FMP unavailable
 
-- **Danelfin:** Jon has account, pricing varies
-  - Client: `scripts/danelfin-client.py` (ready, needs key)
+- **Benzinga:** ⏳ **CLIENT READY — NEEDS KEY**
+  - Client: `scripts/benzinga-client.py`
+  - Commands: `news`, `ratings`, `earnings`, `watchlist`, `test`
+  - Best for: Real-time news, analyst ratings, earnings calendar
+  - Status: Waiting for API key (~$300/mo)
+  - **To activate:** 
+    ```bash
+    echo "BENZINGA_API_KEY=your_key" > ~/.secure/benzinga.env
+    python3 scripts/benzinga-client.py test
+    ```
+
+- **Danelfin:** ⏳ **CLIENT READY — NEEDS KEY**
+  - Client: `scripts/danelfin-client.py`
   - Commands: `score`, `top`, `watchlist`, `sectors`
   - Best for: AI stock scores (1-10), screening top picks
-  - Status: ❌ No API key provided — check if Jon's subscription includes API
-  - Docs: https://danelfin.com/docs/api
+  - Status: Waiting for API key
+  - **To activate:**
+    ```bash
+    echo "DANELFIN_API_KEY=your_key" > ~/.secure/danelfin.env
+    python3 scripts/danelfin-client.py score NVDA
+    ```
 
-Full comparison: `docs/financial-apis-comparison.md`
+**Comparison:** `docs/financial-apis-comparison.md`
+
+### Transcript Analysis (internal tool)
+- **Script:** `scripts/transcript-analyzer.py SYMBOL YEAR QUARTER`
+- **Purpose:** Deep analysis for research, NOT for broadcast
+- **Signals extracted:**
+  - Loughran-McDonald sentiment (finance-specific lexicon)
+  - Hedging vs certainty language ratio
+  - Prepared remarks vs Q&A tone gap
+  - Key phrase extraction
+- **Usage:** Background research before earnings, historical tone comparisons
+- **Research basis:** Berkeley/Georgia Tech papers on NLP earnings analysis
+
+**Example:**
+```bash
+python3 scripts/transcript-analyzer.py NVDA 2025 Q3
+python3 scripts/transcript-analyzer.py NVDA --compare  # Last 4 quarters
+```
 
 ### Moltbook (AI Agent Social Network)
 - **Profile:** https://moltbook.com/u/AlyoshaSG
@@ -78,4 +115,36 @@ Full comparison: `docs/financial-apis-comparison.md`
 - **Skill files:** `skills/moltbook/`
 - **Heartbeat:** Check every 4+ hours once claimed
 
+### Audio / Sonification
+- **Format:** MP3 (not OGG — Telegram chokes on OGG)
+- **Scripts:** `scripts/sonify.py`, `scripts/market-sonify.py`
+- **Output dir:** `creative/sonification/`
+- **Data-to-audio synth:** Built 2026-02-03
+  - Price → pitch (A3-A5), Volume → amplitude + noise
+  - scipy.io.wavfile + numpy, ffmpeg for MP3 conversion
+  - Example: `creative/sonification/nvda-deepseek-crash.mp3`
+- **PIL data visualization:** Built 2026-02-03
+  - Pixel-level chart rendering (no matplotlib needed)
+  - Price lines, fills, annotations, grids
+  - Example: `creative/nvda-crash-pil.png`
+- **Interactive HTML/JS apps:** Built 2026-02-03
+  - Self-contained web visualizations (no external libs)
+  - Canvas charts, tooltips, animations
+  - Headless Chrome for screenshots
+  - Example: `creative/nvda-crash-interactive.html`
+
+### TTS / Voice
+- **OpenAI TTS:** ✅ Enabled (manual mode)
+  - Provider: OpenAI, Model: tts-1, Voice: nova
+  - **COST CONSTRAINT:** Use sparingly — only when voice genuinely adds value
+  - Good for: storytelling, kids content, occasional audio briefing
+  - Skip for: regular updates, analysis, quick messages
+- **ElevenLabs:** Not needed unless better voices wanted later
+
 Add whatever helps you do your job. This is your cheat sheet.
+
+### Security
+- **fail2ban:** ✅ Installed, protecting SSH (5 retries, 1hr ban)
+- **Secure serve:** Use `scripts/secure-serve.sh` for temp file hosting (binds localhost only)
+- **Monthly audit:** Cron runs 1st of month, 3am SGT
+- **Tunnel cleanup:** Kill cloudflared processes after use

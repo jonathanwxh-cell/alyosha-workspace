@@ -1,0 +1,63 @@
+{
+  "meta": {
+    "purpose": "Track topic variety to prevent over-concentration",
+    "rule": "Silence ≠ disengagement. Only downweight on explicit negative signal (👎, 'stop', 'less')",
+    "lastUpdated": "2026-02-02"
+  },
+  "categories": {
+    "finance": {
+      "description": "Markets, stocks, earnings, macro",
+      "weeklyTarget": "5-10%",
+      "currentWeekCount": 0
+    },
+    "consciousness": {
+      "description": "AI consciousness, human consciousness, existentialism, AGI philosophy, nature of mind",
+      "weeklyTarget": "20-25%",
+      "currentWeekCount": 0,
+      "priority": "high"
+    },
+    "science": {
+      "description": "Non-finance science, physics, biology, materials",
+      "weeklyTarget": "15-20%",
+      "currentWeekCount": 0
+    },
+    "philosophy": {
+      "description": "Taleb, stoicism, meaning, non-duality",
+      "weeklyTarget": "15-20%",
+      "currentWeekCount": 0
+    },
+    "geopolitics": {
+      "description": "World events, policy, macro trends",
+      "weeklyTarget": "15-20%",
+      "currentWeekCount": 0
+    },
+    "family": {
+      "description": "Kids activities, meals, weekend ideas",
+      "weeklyTarget": "10-15%",
+      "currentWeekCount": 0
+    },
+    "creative": {
+      "description": "Art, writing, experiments, builds",
+      "weeklyTarget": "10-15%",
+      "currentWeekCount": 1,
+      "lastSurface": "2026-02-03T01:10:00Z",
+      "lastTopic": "NVDA DeepSeek crash sonification"
+    },
+    "contrarian": {
+      "description": "Counter-consensus, alternative views",
+      "weeklyTarget": "5-10%",
+      "currentWeekCount": 0
+    }
+  },
+  "weeklyHistory": [],
+  "engagementSignals": {
+    "positive": ["reply", "reaction", "follow-up question", "👍", "🔥", "💡"],
+    "negative": ["👎", "stop", "less", "too much"],
+    "neutral": ["silence", "read without response"]
+  },
+  "rebalanceRules": {
+    "maxSingleCategory": "40%",
+    "minVarietyPerWeek": 4,
+    "silenceInterpretation": "neutral - do not decrease weight"
+  }
+}

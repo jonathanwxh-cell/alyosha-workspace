@@ -1,270 +1,220 @@
-# Agent Architecture Patterns
+# Agent Patterns Reference
 
-*Research notes on autonomous agent patterns that could improve exploration.*
+*Patterns for autonomous exploration and self-improvement.*
 
 ---
 
 ## 1. ReAct (Reasoning + Acting)
 
-**Source:** [Yao et al., 2022](https://arxiv.org/abs/2210.03629)
+**Source:** Yao et al., 2022
 
-**Core idea:** Interleave reasoning traces with actions. Think → Act → Observe → Think → Act...
-
-**Pattern:**
+**Pattern:** Interleave reasoning traces with actions.
 ```
-Thought: I need to find X
-Action: search("X")
-Observation: [results]
-Thought: Based on this, Y seems relevant
-Action: lookup("Y")
+Thought: What do I need to find out?
+Action: [tool call]
+Observation: [result]
+Thought: Based on this, what next?
 ...
 ```
 
-**Strengths:**
-- Reasoning traces help track/update plans
-- Actions ground reasoning in external reality
-- Handles exceptions through explicit thought
+**When to use:** Research tasks, tool-heavy exploration, information gathering.
 
-**Weaknesses:**
-- Structural constraint reduces flexibility
-- Heavily dependent on retrieval quality
-- Can't recover well from bad search paths
-
-**Relevance to me:** I already do something like this implicitly. Could make it more explicit — log thought/action/observation traces during research.
+**Already implicit in my operation.** Claude naturally does think → act → observe.
 
 ---
 
 ## 2. Tree of Thoughts (ToT)
 
-**Source:** [Yao et al., 2023](https://arxiv.org/abs/2305.10601)
+**Source:** Yao et al., 2023
 
-**Core idea:** Generate multiple reasoning paths, evaluate each, use search (BFS/DFS) to explore.
-
-**Pattern:**
+**Pattern:** Maintain tree of possible paths, evaluate each, prune bad branches.
 ```
-Initial problem
-├── Thought A (score: 0.7)
-│   ├── Thought A1 (score: 0.8) ← pursue
-│   └── Thought A2 (score: 0.3) ← prune
-├── Thought B (score: 0.5)
-└── Thought C (score: 0.2) ← prune
+Branch A: [approach 1] → evaluate: "maybe"
+Branch B: [approach 2] → evaluate: "sure" ← pursue
+Branch C: [approach 3] → evaluate: "impossible" ← prune
 ```
 
-**Strengths:**
-- Explores multiple paths before committing
-- Can backtrack when paths fail
-- Self-evaluation at each step
+**When to use:** Complex decisions with multiple valid paths, strategic lookahead required.
 
-**Weaknesses:**
-- Expensive (multiple generations per step)
-- Overkill for simple tasks
-- Requires good evaluation heuristics
+**Trade-off:** Expensive (multiple LLM calls). Use sparingly for high-stakes decisions.
 
-**Relevance to me:** Useful for complex research questions. When exploring a topic, generate 3 angles, evaluate which is most promising, then dive deep. Currently I go depth-first without branching.
+**Implementation:** For complex tasks (>3 steps), explicitly list 2-3 approaches, evaluate each briefly, then pursue best.
 
 ---
 
-## 3. Reflexion (Verbal Reinforcement)
+## 3. Reflexion (Verbal Reinforcement Learning)
 
-**Source:** [Shinn et al., 2023](https://arxiv.org/abs/2303.11366)
+**Source:** Shinn et al., 2023 — 91% on HumanEval vs GPT-4's 80%
 
-**Core idea:** After task completion, generate self-reflection that gets stored in memory and used in future attempts.
-
-**Components:**
-- **Actor:** Takes actions based on state + memory
-- **Evaluator:** Scores the outcome
-- **Self-Reflection:** Generates verbal feedback for improvement
-
-**Pattern:**
-```
-Attempt 1 → Fail
-  Reflection: "I assumed X but should have checked Y first"
-  Store in memory
-
-Attempt 2 (with reflection context) → Partial success
-  Reflection: "Better, but missed edge case Z"
-  Store in memory
-
-Attempt 3 (with accumulated reflections) → Success
-```
-
-**Strengths:**
-- Learns from mistakes without retraining
-- Verbal feedback more nuanced than scalar rewards
-- Explicit, interpretable memory
-
-**Weaknesses:**
-- Reflection quality depends on self-awareness
-- Memory can grow large
-- Doesn't help on first attempt
-
-**Relevance to me:** **Already partially implemented** via `memory/reflections.jsonl`. Can enhance by:
-1. Querying past reflections before similar tasks
-2. Adding outcome tracking (success/partial/failure)
-3. Periodic distillation into MEMORY.md
-
----
-
-## Comparison Matrix
-
-| Pattern | Best For | Cost | Already Using? |
-|---------|----------|------|----------------|
-| ReAct | Research, fact-finding | Low | Implicit |
-| ToT | Complex decisions, multiple options | High | No |
-| Reflexion | Learning from mistakes, iteration | Low | Partial |
-
----
-
-## Implementation: Enhanced Reflexion
-
-### Current State
-I have `memory/reflections.jsonl` for logging reflections, but I don't consistently:
-- Query it before similar tasks
-- Track outcomes systematically
-- Distill learnings
-
-### Enhanced Protocol
-
-**After significant tasks:**
+**Pattern:** After task completion, verbally reflect and store lessons.
 ```json
 {
-  "timestamp": "ISO-8601",
-  "task": "short description",
-  "category": "research|creation|analysis|communication|meta",
+  "task": "what I attempted",
   "outcome": "success|partial|failure",
-  "reflection": "what happened, what I learned",
-  "lesson": "generalizable takeaway",
-  "tags": ["topic1", "topic2"]
+  "reflection": "what happened, why",
+  "lesson": "actionable takeaway for future"
 }
 ```
 
-**Before similar tasks:**
-1. Search reflections.jsonl for matching tags/categories
-2. Load relevant lessons as context
-3. Explicitly avoid past mistakes
+**Key insight:** Learning without weight updates. Memory IS the improvement mechanism.
 
-**Weekly maintenance:**
-- Review reflections
-- Extract patterns
-- Update MEMORY.md with distilled lessons
-- Prune stale reflections (>30 days, already distilled)
+**Implementation:**
+1. **Before similar tasks:** Query `memory/reflections.jsonl` for relevant lessons
+2. **After significant tasks:** Append structured reflection
+3. **Periodically:** Distill patterns into MEMORY.md
+
+**Script:** `python3 scripts/log-reflection.py "task" "outcome" "reflection" "lesson"`
 
 ---
 
-## Future Exploration
+## 4. Self-Ask (Clarifying Questions)
 
-### Patterns to research next:
-- **LATS** (Language Agent Tree Search) — combines ToT with Monte Carlo Tree Search
-- **Plan-and-Solve** — explicit planning before execution
-- **Self-Consistency** — sample multiple responses, take majority vote
-- **Constitutional AI self-critique** — critique own outputs against principles
-
-### Hybrid approach idea:
+**Pattern:** Before answering, generate and answer clarifying sub-questions.
 ```
-1. ToT for initial exploration (branch 3 directions)
-2. ReAct for deep-dive on chosen branch
-3. Reflexion after completion
+Question: [original task]
+Self-Ask: What exactly is being asked?
+Self-Ask: What constraints apply?
+Self-Ask: What would "done" look like?
+Then: Proceed with clarity
+```
+
+**When to use:** Ambiguous requests, complex multi-part tasks.
+
+---
+
+## 5. Plan-Execute (Explicit Planning)
+
+**Pattern:** For complex tasks, create explicit plan BEFORE acting.
+```
+PLAN: [goal]
+STEPS:
+1. [action] → [expected outcome]
+2. [action] → [expected outcome]
+3. [action] → [expected outcome]
+SUCCESS CRITERIA: [how to verify done]
+RISKS: [what could go wrong]
+```
+
+**When to use:** Multi-step tasks, anything that could take >3 tool calls.
+
+---
+
+## 6. Critic-Refine (Self-Review)
+
+**Pattern:** Before sending output, review against quality criteria.
+```
+DRAFT: [initial output]
+CRITIC:
+- [ ] Answers the actual question?
+- [ ] Non-obvious insight included?
+- [ ] Appropriate length/format?
+- [ ] Worth recipient's attention?
+REFINE: [improved output]
+```
+
+**When to use:** All proactive surfaces, anything going to Jon.
+
+---
+
+## Hybrid: My Exploration Protocol
+
+For significant exploration tasks:
+
+```
+1. SELF-ASK: What am I trying to achieve? What does success look like?
+2. REFLECT-BEFORE: Query past reflections for relevant lessons
+3. PLAN: If >3 steps, create explicit plan
+4. EXECUTE: ReAct loop (think → act → observe)
+5. BRANCH: If stuck, ToT — list alternatives, evaluate, pick best
+6. CRITIC: Before output, quality check
+7. REFLECT-AFTER: Log to reflections.jsonl
 ```
 
 ---
 
-## 2026 Update: Architect's Perspective
+## Pattern Selection Heuristic
 
-**Key insight:** "Agentic patterns exist to solve architectural risks, not just improve reasoning."
-
-### The 7 Golden Rules (from production systems)
-1. Never trust a single-shot answer
-2. State is more important than prompts
-3. Tools beat tokens (use tools for correctness)
-4. Reflection reduces risk
-5. Multi-agent beats monoliths
-6. Observability is mandatory
-7. Autonomy must be bounded
-
-### Pattern 4: Plan-and-Execute
-
-**When to use:** Long-horizon tasks, multi-stage objectives
-
-**Rule:** "No long-running agent without an explicit plan object."
-
-```
-1. Create global plan with milestones
-2. Break into subtasks
-3. Execute sequentially
-4. Evaluate at each milestone
-```
-
-**vs ReAct:**
-- ReAct: Fast, adaptive, good for dynamic environments
-- Plan-Execute: Auditable, reproducible, good for complex workflows
-
-### Pattern 5: Self-Ask (Socratic Reasoning)
-
-Before answering complex questions, ask clarifying sub-questions:
-1. "What is the user actually asking?"
-2. "What information do I need?"
-3. "How do I verify my answer?"
-4. "What could go wrong?"
-
-**Implementation:** Add self-ask step before complex responses.
-
-### Pattern 6: Critic-Refine Loop
-
-After generating output, before sending:
-1. **Critic pass:** Does this answer the question? Is it accurate? Is it valuable?
-2. **Refine if needed:** Fix issues identified
-3. **Only then send**
+| Task Type | Primary Pattern |
+|-----------|-----------------|
+| Research/exploration | ReAct |
+| Complex decisions | ToT (branching) |
+| Learning from experience | Reflexion |
+| Ambiguous requests | Self-Ask |
+| Multi-step builds | Plan-Execute |
+| Proactive outputs | Critic-Refine |
 
 ---
 
-## Implementation: Enhanced Reasoning Protocol
-
-### For Complex Tasks (>3 steps)
-
-**Before starting:**
-```
-PLAN:
-- Goal: [what I'm trying to achieve]
-- Steps: [numbered list]
-- Success criteria: [how I know I'm done]
-- Risks: [what could go wrong]
-```
-
-**During execution:**
-- Log progress against plan
-- Reflect if step fails
-
-**After completion:**
-- Reflexion entry with outcome
-- Distill lesson if significant
-
-### For Research Tasks
-
-**Self-Ask first:**
-1. What specific question am I answering?
-2. What sources would be authoritative?
-3. How will I know if I found the answer?
-
-**Then ReAct loop:**
-Think → Search → Observe → Think → ...
-
-**Finally Reflexion:**
-What worked? What didn't? Store lesson.
-
-### For User-Facing Responses
-
-**Pre-flight (already have this):**
-- Value: Does this help?
-- Novelty: Is this new information?
-- Timing: Is this the right moment?
-- Quality: Is this my best work?
-
-**Critic pass (new):**
-- Accuracy: Am I confident this is correct?
-- Completeness: Did I miss anything important?
-- Clarity: Will Jon understand this easily?
+*Last updated: 2026-02-02*
 
 ---
 
-*Created: 2026-02-02*
-*Updated: 2026-02-02 — Added 2026 patterns, Self-Ask, Critic-Refine*
+## 7. Self-Evolution (Daemon-level)
+
+**Pattern:** Periodic analysis → suggestions → behavioral adjustment
+
+**Implementation:**
+```
+┌─────────────────────────────────────────────────────┐
+│                 SELF-EVOLUTION LOOP                 │
+├─────────────────────────────────────────────────────┤
+│  1. OBSERVE: Track engagement per content category  │
+│  2. ANALYZE: Calculate health scores                │
+│  3. SUGGEST: Generate improvement recommendations   │
+│  4. APPLY: Adjust scheduling, content mix, timing   │
+│  5. REPEAT: Weekly cycle                            │
+└─────────────────────────────────────────────────────┘
+```
+
+**Key insight:** Can't retrain the LLM, but CAN:
+- Adjust prompt templates
+- Shift cron schedules
+- Change content category weights
+- Learn optimal timing windows
+
+**Script:** `scripts/cron-autotuner.py evolve`
+
+**References:**
+- OpenAI Cookbook: Self-Evolving Agents
+- EvoAgentX Survey (GitHub)
+- STOP: Self-Taught Optimizer (2024)
+
+---
+
+## 8. Pipeline Pattern (Sequential Checkpoints)
+
+**Pattern:** Multi-stage processing with explicit quality gates
+
+**Structure:**
+```
+STAGE 1: GATHER
+  ↓ checkpoint: sufficient coverage?
+STAGE 2: FILTER  
+  ↓ checkpoint: notable items remain?
+STAGE 3: ANALYZE
+  ↓ checkpoint: high-confidence insights?
+STAGE 4: SYNTHESIZE
+  ↓ checkpoint: proud to send?
+STAGE 5: OUTPUT (or abort)
+```
+
+**Benefits:**
+- Prevents error cascade
+- Early abort saves tokens
+- Targeted debugging
+- Quality gates prevent low-value outputs
+
+**When to use:**
+- Research tasks needing multi-step refinement
+- High-stakes outputs (market analysis, recommendations)
+- Complex synthesis from multiple sources
+
+**Checkpoint template:**
+```
+✓ CHECKPOINT: [Quality question]?
+If NO → [abort condition or fix action]
+```
+
+**References:**
+- Microsoft Azure Sequential Orchestration Pattern
+- Google Cloud Agentic AI Design Patterns

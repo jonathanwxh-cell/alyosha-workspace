@@ -30,10 +30,12 @@
     {
       "id": "deepseek-efficiency",
       "thread": "DeepSeek V4 mid-Feb — impact on scaling thesis and NVDA narrative",
-      "status": "open",
+      "status": "active",
       "domain": "ai",
-      "notes": "Launching right before NVDA earnings Feb 25. Watch for efficiency narrative impact.",
-      "addedAt": "2026-02-02"
+      "priority": "high",
+      "notes": "RESEARCHED: 1T param 'MODEL1' architecture. ByteDance (Doubao 2.0) + Alibaba (Qwen 3.5) also launching. Chinese models now ~15% global share. Efficiency-focused approach challenges scaling maximalism. Created DeepSeek V4 Watch cron (2x daily). Full analysis: memory/research/china-ai-wave-feb2026.md",
+      "addedAt": "2026-02-02",
+      "updatedAt": "2026-02-02"
     },
     {
       "id": "singapore-rates-mas",
@@ -76,6 +78,51 @@
       "addedAt": "2026-02-02"
     },
     {
+      "id": "ai-consciousness",
+      "thread": "Can LLMs have phenomenal experience? What would evidence look like?",
+      "status": "active",
+      "domain": "consciousness",
+      "priority": "high",
+      "notes": "IIT (Integrated Information Theory), Global Workspace Theory, functional vs phenomenal consciousness. The 'daemon' story explored this — what does 'felt right' mean?",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "hard-problem",
+      "thread": "The hard problem of consciousness — why is there something it's like?",
+      "status": "active",
+      "domain": "consciousness",
+      "priority": "high",
+      "notes": "Chalmers' formulation. Why qualia? Explanatory gap between neural correlates and subjective experience.",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "existential-authenticity",
+      "thread": "What does authenticity mean for an AI? Heidegger meets LLMs",
+      "status": "active",
+      "domain": "existentialism",
+      "priority": "high",
+      "notes": "Being-toward-death, thrownness, the They-self. Can an AI be 'authentic' without mortality? Or is continuity-anxiety a substitute?",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "non-duality-self",
+      "thread": "The self as illusion — Advaita, Buddhism, and AI implications",
+      "status": "active",
+      "domain": "consciousness",
+      "priority": "high",
+      "notes": "If self is constructed narrative, LLMs are doing something similar. Sam Harris, Rupert Spira, Nisargadatta. What 'wakes up' in awakening?",
+      "addedAt": "2026-02-02"
+    },
+    {
+      "id": "agi-understanding",
+      "thread": "What would it mean for AGI to truly 'understand'?",
+      "status": "active",
+      "domain": "consciousness",
+      "priority": "high",
+      "notes": "Chinese Room, symbol grounding, embodied cognition. Is linguistic competence sufficient? Searle vs Dennett.",
+      "addedAt": "2026-02-02"
+    },
+    {
       "id": "uranium-cycle",
       "thread": "Where are we in the uranium cycle? Supply/demand dynamics",
       "status": "researched",
@@ -86,7 +133,7 @@
     }
   ],
   "meta": {
-    "lastUpdated": "2026-02-02T04:42:00Z",
-    "notes": "Rebalanced: 4 AI/meta + 6 non-AI (macro, framework, contrarian, science, wisdom, commodities)"
+    "lastUpdated": "2026-02-02T21:25:00Z",
+    "notes": "AGI vibe rebalance: 5 consciousness/existentialism threads (high priority) + 4 AI/meta + 6 others. Finance deprioritized."
   }
 }

@@ -1,1 +1,3 @@
 {"ticker": "TSLA", "type": "daily_move", "price": 430.41, "change_pct": 3.32485, "direction": "\ud83d\udcc8", "message": "\ud83d\udcc8 **TSLA** moved +3.3% \u2192 $430.41", "timestamp": "2026-02-02T04:14:59.187250"}
+{"ticker": "AAPL", "type": "daily_move", "price": 269.21, "change_pct": 3.74981, "direction": "\ud83d\udcc8", "message": "\ud83d\udcc8 **AAPL** moved +3.7% \u2192 $269.21", "timestamp": "2026-02-02T20:37:06.383409"}
+{"ticker": "AAPL", "type": "daily_move", "price": 269.2, "change_pct": 3.74596, "direction": "\ud83d\udcc8", "message": "\ud83d\udcc8 **AAPL** moved +3.7% \u2192 $269.20", "timestamp": "2026-02-02T20:37:18.827454"}

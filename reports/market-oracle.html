@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Market Oracle</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital@0;1&display=swap');
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Crimson Text', serif;
+            background: radial-gradient(ellipse at center, #1a0a2e 0%, #0d0015 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e8d5b7;
+            overflow: hidden;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(2px 2px at 160px 120px, rgba(255,255,255,0.9), transparent);
+            background-size: 200px 200px;
+            animation: twinkle 5s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        .container {
+            text-align: center;
+            padding: 40px;
+            max-width: 600px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 30px rgba(147, 112, 219, 0.8);
+            letter-spacing: 0.1em;
+        }
+        
+        .subtitle {
+            font-style: italic;
+            opacity: 0.7;
+            margin-bottom: 40px;
+        }
+        
+        .crystal-ball {
+            width: 200px;
+            height: 200px;
+            margin: 30px auto;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, 
+                rgba(200, 180, 255, 0.4) 0%,
+                rgba(100, 80, 180, 0.3) 30%,
+                rgba(50, 30, 100, 0.5) 70%,
+                rgba(20, 10, 50, 0.8) 100%);
+            box-shadow: 
+                0 0 60px rgba(147, 112, 219, 0.5),
+                inset 0 0 60px rgba(147, 112, 219, 0.3),
+                0 20px 30px rgba(0,0,0,0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .crystal-ball:hover {
+            box-shadow: 
+                0 0 80px rgba(147, 112, 219, 0.8),
+                inset 0 0 80px rgba(147, 112, 219, 0.5),
+                0 20px 30px rgba(0,0,0,0.5);
+        }
+        
+        .crystal-ball.active {
+            animation: pulse 0.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .inner-glow {
+            font-size: 3em;
+            opacity: 0.8;
+        }
+        
+        .prophecy {
+            min-height: 150px;
+            padding: 30px;
+            margin: 20px 0;
+            font-size: 1.3em;
+            line-height: 1.6;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        
+        .prophecy.visible {
+            opacity: 1;
+        }
+        
+        .prophecy-text {
+            font-style: italic;
+        }
+        
+        .prophecy-source {
+            margin-top: 15px;
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+        
+        .instruction {
+            font-size: 0.9em;
+            opacity: 0.5;
+            margin-top: 20px;
+        }
+        
+        .category {
+            display: inline-block;
+            padding: 5px 15px;
+            margin: 5px;
+            border: 1px solid rgba(147, 112, 219, 0.5);
+            border-radius: 20px;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .category:hover, .category.active {
+            background: rgba(147, 112, 219, 0.3);
+            border-color: rgba(147, 112, 219, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="stars"></div>
+    
+    <div class="container">
+        <h1>🔮 THE MARKET ORACLE</h1>
+        <p class="subtitle">Talebian wisdom for uncertain times</p>
+        
+        <div class="categories">
+            <span class="category active" data-cat="all">All</span>
+            <span class="category" data-cat="risk">Risk</span>
+            <span class="category" data-cat="markets">Markets</span>
+            <span class="category" data-cat="wisdom">Wisdom</span>
+        </div>
+        
+        <div class="crystal-ball" onclick="reveal()">
+            <span class="inner-glow">✧</span>
+        </div>
+        
+        <div class="prophecy" id="prophecy">
+            <div class="prophecy-text" id="prophecy-text"></div>
+            <div class="prophecy-source" id="prophecy-source"></div>
+        </div>
+        
+        <p class="instruction">Touch the crystal to receive wisdom</p>
+    </div>
+
+    <script>
+        const prophecies = {
+            risk: [
+                { text: "The three most harmful addictions are heroin, carbohydrates, and a monthly salary.", source: "— Taleb, The Bed of Procrustes" },
+                { text: "Wind extinguishes a candle and energizes fire. You want to be the fire and wish for the wind.", source: "— Taleb, Antifragile" },
+                { text: "If you see fraud and do not say fraud, you are a fraud.", source: "— Taleb" },
+                { text: "The best way to verify that you are alive is by checking if you like variations.", source: "— Taleb, Antifragile" },
+                { text: "Never ask anyone for their opinion, forecast, or recommendation. Just ask them what they have in their portfolio.", source: "— Taleb" },
+                { text: "The inability to predict outliers implies the inability to predict the course of history.", source: "— Taleb, The Black Swan" },
+            ],
+            markets: [
+                { text: "The market can stay irrational longer than you can stay solvent.", source: "— Keynes (Taleb's favorite)" },
+                { text: "Missing a train is only painful if you run after it.", source: "— Taleb, The Black Swan" },
+                { text: "Wear your best for your execution and stand dignified. Your last recourse against randomness is how you act.", source: "— Taleb" },
+                { text: "The problem with experts is that they do not know what they do not know.", source: "— Taleb, The Black Swan" },
+                { text: "Suckers try to win arguments, non-suckers try to win.", source: "— Taleb" },
+                { text: "What matters isn't what a person has or doesn't have; it's what he or she is afraid of losing.", source: "— Taleb, Antifragile" },
+            ],
+            wisdom: [
+                { text: "A Stoic is someone who transforms fear into prudence, pain into transformation, mistakes into initiation, and desire into undertaking.", source: "— Taleb, Antifragile" },
+                { text: "Comfort makes you weaker. We need some variability, some stressors. Not too much, but just enough.", source: "— Taleb" },
+                { text: "To be completely cured of newspapers, spend a year reading the previous week's newspapers.", source: "— Taleb" },
+                { text: "Read books are far less valuable than unread ones.", source: "— Taleb, The Black Swan" },
+                { text: "The psychologist Gerd Gigerenzer has a simple heuristic. Never ask the doctor what you should do. Ask him what he would do if he were in your place.", source: "— Taleb" },
+                { text: "You will get the most attention from those who hate you. No friend, no admirer, and no partner will flatter you with as much curiosity.", source: "— Taleb" },
+            ]
+        };
+        
+        let currentCategory = 'all';
+        let lastIndex = -1;
+        
+        document.querySelectorAll('.category').forEach(cat => {
+            cat.addEventListener('click', function() {
+                document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                currentCategory = this.dataset.cat;
+            });
+        });
+        
+        function reveal() {
+            const ball = document.querySelector('.crystal-ball');
+            const prophecyDiv = document.getElementById('prophecy');
+            const textDiv = document.getElementById('prophecy-text');
+            const sourceDiv = document.getElementById('prophecy-source');
+            
+            ball.classList.add('active');
+            setTimeout(() => ball.classList.remove('active'), 500);
+            
+            // Get prophecies based on category
+            let pool = [];
+            if (currentCategory === 'all') {
+                pool = [...prophecies.risk, ...prophecies.markets, ...prophecies.wisdom];
+            } else {
+                pool = prophecies[currentCategory];
+            }
+            
+            // Avoid repeating the same one
+            let index;
+            do {
+                index = Math.floor(Math.random() * pool.length);
+            } while (index === lastIndex && pool.length > 1);
+            lastIndex = index;
+            
+            const chosen = pool[index];
+            
+            prophecyDiv.classList.remove('visible');
+            
+            setTimeout(() => {
+                textDiv.textContent = `"${chosen.text}"`;
+                sourceDiv.textContent = chosen.source;
+                prophecyDiv.classList.add('visible');
+            }, 300);
+        }
+        
+        // Auto-reveal on load
+        setTimeout(reveal, 1000);
+    </script>
+</body>
+</html>

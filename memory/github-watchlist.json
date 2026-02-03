@@ -1,0 +1,6 @@
+[
+  {"repo": "deepseek-ai/DeepSeek-V3", "name": "DeepSeek", "priority": "high"},
+  {"repo": "meta-llama/llama-models", "name": "Llama", "priority": "medium"},
+  {"repo": "QwenLM/Qwen2.5", "name": "Qwen", "priority": "medium"},
+  {"repo": "openai/openai-python", "name": "OpenAI SDK", "priority": "low"}
+]

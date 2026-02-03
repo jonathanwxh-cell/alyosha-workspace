@@ -1,29 +1,29 @@
 #!/usr/bin/env python3
 """
 Query past reflections for relevant lessons before similar tasks.
-Part of enhanced Reflexion implementation.
+Part of the Reflexion pattern for self-improving agents.
 
 Usage:
-  python scripts/query-reflections.py "research" "nvidia"
-  python scripts/query-reflections.py --category meta
-  python scripts/query-reflections.py --recent 5
+    python3 scripts/query-reflections.py "research"     # Find research lessons
+    python3 scripts/query-reflections.py "tool"         # Find tool-building lessons
+    python3 scripts/query-reflections.py --recent 5     # Last 5 reflections
+    python3 scripts/query-reflections.py --failures     # Only failures
 """
 
 import json
 import sys
-import argparse
 from pathlib import Path
 from datetime import datetime, timedelta
 
-REFLECTIONS_PATH = Path(__file__).parent.parent / "memory" / "reflections.jsonl"
+REFLECTIONS_FILE = Path.home() / ".openclaw/workspace/memory/reflections.jsonl"
 
 def load_reflections():
     """Load all reflections from JSONL file."""
-    if not REFLECTIONS_PATH.exists():
+    if not REFLECTIONS_FILE.exists():
         return []
     
     reflections = []
-    with open(REFLECTIONS_PATH) as f:
+    with open(REFLECTIONS_FILE) as f:
         for line in f:
             line = line.strip()
             if line:
@@ -33,93 +33,96 @@ def load_reflections():
                     continue
     return reflections
 
-def search_reflections(reflections, keywords=None, category=None, recent_days=None):
-    """Filter reflections by keywords, category, or recency."""
-    results = reflections
-    
-    # Filter by recency
-    if recent_days:
-        cutoff = datetime.utcnow()
-        cutoff = cutoff - timedelta(days=recent_days)
-        filtered = []
-        for r in results:
-            ts = r.get('timestamp', '')
-            try:
-                # Parse and make naive for comparison
-                dt = datetime.fromisoformat(ts.replace('Z', '+00:00'))
-                dt_naive = dt.replace(tzinfo=None)
-                if dt_naive > cutoff:
-                    filtered.append(r)
-            except:
-                filtered.append(r)  # Keep if unparseable
-        results = filtered
-    
-    # Filter by category
-    if category:
-        results = [
-            r for r in results 
-            if r.get('category', '').lower() == category.lower() or
-               category.lower() in r.get('tags', [])
-        ]
-    
-    # Filter by keywords (search in task, reflection, lesson, tags)
-    if keywords:
-        filtered = []
-        for r in results:
-            searchable = ' '.join([
-                r.get('task', ''),
-                r.get('reflection', ''),
-                r.get('lesson', ''),
-                ' '.join(r.get('tags', []))
-            ]).lower()
-            if all(kw.lower() in searchable for kw in keywords):
-                filtered.append(r)
-        results = filtered
-    
-    return results
-
-def format_output(reflections):
-    """Format reflections for display."""
-    if not reflections:
-        print("No matching reflections found.")
-        return
-    
-    print(f"\n📚 Found {len(reflections)} relevant reflection(s):\n")
-    print("-" * 60)
+def search_reflections(query, reflections):
+    """Simple keyword search in reflections."""
+    query_lower = query.lower()
+    matches = []
     
     for r in reflections:
-        timestamp = r.get('timestamp', 'unknown')[:10]
-        task = r.get('task', 'unknown')
-        outcome = r.get('outcome', '?')
-        lesson = r.get('lesson', r.get('reflection', 'no lesson'))
+        # Search in task, reflection, and lesson fields
+        searchable = ' '.join([
+            r.get('task', ''),
+            r.get('reflection', ''),
+            r.get('lesson', ''),
+            r.get('outcome', '')
+        ]).lower()
         
-        outcome_emoji = {'success': '✅', 'partial': '⚠️', 'failure': '❌'}.get(outcome, '❓')
-        
-        print(f"{outcome_emoji} [{timestamp}] {task}")
-        print(f"   💡 {lesson}")
-        print()
+        if query_lower in searchable:
+            matches.append(r)
+    
+    return matches
+
+def format_reflection(r):
+    """Format a reflection for display."""
+    timestamp = r.get('timestamp', 'unknown')[:10]
+    task = r.get('task', 'unknown task')
+    outcome = r.get('outcome', '?')
+    lesson = r.get('lesson', 'no lesson recorded')
+    
+    emoji = "✅" if outcome == "success" else "⚠️" if outcome == "partial" else "❌"
+    return f"{emoji} [{timestamp}] {task}\n   Lesson: {lesson}"
 
 def main():
-    parser = argparse.ArgumentParser(description='Query past reflections')
-    parser.add_argument('keywords', nargs='*', help='Keywords to search for')
-    parser.add_argument('--category', '-c', help='Filter by category')
-    parser.add_argument('--recent', '-r', type=int, help='Only show last N days')
-    parser.add_argument('--json', '-j', action='store_true', help='Output as JSON')
-    
-    args = parser.parse_args()
-    
+    args = sys.argv[1:]
     reflections = load_reflections()
-    results = search_reflections(
-        reflections,
-        keywords=args.keywords if args.keywords else None,
-        category=args.category,
-        recent_days=args.recent
-    )
     
-    if args.json:
-        print(json.dumps(results, indent=2))
-    else:
-        format_output(results)
+    if not reflections:
+        print("No reflections found. Start logging lessons!")
+        return
+    
+    # Filter modes
+    if "--recent" in args:
+        idx = args.index("--recent")
+        count = int(args[idx + 1]) if idx + 1 < len(args) else 5
+        recent = reflections[-count:]
+        print(f"📚 Last {len(recent)} reflections:\n")
+        for r in recent:
+            print(format_reflection(r))
+            print()
+        return
+    
+    if "--failures" in args:
+        failures = [r for r in reflections if r.get('outcome') in ['failure', 'partial']]
+        print(f"❌ {len(failures)} failures/partial successes:\n")
+        for r in failures[-10:]:  # Last 10
+            print(format_reflection(r))
+            print()
+        return
+    
+    if "--stats" in args:
+        total = len(reflections)
+        successes = len([r for r in reflections if r.get('outcome') == 'success'])
+        failures = len([r for r in reflections if r.get('outcome') == 'failure'])
+        partial = len([r for r in reflections if r.get('outcome') == 'partial'])
+        
+        print(f"📊 Reflection Stats:")
+        print(f"   Total: {total}")
+        print(f"   ✅ Success: {successes} ({100*successes/total:.0f}%)" if total else "")
+        print(f"   ⚠️ Partial: {partial} ({100*partial/total:.0f}%)" if total else "")
+        print(f"   ❌ Failure: {failures} ({100*failures/total:.0f}%)" if total else "")
+        return
+    
+    # Default: keyword search
+    if args and not args[0].startswith('--'):
+        query = args[0]
+        matches = search_reflections(query, reflections)
+        
+        if matches:
+            print(f"🔍 Found {len(matches)} reflections matching '{query}':\n")
+            for r in matches[-5:]:  # Last 5 matches
+                print(format_reflection(r))
+                print()
+        else:
+            print(f"No reflections found matching '{query}'")
+        return
+    
+    # No args: show recent
+    print("📚 Recent reflections:\n")
+    for r in reflections[-5:]:
+        print(format_reflection(r))
+        print()
+    print(f"\nTotal: {len(reflections)} reflections")
+    print("Use: --recent N, --failures, --stats, or search term")
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

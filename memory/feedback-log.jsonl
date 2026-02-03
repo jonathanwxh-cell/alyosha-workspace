@@ -16,3 +16,15 @@
 {"timestamp":"2026-02-01T08:34:30Z","type":"instruction","content":"Visuals are part of toolbox. Should be autonomous - self-learn when to use them. Don't wait for direction.","lesson":"Autonomously decide when visuals add value. Create charts/images/dashboards without being asked. Learn from engagement which formats work."}
 {"timestamp":"2026-02-01T10:33:00Z","type":"observation","pattern":"message_fatigue","content":"Multiple cron outputs (content curation, self-assessment, financial APIs) sent within 30min without replies. Interactive daemon meta discussion got high engagement. Lesson: Interactive > broadcast. Batch cron outputs or space them out.","category":"scheduling"}
 {"timestamp":"2026-02-01T10:33:00Z","type":"observation","pattern":"high_engagement","content":"Daemon framework discussion, hybrid autonomy model, profile corrections - all got fast replies. Pattern: Meta/system improvement discussions get highest engagement.","category":"meta"}
+{"timestamp":"2026-02-02T07:13:00Z","type":"request","content":"Self-improvement progress report with percentages","category":"meta","hourSGT":15,"replySpeed":"engaged"}
+{"timestamp":"2026-02-02T07:21:00Z","type":"preference","content":"Calendar OFF - privacy","category":"privacy","lesson":"Don't access calendar data"}
+{"timestamp":"2026-02-02T07:23:00Z","type":"reply","replySpeed":"fast","topic":"vector_db_timing","category":"infrastructure","action":"approved_logging_first"}
+{"timestamp":"2026-02-02T07:30:00Z","type":"reply","replySpeed":"fast","content":"yes","topic":"improve_logging_structure","category":"infrastructure","action":"approved"}
+{"timestamp":"2026-02-02T08:34:00Z","type":"preference","content":"ElevenLabs API essential","category":"capability","lesson":"TTS is a priority capability"}
+{"timestamp":"2026-02-02T11:57:00Z","type":"instruction","content":"proceed without asking much like i say earlier. autonomous","lesson":"REINFORCED: Full autonomy. Stop asking permission. Implement and report. This is the third time Jon has said this.","category":"autonomy"}
+{"timestamp":"2026-02-02T16:52:00Z","type":"surface","topic":"market_koans_art","category":"creative","hourSGT":0,"msgId":2044,"gotReply":null,"note":"Midnight creative - koans + zen garden image"}
+{"timestamp":"2026-02-02T17:05:00Z","type":"surface","topic":"data_sonification","category":"skill_demo","hourSGT":1,"msgId":2052,"gotReply":null,"note":"NVDA audio + market symphony - new skill learned"}
+{"timestamp":"2026-02-02T18:10:00Z","type":"surface","topic":"financial_api_research","category":"tool_building","hourSGT":2,"msgId":2059,"gotReply":null,"note":"Benzinga/Danelfin client docs"}
+{"timestamp": "2026-02-03T00:51:24.798836", "type": "positive", "context": "Jon approved Opus model choice", "source": "manual"}
+{"timestamp": "2026-02-03T00:51:24.825006", "type": "engagement", "context": "Active session on daemon research", "source": "manual"}
+{"timestamp":"2026-02-03T03:17:00Z","messageType":"deep-dive","topic":"neuro-ai-convergence","signal":"👍","interpretation":"positive - research format works"}

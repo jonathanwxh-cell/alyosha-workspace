@@ -18,12 +18,162 @@
       "confidence": 0.9
     }
   },
+  "timeSlotScoring": {
+    "enabled": true,
+    "scores": {
+      "6": {
+        "score": 0.88,
+        "samples": 8,
+        "note": "Early morning - high engagement observed"
+      },
+      "8": {
+        "score": 0.6,
+        "samples": 0,
+        "note": "Morning start - assumed moderate"
+      },
+      "9": {
+        "score": 0.65,
+        "samples": 0,
+        "note": "Mid-morning - assumed moderate"
+      },
+      "10": {
+        "score": 0.7,
+        "samples": 0,
+        "note": "Late morning - assumed good"
+      },
+      "14": {
+        "score": 1.0,
+        "samples": 1,
+        "note": "Afternoon - 100% engagement observed"
+      },
+      "15": {
+        "score": 0.75,
+        "samples": 0,
+        "note": "Afternoon - assumed good"
+      },
+      "16": {
+        "score": 0.75,
+        "samples": 0,
+        "note": "Afternoon - assumed good"
+      },
+      "20": {
+        "score": 0.7,
+        "samples": 0,
+        "note": "Evening - assumed good for winding down"
+      },
+      "21": {
+        "score": 0.7,
+        "samples": 0,
+        "note": "Evening - assumed good"
+      },
+      "22": {
+        "score": 0.6,
+        "samples": 0,
+        "note": "Late evening - lower priority"
+      }
+    },
+    "defaultScore": 0.5,
+    "updateScript": "scripts/analyze-engagement.py --update"
+  },
+  "contentTimeMatching": {
+    "enabled": true,
+    "rules": [
+      {
+        "category": "meta",
+        "preferredHours": [
+          14,
+          15,
+          16,
+          20,
+          21
+        ],
+        "reason": "System discussions when Jon has focus time",
+        "engagementRate": 1.0
+      },
+      {
+        "category": "deep_dive",
+        "preferredHours": [
+          20,
+          21,
+          22
+        ],
+        "reason": "Long reads better for evening",
+        "engagementRate": 0.5
+      },
+      {
+        "category": "family",
+        "preferredHours": [
+          8,
+          9,
+          17,
+          18
+        ],
+        "reason": "Morning/early evening for family planning",
+        "weekendBoost": 1.5
+      },
+      {
+        "category": "financial",
+        "preferredHours": [
+          8,
+          9,
+          21,
+          22
+        ],
+        "reason": "Market open (US premarket) or evening review",
+        "engagementRate": 0.7
+      },
+      {
+        "category": "create",
+        "preferredHours": [
+          14,
+          15,
+          16,
+          20
+        ],
+        "reason": "Creative output when mind is fresh or relaxed",
+        "engagementRate": 0.8
+      }
+    ]
+  },
+  "adaptiveIntervals": {
+    "enabled": true,
+    "baseInterval": {
+      "minGapMinutes": 120,
+      "maxSurfacesPerDay": 3
+    },
+    "adjustments": {
+      "highEngagement": {
+        "threshold": 0.7,
+        "gapMultiplier": 0.8,
+        "maxSurfacesMultiplier": 1.3,
+        "note": "If recent engagement >70%, allow tighter spacing"
+      },
+      "lowEngagement": {
+        "threshold": 0.3,
+        "gapMultiplier": 2.0,
+        "maxSurfacesMultiplier": 0.5,
+        "note": "If recent engagement <30%, back off significantly"
+      },
+      "activeConversation": {
+        "recentReplyMinutes": 30,
+        "pauseCronSurfaces": true,
+        "note": "Pause scheduled surfaces during active conversation"
+      }
+    },
+    "rollingEngagement": {
+      "windowSize": 10,
+      "currentRate": 1.0,
+      "lastCalculated": "2026-02-02T13:01:03.431375",
+      "samples": 1
+    }
+  },
   "observedPatterns": {
     "fastReplies": {
       "hours": [
-        6
+        6,
+        14
       ],
-      "note": "SGT hours with fast replies (n=6)"
+      "note": "SGT hours with fast replies"
     },
     "reactions": {
       "positive": [
@@ -40,23 +190,164 @@
       ]
     },
     "dayOfWeek": {
-      "note": "Insufficient data - need more observations"
+      "weekday": {
+        "weight": 1.0
+      },
+      "saturday": {
+        "weight": 0.7,
+        "preferCategories": [
+          "family",
+          "create",
+          "interesting"
+        ]
+      },
+      "sunday": {
+        "weight": 0.7,
+        "preferCategories": [
+          "family",
+          "create",
+          "interesting"
+        ]
+      },
+      "note": "Weekend = lighter touch, casual content"
     },
     "topCategories": {
       "categories": [
         "meta",
-        "research_brief",
-        "project_ideation",
-        "deep_dive",
-        "preference"
+        "infrastructure",
+        "project_ideation"
       ],
-      "note": "Categories with highest engagement"
+      "engagementRate": 1.0,
+      "note": "100% engagement on these categories"
+    },
+    "hourEngagement": {
+      "data": {
+        "6": {
+          "engaged": 7,
+          "total": 8,
+          "fast_replies": 6
+        },
+        "14": {
+          "engaged": 1,
+          "total": 1,
+          "fast_replies": 0
+        }
+      },
+      "optimal": [
+        6,
+        14
+      ],
+      "avoid": [],
+      "confidence": "medium",
+      "lastUpdated": "2026-02-02T13:01:03.431249"
+    },
+    "categoryEngagement": {
+      "data": {
+        "research_brief": {
+          "engaged": 1,
+          "total": 1
+        },
+        "project_ideation": {
+          "engaged": 2,
+          "total": 2
+        },
+        "preference": {
+          "engaged": 1,
+          "total": 1
+        },
+        "tool_demo": {
+          "engaged": 1,
+          "total": 1
+        },
+        "meta": {
+          "engaged": 3,
+          "total": 3
+        },
+        "deep_dive": {
+          "engaged": 1,
+          "total": 2
+        },
+        "proactive_alert": {
+          "engaged": 1,
+          "total": 1
+        },
+        "agent_improvement": {
+          "engaged": 1,
+          "total": 1
+        },
+        "infrastructure": {
+          "engaged": 2,
+          "total": 2
+        }
+      },
+      "recommendations": {
+        "project_ideation": {
+          "engagement_rate": 1.0,
+          "sample_size": 2,
+          "recommendation": "high_value"
+        },
+        "meta": {
+          "engagement_rate": 1.0,
+          "sample_size": 3,
+          "recommendation": "high_value"
+        },
+        "deep_dive": {
+          "engagement_rate": 0.5,
+          "sample_size": 2,
+          "recommendation": "normal"
+        },
+        "infrastructure": {
+          "engagement_rate": 1.0,
+          "sample_size": 2,
+          "recommendation": "high_value"
+        }
+      },
+      "lastUpdated": "2026-02-02T13:01:03.431259"
     }
   },
   "adaptiveRules": {
     "proactiveSurface": {
-      "preferredHours": [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
-      "avoidHours": [23, 0, 1, 2, 3, 4, 5, 6, 7],
+      "preferredHours": [
+        6,
+        14,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20,
+        21,
+        22
+      ],
+      "okayHours": [
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        17,
+        18,
+        19,
+        22
+      ],
+      "avoidHours": [
+        23,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        7
+      ],
       "maxPerDay": 3,
       "minGapHours": 2
     },
@@ -69,7 +360,17 @@
       "note": "Background work (memory, research) anytime"
     },
     "autonomousWork": {
-      "preferredHours": [23, 0, 1, 2, 3, 4, 5, 6, 7],
+      "preferredHours": [
+        23,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
       "activities": [
         "memory maintenance",
         "research deep dives",
@@ -84,9 +385,10 @@
   },
   "learningConfig": {
     "updateFrequency": "weekly",
+    "updateScript": "scripts/analyze-engagement.py --update",
     "minDataPoints": 20,
     "decayFactor": 0.9,
-    "note": "Patterns decay over time, recent behavior weighted more"
+    "note": "Run weekly to update patterns. Recent behavior weighted more."
   },
   "adaptiveScheduling": {
     "enabled": true,
@@ -95,6 +397,7 @@
       "backoffMultiplier": 1.5,
       "maxBackoffHours": 8,
       "resetOnReply": true,
+      "currentBackoffLevel": 0,
       "note": "If 3+ surfaces without reply, increase gap between surfaces"
     },
     "conversationAwareness": {
@@ -109,7 +412,11 @@
       },
       "weekend": {
         "surfaceWeight": 0.7,
-        "preferredCategories": ["create", "family", "interesting"],
+        "preferredCategories": [
+          "create",
+          "family",
+          "interesting"
+        ],
         "note": "Lighter touch on weekends, bias toward casual/family content"
       }
     },
@@ -122,24 +429,38 @@
       "maxUnrepliedSurfaces": 3,
       "windowCycles": 7,
       "action": "batch_or_skip",
-      "note": "If 3+ surfaces without any reaction/reply within 7 heartbeat cycles, batch or skip. Cycle-based = auto-adjusts to heartbeat interval."
+      "note": "If 3+ surfaces without any reaction/reply within 7 heartbeat cycles, batch or skip."
     },
     "engagementSignals": {
-      "countsAsEngaged": ["reply", "reaction"],
+      "countsAsEngaged": [
+        "reply",
+        "reaction"
+      ],
       "reactionWeight": 0.7,
       "replyWeight": 1.0,
-      "note": "Reactions (👍🔥🤔) count as engagement. Reply = full signal, reaction = lighter signal."
+      "silenceInterpretation": "neutral",
+      "backoffTriggers": [
+        "\ud83d\udc4e",
+        "stop",
+        "less",
+        "too much",
+        "explicit negative"
+      ],
+      "note": "Silence = neutral (passive reading likely). Only backoff on explicit negative signals. Positive signals amplify, absence doesn't suppress."
     }
   },
   "meta": {
-    "version": 2,
+    "version": 3,
     "created": "2026-02-01",
     "lastUpdated": "2026-02-02",
-    "dataPoints": 11,
+    "dataPoints": 24,
     "optimizations": [
-      "2026-02-02: Spread 08:00 SGT cluster (5 jobs → 00/15/45 min offsets)",
-      "2026-02-02: Spread 07:00 SGT cluster (2 jobs → 00/20 min offsets)",
-      "2026-02-02: Fixed 03:00 Mon conflict (weekly-self-review → 03:30)"
+      "2026-02-02: Spread 08:00 SGT cluster (5 jobs \u2192 00/15/45 min offsets)",
+      "2026-02-02: Spread 07:00 SGT cluster (2 jobs \u2192 00/20 min offsets)",
+      "2026-02-02: Fixed 03:00 Mon conflict (weekly-self-review \u2192 03:30)",
+      "2026-02-02: Added timeSlotScoring with learned weights",
+      "2026-02-02: Added contentTimeMatching rules",
+      "2026-02-02: Added adaptiveIntervals with rolling engagement"
     ]
   }
 }

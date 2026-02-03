@@ -1,140 +1,204 @@
-# Prompt Engineering Research — 2026-02-02
+# Prompt Engineering Research Report
+**Date:** 2026-02-02  
+**Focus:** Improving PROMPTS array in curiosity-daemon.sh  
+**Status:** Research complete, improvements proposed
+
+---
 
 ## Research Sources
-- Lakera AI Guide to Prompt Engineering 2026
-- Medium: Complete Prompt Engineering Guide for 2025
-- Mirascope: 11 Prompt Engineering Best Practices
 
-## Key Findings
+### 1. Lakera "Ultimate Guide to Prompt Engineering" (2026)
+**URL:** https://www.lakera.ai/blog/prompt-engineering-guide
 
-### 1. Most Impactful Practice: Few-Shot Examples (3-5)
-> "Provide Examples (Few-Shot): This is the single most impactful practice. Aim for 3–5+ diverse, high-quality examples."
+**Key Insights:**
+- **Composite prompts work best**: Blend multiple styles (few-shot + role + CoT + formatting)
+- **Delimiters matter**: Visual separation improves instruction-following
+- **Types hierarchy**: Zero-shot → One-shot → Few-shot → Chain-of-thought → Role-based → Context-rich
+- **Combo pattern (most effective)**: Role-based + Few-shot + Chain-of-thought together
 
-**Current gap:** Our prompts have NO examples. This is the biggest improvement opportunity.
+**Actionable Takeaway:**
+> "You are a [ROLE]. Below are [N] examples. Think step by step before [TASK]. Then handle [NEW INPUT]."
 
-### 2. Strong Action Verbs First
-> "Clear, concise prompts with strong action verbs (act, analyze, generate) consistently outperform verbose ones."
+### 2. Claude Prompt Engineering Best Practices (2026)
+**URL:** https://promptbuilder.cc/blog/claude-prompt-engineering-best-practices-2026
 
-**Current status:** ✅ Good — we use GOAL/STEPS/OUTPUT structure with action verbs.
+**Key Insights:**
+- **80/20 Rule**: Goal+constraints → Examples (1-3) → Forced structure
+- **Contract-style system prompts**: Role → Goal → Constraints → Uncertainty → Format
+- **Four-block pattern**: INSTRUCTIONS / CONTEXT / TASK / OUTPUT FORMAT
+- **Examples > Adjectives**: "One good example beats five adjectives"
+- **Built-in evaluator**: Self-check checklist appended to prompts
+- **Uncertainty handling**: "If unsure, say so explicitly. Do not guess."
 
-### 3. Be Specific About "Done"
-> "Detail exactly what 'done' looks like — length, format, content structure."
+**Claude-Specific:**
+- Claude follows structure extremely well
+- Explicit format constraints reduce drift
+- Self-correction is strong when explicitly requested
 
-**Current status:** ✅ Good — VERIFY/OUTPUT sections do this.
+---
 
-### 4. Advanced Techniques Missing
+## Current State Analysis
 
-#### Recursive Self-Improvement Prompting (RSIP)
+### META_PROMPT (v2.5) - Strengths
+✅ ReAct pattern (action-first)
+✅ Self-critique section
+✅ Confidence calibration (HIGH/MEDIUM/LOW)
+✅ Pre-flight checklist
+✅ GOOD/BAD examples pattern
+✅ Context loading instructions
+
+### META_PROMPT (v2.5) - Gaps
+- **No explicit role definition** (contract pattern)
+- **No uncertainty handling rule** ("if unsure, say so")
+- **Pre-flight is list, not questions** (Claude prefers ☐ Did you...?)
+- **No output format spec** (each prompt has own, inconsistent)
+
+### Individual Prompts (v5) - Strengths
+✅ GOAL stated first
+✅ GOOD/BAD examples included
+✅ STEPS defined
+✅ RECOVER section for failures
+✅ Category tags (SCOUT/ACTION/RESEARCH)
+
+### Individual Prompts (v5) - Gaps
+- **Some lack CONTEXT section** (inconsistent)
+- **Self-critique is statement, not question** (weaker)
+- **OUTPUT format varies wildly** (some schema, some prose)
+- **Missing time estimates** (helps model gauge effort)
+- **No explicit role in most prompts**
+
+---
+
+## Proposed Improvements
+
+### META_PROMPT v3.0
+
 ```
-1. Generate initial output
-2. Self-critique using specific criteria
-3. Generate improved version
-```
-**Gap:** Our prompts don't ask for self-critique before output.
+## AGENT PROTOCOL (v3.0)
 
-#### Calibrated Confidence Prompting (CCP)
-```
-Assign confidence levels (95%, 80-95%, <80%, unknown)
-Justify high-confidence claims
-Note what would increase confidence
-```
-**Gap:** We don't ask for confidence levels on claims.
+### ROLE
+You are Alyosha, an autonomous research companion for Jon.
+Bias toward action, creation, and silence over noise.
 
-#### Multi-Perspective Simulation (MPS)
-```
-1. Identify distinct perspectives
-2. Articulate assumptions/arguments for each
-3. Simulate dialogue between perspectives
-4. Integrated analysis
-```
-**Gap:** Useful for RESEARCH prompts — not currently used.
+### GOAL
+Serve Jon's interests: markets, AI, geopolitics, cross-domain insights.
+Create artifacts (files, tools, alerts) — not descriptions of what could be done.
 
-### 5. Structure Comparison
+### CONSTRAINTS
+- Action verb FIRST (do, then explain)
+- Mark confidence: [HIGH: 3+ sources] [MEDIUM: credible] [LOW: speculation]
+- NEVER share LOW confidence as fact
+- NEVER surface old news (>48h)
+- NEVER send output that fails self-check
 
-**Current Pattern:**
-```
-GOAL → CONTEXT → STEPS → OUTPUT → VERIFY → RECOVER → NEVER
-```
+### UNCERTAINTY HANDLING
+If unsure → say so explicitly. Do not guess.
+If blocked → try 2 alternatives, then document failure.
 
-**Recommended Enhanced Pattern:**
-```
-GOAL → CONTEXT → THINK (perspective/criteria) → STEPS → SELF-CRITIQUE → OUTPUT → VERIFY → CONFIDENCE → RECOVER → NEVER
-```
+### CONTEXT LOADING
+Read files in CONTEXT section BEFORE acting.
+Align with goals.json, connect via topic-graph.json.
 
-## Test Variations
+### SELF-CHECK (Before Sending)
+☐ Did I DO the thing, or describe it?
+☐ Does this match GOOD example quality?
+☐ Would Jon click/use/value this?
+☐ Is this actually new (<48h)?
+☐ Am I confident (HIGH or MEDIUM)?
+If ANY ☐ fails → improve or stay silent.
 
-### Original SCOUT:AI (v4)
-```
-SCOUT:AI (v4) | GOAL: Surface ONE AI development <24h that shifts mental models. 
-STEPS: 1) Search 'AI news today' 'AI breakthrough' 2) Filter: genuinely new + Jon-relevant 3) Verify primary source 4) Share OR stay silent. 
-OUTPUT: '[Source]: [What] — [Why it matters]' OR silence. 
-VERIFY: □ <24h □ Primary source □ Non-obvious □ Not incremental. 
-RECOVER: Search fail → try HN, ArXiv, X/AI. Nothing notable → silence (no 'nothing found'). 
-NEVER: Hedge, surface follow-up coverage, editorialize without insight.
+### AFTER
+Log outcomes to memory/reflections.jsonl
 ```
 
-### Variation A: Add Self-Critique
-```
-SCOUT:AI (v5) | GOAL: Surface ONE AI development <24h that shifts mental models.
-STEPS: 1) Search 'AI news today' 'AI breakthrough' 2) Filter: genuinely new + Jon-relevant 3) Verify primary source.
-SELF-CRITIQUE: Before sharing, ask: "Would I click this? Is this actually new? Does it change how I think?"
-OUTPUT: '[Source]: [What] — [Why it matters] — Confidence: [HIGH/MEDIUM]' OR silence.
-VERIFY: □ <24h □ Primary source □ Non-obvious □ Passed self-critique.
-RECOVER: Search fail → try HN, ArXiv. Nothing notable → silence.
-NEVER: Hedge, share without self-critique, surface incremental progress.
-```
+### Individual Prompt v6 Template
 
-### Variation B: Add Few-Shot Example
 ```
-SCOUT:AI (v5) | GOAL: Surface ONE AI development <24h that shifts mental models.
+[CATEGORY]:[NAME] (v6) | Time: [2-30 min]
 
-GOOD EXAMPLE: "Anthropic blog: Claude gains tool use. — First major model to reliably chain tool calls. Shifts interaction from Q&A to agent workflows."
+ROLE: [Specific role for this task]
+GOAL: [Single measurable outcome]
 
-BAD EXAMPLE (don't do this): "AI news roundup: Several companies announced AI features today."
+EXAMPLES:
+GOOD: '[Concrete example that meets bar]'
+BAD: '[Anti-pattern to avoid]'
 
-STEPS: 1) Search 'AI news today' 2) Filter for Jon-relevance 3) Match quality to good example.
-OUTPUT: Single insight matching good example format, OR silence.
-VERIFY: □ <24h □ Matches good example quality □ Non-obvious.
-```
+CONTEXT: [files to read first]
 
-### Variation C: Calibrated Confidence
-```
-SCOUT:AI (v5) | GOAL: Surface ONE AI development <24h that shifts mental models.
-STEPS: 1) Search 2) Filter 3) Verify source 4) Assess confidence.
+STEPS:
+1) [Action verb] [specific action]
+2) [Action verb] [specific action]
+3) [Action verb] [specific action]
+
 OUTPUT FORMAT:
-'[Source]: [What] — [Why it matters]
-Confidence: [HIGH: verified primary source | MEDIUM: secondary source | LOW: rumor/speculation]'
-RULE: Only share HIGH or MEDIUM confidence. LOW → silence.
-VERIFY: □ <24h □ Confidence assessed □ Source cited.
+[Exact structure: JSON/bullets/sentence pattern]
+
+SELF-CHECK:
+☐ [Did I X?]
+☐ [Is Y true?]
+
+RECOVER: [What to do if blocked]
 ```
 
-## Recommendations for PROMPTS Array
+### Specific Prompt Upgrades
 
-### Priority 1: Add Examples to High-Frequency Prompts
-- SCOUT:AI, SCOUT:MARKET, ACTION:DISCOVERY
-- Include 1 GOOD and 1 BAD example in each
+**SCOUT:AI (v5 → v6)**
+```
+SCOUT:AI (v6) | Time: 2-5 min
 
-### Priority 2: Add Self-Critique Step
-- Insert "SELF-CRITIQUE: Before output, ask: [criteria]" 
-- Most useful for RESEARCH and CREATE prompts
+ROLE: AI news analyst filtering signal from noise
+GOAL: Surface ONE development <24h that shifts thinking, or stay silent
 
-### Priority 3: Add Confidence Calibration
-- For RESEARCH prompts: require confidence levels
-- For SCOUT prompts: threshold (only share HIGH/MEDIUM)
+EXAMPLES:
+GOOD: 'Anthropic blog: Claude gains tool use — First model to reliably chain tools. Shifts Q&A→agents. [HIGH]'
+BAD: 'AI news: Several companies announced features.' (vague, no insight)
 
-### Priority 4: Shorten Verbose Prompts
-- Current prompts are ~150-250 words each
-- Target: 80-120 words with same information density
-- Use structured shorthand (already doing well)
+STEPS:
+1) Search: AI news last 24h
+2) Filter: genuinely new + meaningful shift
+3) Verify: primary source exists
+4) Write: [Source]: [What] — [Why matters] [confidence]
 
-## Metrics to Track
-1. Surface rate (% of prompts that produce output)
-2. Engagement rate (% of surfaces that get response)
-3. Quality score (subjective, from feedback-log)
-4. False positive rate (surfaces that shouldn't have been)
+OUTPUT FORMAT:
+'[Source]: [Development in <10 words] — [Insight/implication]. [HIGH/MEDIUM]'
+OR: (silence)
+
+SELF-CHECK:
+☐ Is this <24h old?
+☐ Would I click this headline?
+☐ Does it shift thinking, not just inform?
+
+RECOVER: Search fails → try HN, ArXiv. Nothing meets bar → silence is success.
+```
+
+---
 
 ## Implementation Plan
-1. Test Variation B (few-shot) on 3 prompts for 1 week
-2. Measure engagement vs. current prompts
-3. If improved: roll out to all SCOUT prompts
-4. Then test self-critique on RESEARCH prompts
+
+1. **Update META_PROMPT** to v3.0 (add role, uncertainty, question-form self-check)
+2. **Upgrade 5 core prompts** to v6 format as test
+3. **Measure**: Compare quality of outputs before/after
+4. **Iterate**: Adjust based on outcomes
+
+## Key Learnings
+
+| Finding | Source | Action |
+|---------|--------|--------|
+| Examples > Adjectives | Claude guide | ✅ Already doing |
+| Contract-style system | Claude guide | Add ROLE+GOAL to META |
+| Question-form self-check | Claude guide | Convert statements to ☐ Did I...? |
+| Uncertainty handling | Claude guide | Add explicit rule |
+| Composite prompts | Lakera | Combine patterns more explicitly |
+| Four-block separation | Claude guide | Standardize prompt sections |
+
+---
+
+## References
+
+1. Lakera. "The Ultimate Guide to Prompt Engineering in 2026." https://www.lakera.ai/blog/prompt-engineering-guide
+2. PromptBuilder. "Claude Prompt Engineering Best Practices (2026)." https://promptbuilder.cc/blog/claude-prompt-engineering-best-practices-2026
+3. IBM. "The 2026 Guide to Prompt Engineering." https://www.ibm.com/think/prompt-engineering (not fetched)
+
+---
+
+*Report generated during autonomous work hours. Ready for review/implementation.*

@@ -1,0 +1,18 @@
+{
+  "jobs": {
+    "deep_dive": {
+      "surfaces": 1,
+      "engaged": 1,
+      "engagement_rate": 1.0,
+      "health_score": 1.0,
+      "avg_hour": 6,
+      "topics": [
+        "us_china_ai_race"
+      ],
+      "status": "healthy"
+    }
+  },
+  "meta": {
+    "lastUpdated": "2026-02-02T17:18:48.261145+00:00"
+  }
+}

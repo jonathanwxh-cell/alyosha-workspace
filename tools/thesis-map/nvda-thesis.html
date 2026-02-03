@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVDA Investment Thesis Map</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #eee;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #76b900;
+            font-size: 2em;
+        }
+        .thesis-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .node {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .node:hover {
+            background: rgba(255,255,255,0.1);
+            border-color: #76b900;
+            transform: translateX(5px);
+        }
+        .node.expanded {
+            border-color: #76b900;
+            background: rgba(118, 185, 0, 0.1);
+        }
+        .node-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .node-icon {
+            font-size: 2em;
+        }
+        .node-title {
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+        .node-subtitle {
+            color: #888;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+        .node-content {
+            display: none;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .node.expanded .node-content {
+            display: block;
+        }
+        .sub-nodes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .sub-node {
+            background: rgba(0,0,0,0.2);
+            padding: 12px;
+            border-radius: 8px;
+            border-left: 3px solid #76b900;
+        }
+        .sub-node-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        .sub-node-detail {
+            font-size: 0.85em;
+            color: #aaa;
+        }
+        .metric {
+            display: inline-block;
+            background: rgba(118, 185, 0, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin: 3px;
+        }
+        .risk {
+            background: rgba(255, 100, 100, 0.2);
+        }
+        .catalyst {
+            background: rgba(100, 200, 255, 0.2);
+        }
+        .conviction-bar {
+            height: 6px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        .conviction-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #76b900, #9be000);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .expand-hint {
+            font-size: 0.8em;
+            color: #666;
+            text-align: right;
+        }
+        .summary {
+            background: rgba(118, 185, 0, 0.1);
+            border: 1px solid #76b900;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .summary h2 {
+            color: #76b900;
+            margin-bottom: 10px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 0.85em;
+        }
+    </style>
+</head>
+<body>
+    <h1>🟢 NVIDIA Investment Thesis</h1>
+    
+    <div class="thesis-container">
+        <div class="summary">
+            <h2>Core Thesis</h2>
+            <p>NVIDIA is the picks-and-shovels play on AI — winning regardless of which AI company wins. Data center growth driven by training AND inference demand. Expanding moat through CUDA ecosystem lock-in.</p>
+            <div style="margin-top: 15px;">
+                <span class="metric">Conviction: 85%</span>
+                <span class="metric catalyst">Next Catalyst: Feb 25 Earnings</span>
+                <span class="metric">Time Horizon: 2-5 years</span>
+            </div>
+        </div>
+
+        <div class="node" onclick="toggleNode(this)">
+            <div class="node-header">
+                <span class="node-icon">🚀</span>
+                <div>
+                    <div class="node-title">Bull Case: AI Infrastructure Dominance</div>
+                    <div class="node-subtitle">Click to expand</div>
+                </div>
+            </div>
+            <div class="node-content">
+                <p>NVIDIA captures 80%+ of AI training compute. Transitioning from training to inference creates second growth wave.</p>
+                <div class="sub-nodes">
+                    <div class="sub-node">
+                        <div class="sub-node-title">Data Center Growth</div>
+                        <div class="sub-node-detail">$18B → $35B+ in 2 years. Hyperscalers (MSFT, GOOG, AMZN, META) all increasing capex.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">CUDA Moat</div>
+                        <div class="sub-node-detail">10+ years of ecosystem lock-in. Developers, libraries, tools all CUDA-native. Switching cost is enormous.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">Inference Wave</div>
+                        <div class="sub-node-detail">Training is one-time, inference is ongoing. As AI deploys, inference demand grows 10x+.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">Robotics/Embodied AI</div>
+                        <div class="sub-node-detail">NVIDIA Isaac, Omniverse, Cosmos. Next frontier beyond cloud AI.</div>
+                    </div>
+                </div>
+                <div class="conviction-bar"><div class="conviction-fill" style="width: 90%"></div></div>
+            </div>
+        </div>
+
+        <div class="node" onclick="toggleNode(this)">
+            <div class="node-header">
+                <span class="node-icon">⚠️</span>
+                <div>
+                    <div class="node-title">Bear Case: Risks & Challenges</div>
+                    <div class="node-subtitle">Click to expand</div>
+                </div>
+            </div>
+            <div class="node-content">
+                <p>Valuation stretched, competition emerging, geopolitical risks from China exposure.</p>
+                <div class="sub-nodes">
+                    <div class="sub-node">
+                        <div class="sub-node-title">Valuation</div>
+                        <div class="sub-node-detail">Trading at 30x+ forward P/E. Priced for perfection. Any miss = significant downside.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">Competition</div>
+                        <div class="sub-node-detail">AMD MI300, Google TPUs, custom ASICs (Amazon Trainium). Market share pressure emerging.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">China Risk</div>
+                        <div class="sub-node-detail">Export controls limiting sales. ~20% revenue exposure. Geopolitical wildcard.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">DeepSeek Efficiency</div>
+                        <div class="sub-node-detail">If AI gets 10x more efficient, do you need 10x less compute? Counter: demand elastic.</div>
+                    </div>
+                </div>
+                <div class="conviction-bar"><div class="conviction-fill" style="width: 40%; background: linear-gradient(90deg, #ff6464, #ff9999);"></div></div>
+            </div>
+        </div>
+
+        <div class="node" onclick="toggleNode(this)">
+            <div class="node-header">
+                <span class="node-icon">📅</span>
+                <div>
+                    <div class="node-title">Catalysts & Timeline</div>
+                    <div class="node-subtitle">Click to expand</div>
+                </div>
+            </div>
+            <div class="node-content">
+                <div class="sub-nodes">
+                    <div class="sub-node">
+                        <div class="sub-node-title">Feb 25, 2026: Q4 Earnings</div>
+                        <div class="sub-node-detail">Data center guidance critical. Watch for Blackwell ramp commentary.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">H1 2026: Blackwell Ramp</div>
+                        <div class="sub-node-detail">Next-gen architecture. Performance/efficiency leap.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">2026: Inference Monetization</div>
+                        <div class="sub-node-detail">NVIDIA NIM, enterprise AI deployment at scale.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">2027+: Robotics</div>
+                        <div class="sub-node-detail">Physical AI becomes material revenue driver.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="node" onclick="toggleNode(this)">
+            <div class="node-header">
+                <span class="node-icon">📊</span>
+                <div>
+                    <div class="node-title">Position & Sizing</div>
+                    <div class="node-subtitle">Click to expand</div>
+                </div>
+            </div>
+            <div class="node-content">
+                <p>Core holding in AI allocation. Size based on conviction and volatility tolerance.</p>
+                <div class="sub-nodes">
+                    <div class="sub-node">
+                        <div class="sub-node-title">Entry Strategy</div>
+                        <div class="sub-node-detail">DCA on pullbacks. Add on -10% dips. Don't chase green days.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">Position Size</div>
+                        <div class="sub-node-detail">5-10% of portfolio. Higher for aggressive growth mandate.</div>
+                    </div>
+                    <div class="sub-node">
+                        <div class="sub-node-title">Exit Triggers</div>
+                        <div class="sub-node-detail">Thesis break: Data center growth stalls, CUDA moat erodes, margin compression.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Generated by Alyosha • Updated Feb 2026<br>
+        <small>Interactive thesis map — click nodes to expand</small>
+    </div>
+
+    <script>
+        function toggleNode(node) {
+            node.classList.toggle('expanded');
+        }
+        
+        // Auto-expand first node on load
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstNode = document.querySelector('.node');
+            if (firstNode) firstNode.classList.add('expanded');
+        });
+    </script>
+</body>
+</html>

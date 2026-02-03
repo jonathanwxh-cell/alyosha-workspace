@@ -1,167 +1,212 @@
 # Financial APIs Comparison
 
-*Research for market intelligence integration*
+*Last updated: 2026-02-02*
+
+## Quick Reference
+
+| API | Status | Cost | Best For |
+|-----|--------|------|----------|
+| **FMP** | ✅ Active | $149/mo (Ultimate) | Full-stack financial data |
+| **yfinance** | ✅ Active | Free | Quick quotes, basic data |
+| **Benzinga** | ⏳ Need key | ~$300/mo | News, ratings, calendars |
+| **Danelfin** | ⏳ Need key | Varies | AI stock scores |
 
 ---
 
-## Current Status
+## 1. Financial Modeling Prep (FMP) ✅
 
-| API | Status | Key Available | Monthly Cost |
-|-----|--------|---------------|--------------|
-| **yfinance** | ✅ Working | N/A (free) | $0 |
-| **FMP** | ✅ Working | Yes | Free tier (limited) |
-| **Benzinga** | ❌ No key | Jon has account | ~$300/mo |
-| **Danelfin** | ❌ No key | Jon has account | Varies by plan |
+**Status:** Fully integrated and working
 
----
+**Tier:** Ultimate ($149/mo) — all features unlocked
 
-## 1. Financial Modeling Prep (FMP)
+**Client:** `scripts/fmp-client.py`
 
-**Status:** ✅ Integrated
+### Endpoints Available
 
-**What we have:**
-- `scripts/fmp-client.py` — full Python client
-- Quote, profile, key metrics, search
-- Watchlist summaries, company snapshots
+| Endpoint | Command | Notes |
+|----------|---------|-------|
+| Real-time quotes | `fmp-client.py quote NVDA` | Global markets |
+| Company profile | `fmp-client.py profile NVDA` | Company details |
+| Key metrics | `fmp-client.py metrics NVDA` | Valuation ratios |
+| Earnings transcripts | `fmp-client.py transcript NVDA 2025 Q3` | Full text |
+| Market movers | `fmp-client.py movers` | Gainers/losers |
+| Watchlist snapshot | `fmp-client.py watchlist NVDA,AMD` | Multi-quote |
 
-**Free tier limitations:**
-- No earnings calendar
-- No analyst estimates
-- No stock news
-- No screener
-- Must fetch quotes individually (no bulk)
+### Unique Features
+- Earnings call transcripts (full text)
+- Global exchange coverage (.T, .L, .SI)
+- Institutional ownership
+- Insider trading data
+- SEC filings
 
-**To unlock more:** Upgrade to Starter ($14/mo) or Premium ($29/mo)
-
-**Best for:** Basic quotes, company profiles, financial metrics
-
----
-
-## 2. Benzinga
-
-**Status:** ❌ Needs API key
-
-**What it offers:**
-
-### News API
-- Real-time financial news
-- Filter by ticker, category, date
-- Sentiment data included
-- Good for: News alerts, sentiment tracking
-
-### Ratings API (Analyst Upgrades/Downgrades)
-- Analyst actions with price targets
-- Analyst accuracy metrics
-- Good for: Tracking smart money signals
-
-### Calendar APIs
-- **Earnings:** Dates, EPS estimates, surprises
-- **Dividends:** Ex-dates, amounts, yields
-- **Economics:** FOMC, jobs, CPI dates
-- **FDA:** Drug approvals calendar
-- **IPO:** Upcoming IPOs
-- **Conference Calls:** Scheduled calls
-
-### Signals API
-- Option activity alerts
-- Unusual volume
-- Insider transactions
-
-**Pricing:** ~$300/mo for full API access
-
-**Best for:** News, analyst ratings, calendars — real-time market intelligence
-
-**Integration complexity:** Medium (REST API, Python client available on GitHub)
+### Rate Limits
+- Generous on Ultimate tier
+- No known issues
 
 ---
 
-## 3. Danelfin
+## 2. yfinance (Free) ✅
 
-**Status:** ❌ Needs API key
+**Status:** Working
 
-**What it offers:**
+**Client:** `scripts/stock-quote.py`
 
-### AI Scores (1-10)
-- **AI Score:** Overall probability of beating market in 3 months
-- **Fundamental Score:** Based on financial metrics
-- **Technical Score:** Based on price/volume patterns
-- **Sentiment Score:** Market sentiment analysis
-- **Low Risk Score:** Risk assessment
+### Features
+- Basic quotes
+- Historical prices
+- Options chains
+- Basic fundamentals
 
-### Key Features
-- Historical score data for backtesting
-- Sector/industry filtering
-- Buy/sell track record
-- Works for stocks AND ETFs
+### Limitations
+- Yahoo's ToS technically discourages scraping
+- Rate limits on heavy use
+- Data occasionally delayed
 
-### API Plans
-| Plan | Calls/month | Rate limit | Price |
-|------|-------------|------------|-------|
-| Basic | 1,000 | 120/min | ? |
-| Expert | 10,000 | 240/min | ? |
-| Elite | 100,000 | 1,200/min | ? |
-
-**Best for:** Screening stocks, identifying high-probability setups
-
-**Integration complexity:** Low (simple REST API)
+### Use When
+- Quick quotes without API cost
+- Historical price analysis
+- Prototype before using paid APIs
 
 ---
 
-## Comparison Matrix
+## 3. Benzinga ⏳
 
-| Feature | FMP | Benzinga | Danelfin |
-|---------|-----|----------|----------|
-| Real-time quotes | ✅ | ✅ | ❌ |
-| Company profiles | ✅ | ✅ | ❌ |
-| Financial metrics | ✅ | ✅ | ❌ |
-| News | ❌ (paid) | ✅ | ❌ |
-| Analyst ratings | ❌ | ✅ | ❌ |
-| Earnings calendar | ❌ (paid) | ✅ | ❌ |
-| AI stock scores | ❌ | ❌ | ✅ |
-| Stock screening | ❌ (paid) | ❌ | ✅ |
-| Historical data | ✅ | ✅ | ✅ |
-| Python client | ✅ (custom) | ✅ (official) | ❌ (easy to build) |
+**Status:** Client ready, waiting for API key
 
----
+**Cost:** ~$300/mo (Jon's subscription)
 
-## Recommended Integration Priority
+**Client:** `scripts/benzinga-client.py`
 
-### If budget allows ONE addition:
-**Benzinga** — Most comprehensive for market intelligence (news + ratings + calendars)
+### Endpoints Available
 
-### For screening/stock picking:
-**Danelfin** — AI scores are unique value-add, not available elsewhere
+| Endpoint | Command | Best For |
+|----------|---------|----------|
+| News | `benzinga-client.py news NVDA` | Recent headlines |
+| Ratings | `benzinga-client.py ratings NVDA` | Analyst actions |
+| Earnings calendar | `benzinga-client.py earnings NVDA` | Upcoming reports |
+| Watchlist intel | `benzinga-client.py watchlist NVDA,AMD,TSM` | Combined view |
 
-### For basic upgrades:
-**FMP Starter ($14/mo)** — Unlocks screener, earnings, analyst estimates
+### Unique Features
+- **Real-time news** with sentiment signals
+- **Analyst ratings** with price targets
+- **Earnings surprises** historical data
+- **Guidance changes** tracking
+- **IPO calendar**
+- **Economic events** calendar
 
----
+### Why Use It
+Benzinga is the **news and sentiment** specialist. Use for:
+- Breaking news alerts
+- Analyst rating changes
+- Pre-earnings research
+- Market sentiment
 
-## Integration Roadmap
+### Setup
+```bash
+# Create key file
+echo "BENZINGA_API_KEY=your_key_here" > ~/.secure/benzinga.env
+chmod 600 ~/.secure/benzinga.env
 
-### Phase 1: Maximize Current Tools
-- [x] FMP client built and working
-- [x] yfinance for backup quotes
-- [ ] Add more FMP endpoints (if they work on free tier)
-
-### Phase 2: Benzinga (if key provided)
-- Build `scripts/benzinga-client.py`
-- Priority endpoints: Ratings, Earnings Calendar, News
-- Integrate into morning briefings
-
-### Phase 3: Danelfin (if key provided)
-- Build `scripts/danelfin-client.py`
-- Daily "Top AI Scores" scan
-- Track score changes on watchlist
+# Test
+python3 scripts/benzinga-client.py test
+```
 
 ---
 
-## Action Items for Jon
+## 4. Danelfin ⏳
 
-1. **Benzinga:** Do you have API credentials? Check cloud.benzinga.com
-2. **Danelfin:** Is API access included in your subscription?
-3. **FMP upgrade:** Worth $14/mo for earnings calendar + screener?
+**Status:** Client ready, waiting for API key
+
+**Cost:** Varies by plan
+
+**Client:** `scripts/danelfin-client.py`
+
+### Endpoints Available
+
+| Endpoint | Command | Returns |
+|----------|---------|---------|
+| Stock score | `danelfin-client.py score NVDA` | AI score (1-10) |
+| Top picks | `danelfin-client.py top --aiscore-min 9` | Best-rated stocks |
+| Watchlist | `danelfin-client.py watchlist NVDA,AMD` | Multi-score view |
+| Sectors | `danelfin-client.py sectors` | Sector performance |
+
+### Score Components
+- **AI Score (1-10):** Overall rating
+- **Fundamental:** Financial health
+- **Technical:** Price patterns
+- **Sentiment:** Market mood
+- **Low Risk:** Stability
+
+### Why Use It
+Danelfin provides **AI-powered stock scoring**. Use for:
+- Screening for high-probability trades
+- Quick sentiment check
+- Ranking watchlist by AI score
+- Finding momentum plays
+
+### Setup
+```bash
+# Create key file
+echo "DANELFIN_API_KEY=your_key_here" > ~/.secure/danelfin.env
+chmod 600 ~/.secure/danelfin.env
+
+# Test
+python3 scripts/danelfin-client.py score AAPL
+```
 
 ---
 
-*Updated: 2026-02-02*
+## API Combination Strategy
+
+### Daily Workflow
+1. **Morning:** FMP for watchlist prices + Benzinga for overnight news
+2. **Pre-market:** Danelfin scores for momentum picks
+3. **During day:** yfinance for quick quotes (free)
+4. **Research:** FMP transcripts + Benzinga ratings
+
+### Event-Driven
+- **Earnings approaching:** FMP historical + Benzinga estimates
+- **News breaks:** Benzinga real-time
+- **Screening:** Danelfin top picks + FMP fundamentals
+- **Deep dive:** FMP full profile + transcripts
+
+### Cost Optimization
+- Use yfinance for basic quotes (free)
+- Reserve FMP for detailed research (already paid)
+- Benzinga for news-heavy days
+- Danelfin for quick screening
+
+---
+
+## Keys Needed
+
+```bash
+# Already configured
+~/.secure/fmp.env         # FMP Ultimate
+
+# Need from Jon
+~/.secure/benzinga.env    # Benzinga API key
+~/.secure/danelfin.env    # Danelfin API key
+```
+
+To get keys:
+1. **Benzinga:** Login to cloud.benzinga.com → API Keys
+2. **Danelfin:** Check subscription → API access
+
+---
+
+## Quick Test Commands
+
+```bash
+# FMP (working)
+python3 scripts/fmp-client.py quote NVDA
+
+# yfinance (working)
+python3 scripts/stock-quote.py NVDA
+
+# Benzinga (needs key)
+python3 scripts/benzinga-client.py test
+
+# Danelfin (needs key)  
+python3 scripts/danelfin-client.py score NVDA
+```

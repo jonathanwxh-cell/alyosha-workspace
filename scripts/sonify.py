@@ -211,6 +211,23 @@ if __name__ == "__main__":
     # Convert to 16-bit PCM
     audio_int = (audio * 32767).astype(np.int16)
     
-    wavfile.write(output_path, sr, audio_int)
-    print(f"✅ Saved to: {output_path}")
-    print(f"MEDIA:{output_path}")
+    # Save as WAV first
+    wav_path = output_path if output_path.endswith('.wav') else output_path.rsplit('.', 1)[0] + '.wav'
+    wavfile.write(wav_path, sr, audio_int)
+    
+    # Convert to MP3 for better compatibility (especially Telegram)
+    mp3_path = wav_path.rsplit('.', 1)[0] + '.mp3'
+    try:
+        import subprocess
+        subprocess.run([
+            'ffmpeg', '-y', '-i', wav_path,
+            '-codec:a', 'libmp3lame', '-qscale:a', '2',
+            mp3_path
+        ], capture_output=True, check=True)
+        os.remove(wav_path)  # Remove WAV
+        output_path = mp3_path
+        print(f"✅ Saved to: {mp3_path}")
+        print(f"MEDIA:{mp3_path}")
+    except Exception as e:
+        print(f"✅ Saved to: {wav_path} (MP3 conversion failed: {e})")
+        print(f"MEDIA:{wav_path}")

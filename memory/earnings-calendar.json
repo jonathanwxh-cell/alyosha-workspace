@@ -1,0 +1,119 @@
+{
+  "updated": "2026-02-02T16:26:47.018774+00:00",
+  "calendar": {
+    "NVDA": {
+      "next": {
+        "symbol": "NVDA",
+        "date": "2026-02-25",
+        "epsActual": null,
+        "epsEstimated": 1.52,
+        "revenueActual": null,
+        "revenueEstimated": 65550735640,
+        "lastUpdated": "2026-02-02"
+      },
+      "history": [],
+      "beat_rate": null,
+      "samples": 0
+    },
+    "AMD": {
+      "next": null,
+      "history": [],
+      "beat_rate": null,
+      "samples": 0
+    },
+    "SMCI": {
+      "next": {
+        "symbol": "SMCI",
+        "date": "2026-02-24",
+        "epsActual": null,
+        "epsEstimated": 0.48,
+        "revenueActual": null,
+        "revenueEstimated": null,
+        "lastUpdated": "2026-01-18"
+      },
+      "history": [],
+      "beat_rate": null,
+      "samples": 0
+    },
+    "TSM": {
+      "next": null,
+      "history": [],
+      "beat_rate": null,
+      "samples": 0
+    },
+    "AVGO": {
+      "next": null,
+      "history": [],
+      "beat_rate": null,
+      "samples": 0
+    },
+    "GOOGL": {
+      "next": null,
+      "history": [],
+      "beat_rate": null,
+      "samples": 0
+    },
+    "MSFT": {
+      "next": {
+        "symbol": "MSFT",
+        "date": "2026-04-29",
+        "epsActual": null,
+        "epsEstimated": 4.02,
+        "revenueActual": null,
+        "revenueEstimated": null,
+        "lastUpdated": "2026-02-02"
+      },
+      "history": [
+        {
+          "symbol": "MSFT",
+          "date": "2026-01-28",
+          "epsActual": 4.14,
+          "epsEstimated": 3.91,
+          "revenueActual": 81273000000,
+          "revenueEstimated": 80308701686,
+          "lastUpdated": "2026-02-02"
+        }
+      ],
+      "beat_rate": null,
+      "samples": 0
+    },
+    "META": {
+      "next": {
+        "symbol": "META",
+        "date": "2026-04-29",
+        "epsActual": null,
+        "epsEstimated": 6.66,
+        "revenueActual": null,
+        "revenueEstimated": null,
+        "lastUpdated": "2026-02-02"
+      },
+      "history": [
+        {
+          "symbol": "META",
+          "date": "2026-01-28",
+          "epsActual": 8.88,
+          "epsEstimated": 8.19,
+          "revenueActual": 59894000000,
+          "revenueEstimated": 58330095020,
+          "lastUpdated": "2026-02-02"
+        }
+      ],
+      "beat_rate": null,
+      "samples": 0
+    },
+    "AMZN": {
+      "next": {
+        "symbol": "AMZN",
+        "date": "2026-04-29",
+        "epsActual": null,
+        "epsEstimated": null,
+        "revenueActual": null,
+        "revenueEstimated": null,
+        "lastUpdated": "2026-01-31"
+      },
+      "history": [],
+      "beat_rate": null,
+      "samples": 0
+    }
+  }
+}

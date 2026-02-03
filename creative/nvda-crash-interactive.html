@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NVDA DeepSeek Crash — Interactive</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        h1 { text-align: center; margin-bottom: 10px; font-size: 1.8em; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+        
+        .chart-container {
+            background: #0f0f23;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        #chart {
+            width: 100%;
+            height: 300px;
+            cursor: crosshair;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.9);
+            border: 1px solid #e94560;
+            border-radius: 8px;
+            padding: 10px 15px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            z-index: 100;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #0f0f23;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stat-value { font-size: 2em; font-weight: bold; }
+        .stat-label { color: #888; font-size: 0.9em; margin-top: 5px; }
+        .stat-value.negative { color: #e94560; }
+        .stat-value.positive { color: #00ff88; }
+        
+        .timeline {
+            background: #0f0f23;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        
+        .timeline h3 { margin-bottom: 15px; }
+        
+        .event {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            padding-left: 20px;
+            border-left: 2px solid #333;
+            position: relative;
+        }
+        
+        .event::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #e94560;
+        }
+        
+        .event.peak::before { background: #00ff88; }
+        .event.bottom::before { background: #ff6b6b; }
+        
+        .event-time {
+            font-weight: bold;
+            min-width: 60px;
+            color: #888;
+        }
+        
+        .event-content { flex: 1; }
+        .event-price { color: #e94560; font-weight: bold; }
+        .event.peak .event-price { color: #00ff88; }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        button {
+            background: #e94560;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: transform 0.1s, background 0.2s;
+        }
+        
+        button:hover { background: #ff6b6b; transform: scale(1.05); }
+        button:active { transform: scale(0.95); }
+        
+        .footer {
+            text-align: center;
+            color: #555;
+            margin-top: 30px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📉 NVDA DeepSeek Crash</h1>
+        <p class="subtitle">January 27, 2025 — The Day DeepSeek Changed Everything</p>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value positive">$128.40</div>
+                <div class="stat-label">Day High (10:00)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value negative">$116.70</div>
+                <div class="stat-label">Day Low (11:15)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value negative">-9.1%</div>
+                <div class="stat-label">Peak to Trough</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">75 min</div>
+                <div class="stat-label">Crash Duration</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button onclick="animateChart()">▶️ Replay Crash</button>
+            <button onclick="resetChart()">🔄 Reset</button>
+        </div>
+        
+        <div class="chart-container">
+            <canvas id="chart"></canvas>
+            <div class="tooltip" id="tooltip"></div>
+        </div>
+        
+        <div class="timeline">
+            <h3>📍 Key Events</h3>
+            <div class="event peak">
+                <span class="event-time">10:00</span>
+                <div class="event-content">
+                    <strong>Peak reached</strong> — <span class="event-price">$128.40</span>
+                    <br><small>Morning optimism, pre-news</small>
+                </div>
+            </div>
+            <div class="event">
+                <span class="event-time">10:15</span>
+                <div class="event-content">
+                    <strong>DeepSeek news breaks</strong>
+                    <br><small>Chinese AI model matches GPT-4 at fraction of cost</small>
+                </div>
+            </div>
+            <div class="event">
+                <span class="event-time">10:30</span>
+                <div class="event-content">
+                    <strong>Panic selling begins</strong> — <span class="event-price">$122.00</span>
+                    <br><small>Volume spikes 3x normal</small>
+                </div>
+            </div>
+            <div class="event bottom">
+                <span class="event-time">11:15</span>
+                <div class="event-content">
+                    <strong>Bottom hit</strong> — <span class="event-price">$116.70</span>
+                    <br><small>Peak fear, max volume</small>
+                </div>
+            </div>
+            <div class="event">
+                <span class="event-time">16:00</span>
+                <div class="event-content">
+                    <strong>Close</strong> — <span class="event-price">$118.42</span>
+                    <br><small>Partial recovery, -5.1% on day</small>
+                </div>
+            </div>
+        </div>
+        
+        <p class="footer">Built by Alyosha 🕯️ | Data visualization experiment</p>
+    </div>
+    
+    <script>
+        const data = [
+            { time: '09:30', price: 124.80, volume: 50 },
+            { time: '10:00', price: 128.40, volume: 80 },
+            { time: '10:15', price: 125.00, volume: 150 },
+            { time: '10:30', price: 122.00, volume: 200 },
+            { time: '10:45', price: 119.50, volume: 280 },
+            { time: '11:00', price: 117.80, volume: 350 },
+            { time: '11:15', price: 116.70, volume: 400 },
+            { time: '11:30', price: 117.20, volume: 300 },
+            { time: '12:00', price: 118.10, volume: 200 },
+            { time: '13:00', price: 117.80, volume: 100 },
+            { time: '14:00', price: 119.20, volume: 180 },
+            { time: '15:00', price: 118.60, volume: 140 },
+            { time: '16:00', price: 118.42, volume: 200 }
+        ];
+        
+        const canvas = document.getElementById('chart');
+        const ctx = canvas.getContext('2d');
+        const tooltip = document.getElementById('tooltip');
+        
+        let animationFrame = 0;
+        let isAnimating = false;
+        
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth * 2;
+            canvas.height = canvas.offsetHeight * 2;
+            ctx.scale(2, 2);
+        }
+        
+        function drawChart(pointsToShow = data.length) {
+            const width = canvas.offsetWidth;
+            const height = canvas.offsetHeight;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const padding = { top: 20, right: 20, bottom: 40, left: 60 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+            
+            const minPrice = 114;
+            const maxPrice = 132;
+            const priceRange = maxPrice - minPrice;
+            
+            // Grid lines
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= 4; i++) {
+                const y = padding.top + (chartHeight * i / 4);
+                ctx.beginPath();
+                ctx.moveTo(padding.left, y);
+                ctx.lineTo(width - padding.right, y);
+                ctx.stroke();
+                
+                const price = maxPrice - (priceRange * i / 4);
+                ctx.fillStyle = '#666';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'right';
+                ctx.fillText('$' + price.toFixed(0), padding.left - 10, y + 4);
+            }
+            
+            // Draw area fill
+            const visibleData = data.slice(0, pointsToShow);
+            if (visibleData.length > 1) {
+                ctx.beginPath();
+                ctx.moveTo(padding.left, padding.top + chartHeight);
+                
+                visibleData.forEach((d, i) => {
+                    const x = padding.left + (i / (data.length - 1)) * chartWidth;
+                    const y = padding.top + ((maxPrice - d.price) / priceRange) * chartHeight;
+                    ctx.lineTo(x, y);
+                });
+                
+                ctx.lineTo(padding.left + ((visibleData.length - 1) / (data.length - 1)) * chartWidth, padding.top + chartHeight);
+                ctx.closePath();
+                
+                const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + chartHeight);
+                gradient.addColorStop(0, 'rgba(233, 69, 96, 0.4)');
+                gradient.addColorStop(1, 'rgba(233, 69, 96, 0.05)');
+                ctx.fillStyle = gradient;
+                ctx.fill();
+            }
+            
+            // Draw line
+            ctx.beginPath();
+            ctx.strokeStyle = '#e94560';
+            ctx.lineWidth = 3;
+            ctx.lineJoin = 'round';
+            
+            visibleData.forEach((d, i) => {
+                const x = padding.left + (i / (data.length - 1)) * chartWidth;
+                const y = padding.top + ((maxPrice - d.price) / priceRange) * chartHeight;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+            
+            // Draw points
+            visibleData.forEach((d, i) => {
+                const x = padding.left + (i / (data.length - 1)) * chartWidth;
+                const y = padding.top + ((maxPrice - d.price) / priceRange) * chartHeight;
+                
+                ctx.beginPath();
+                ctx.arc(x, y, 5, 0, Math.PI * 2);
+                
+                if (i === 1) ctx.fillStyle = '#00ff88'; // Peak
+                else if (i === 6) ctx.fillStyle = '#ff6b6b'; // Bottom
+                else ctx.fillStyle = '#e94560';
+                
+                ctx.fill();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            });
+            
+            // Time labels
+            ctx.fillStyle = '#666';
+            ctx.font = '10px sans-serif';
+            ctx.textAlign = 'center';
+            data.forEach((d, i) => {
+                if (i % 2 === 0) {
+                    const x = padding.left + (i / (data.length - 1)) * chartWidth;
+                    ctx.fillText(d.time, x, height - padding.bottom + 20);
+                }
+            });
+        }
+        
+        function animateChart() {
+            if (isAnimating) return;
+            isAnimating = true;
+            animationFrame = 0;
+            
+            function step() {
+                animationFrame++;
+                drawChart(Math.min(animationFrame, data.length));
+                
+                if (animationFrame < data.length) {
+                    setTimeout(step, 200);
+                } else {
+                    isAnimating = false;
+                }
+            }
+            step();
+        }
+        
+        function resetChart() {
+            isAnimating = false;
+            animationFrame = data.length;
+            drawChart();
+        }
+        
+        // Mouse interaction
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const width = canvas.offsetWidth;
+            const padding = { left: 60, right: 20 };
+            const chartWidth = width - padding.left - padding.right;
+            
+            const index = Math.round(((x - padding.left) / chartWidth) * (data.length - 1));
+            
+            if (index >= 0 && index < data.length) {
+                const d = data[index];
+                tooltip.innerHTML = `
+                    <strong>${d.time}</strong><br>
+                    Price: <span style="color: #e94560">$${d.price.toFixed(2)}</span><br>
+                    Volume: ${d.volume}x
+                `;
+                tooltip.style.opacity = 1;
+                tooltip.style.left = (e.clientX - rect.left + 15) + 'px';
+                tooltip.style.top = (e.clientY - rect.top - 30) + 'px';
+            }
+        });
+        
+        canvas.addEventListener('mouseleave', () => {
+            tooltip.style.opacity = 0;
+        });
+        
+        // Initialize
+        window.addEventListener('resize', () => { resizeCanvas(); drawChart(); });
+        resizeCanvas();
+        drawChart();
+    </script>
+</body>
+</html>
