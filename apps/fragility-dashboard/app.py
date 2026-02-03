@@ -1,31 +1,24 @@
-#!/usr/bin/env python3
 """
 Fragility Signals Dashboard
-Auto-updated weekly, displays market stress indicators
+Simple Flask app showing market fragility indicators.
 """
-
-from flask import Flask, jsonify, render_template_string
-import json
-from pathlib import Path
+from flask import Flask, render_template_string
 from datetime import datetime
-import os
 
 app = Flask(__name__)
 
-# Data directory (local dev only - Render uses embedded SAMPLE_DATA)
-DATA_DIR = Path(__file__).parent.parent.parent / 'data' / 'fragility'
-
-# Embedded sample data for when local data unavailable (Render deployment)
-# Updated: 2026-02-03
+# Embedded sample data (updated periodically via commits)
 SAMPLE_DATA = {
-    "timestamp": "2026-02-03T08:59:00.000000",
+    "timestamp": "2026-02-03T09:00:08",
     "signals": {
         "volatility": {
-            "vix": {"current": 16.24, "5d_ago": 16.35, "change_pct": -0.7},
+            "vix": {"current": 16.23, "5d_ago": 16.35, "change_pct": -0.7},
             "vvix": {"current": 98.77, "5d_ago": 101.26, "change_pct": -2.5},
             "signal": "✅ Normal"
         },
-        "credit": {"note": "Need FRED API key for credit spreads"},
+        "credit": {
+            "note": "Credit spreads coming soon"
+        },
         "concentration": {
             "top7_weight_pct": 47.2,
             "signal": "⚠️ CONCENTRATED",
@@ -50,175 +43,129 @@ TEMPLATE = """
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0a0a0a; color: #e0e0e0; padding: 20px;
-            max-width: 800px; margin: 0 auto;
+            background: #0d1117; color: #c9d1d9; padding: 20px;
+            min-height: 100vh;
         }
-        h1 { color: #fff; margin-bottom: 10px; }
-        .subtitle { color: #888; margin-bottom: 30px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        h1 { color: #58a6ff; margin-bottom: 8px; font-size: 1.8em; }
+        .updated { color: #8b949e; font-size: 0.9em; margin-bottom: 24px; }
         .card {
-            background: #1a1a1a; border-radius: 12px; padding: 20px;
-            margin-bottom: 15px; border: 1px solid #333;
+            background: #161b22; border: 1px solid #30363d;
+            border-radius: 8px; padding: 20px; margin-bottom: 16px;
         }
-        .signal-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 0; border-bottom: 1px solid #333;
-        }
-        .signal-row:last-child { border-bottom: none; }
-        .signal-name { font-weight: 500; }
-        .signal-value { font-size: 1.2em; font-weight: bold; }
-        .status-normal { color: #4ade80; }
-        .status-elevated { color: #fbbf24; }
-        .status-critical { color: #f87171; }
-        .summary {
-            background: #1e3a5f; border: 1px solid #3b82f6;
-            padding: 15px; border-radius: 8px; margin-top: 20px;
-        }
-        .timestamp { color: #666; font-size: 0.85em; margin-top: 20px; }
-        .demo-banner {
-            background: #422006; border: 1px solid #f59e0b;
-            padding: 10px; border-radius: 8px; margin-bottom: 20px;
-            font-size: 0.9em;
-        }
+        .card h2 { color: #f0f6fc; font-size: 1.1em; margin-bottom: 12px; }
+        .metric { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #21262d; }
+        .metric:last-child { border-bottom: none; }
+        .metric-label { color: #8b949e; }
+        .metric-value { color: #f0f6fc; font-weight: 600; }
+        .signal { padding: 4px 12px; border-radius: 12px; font-size: 0.85em; }
+        .signal-normal { background: #238636; color: #fff; }
+        .signal-warning { background: #9e6a03; color: #fff; }
+        .signal-danger { background: #da3633; color: #fff; }
+        .note { color: #8b949e; font-size: 0.85em; margin-top: 8px; font-style: italic; }
+        .footer { text-align: center; color: #484f58; margin-top: 32px; font-size: 0.85em; }
     </style>
 </head>
 <body>
-    <h1>📊 Fragility Signals</h1>
-    <p class="subtitle">Market stress indicators · Updated weekly</p>
-    
-    {% if demo_mode %}
-    <div class="demo-banner">
-        ⚠️ Demo mode — showing sample data. Live data updates weekly.
-    </div>
-    {% endif %}
-    
-    <div class="card">
-        {% for signal in signals %}
-        <div class="signal-row">
-            <span class="signal-name">{{ signal.name }}</span>
-            <span class="signal-value {{ signal.status_class }}">
-                {{ signal.value }} {{ signal.status_emoji }}
-            </span>
+    <div class="container">
+        <h1>🔮 Fragility Signals</h1>
+        <div class="updated">Last updated: {{ timestamp }}</div>
+        
+        <div class="card">
+            <h2>📊 Volatility</h2>
+            <div class="metric">
+                <span class="metric-label">VIX</span>
+                <span class="metric-value">{{ vix }} <small>({{ vix_change }})</small></span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">VVIX (vol of vol)</span>
+                <span class="metric-value">{{ vvix }} <small>({{ vvix_change }})</small></span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Status</span>
+                <span class="signal {{ vol_class }}">{{ vol_signal }}</span>
+            </div>
         </div>
-        {% endfor %}
+        
+        <div class="card">
+            <h2>🏛️ Market Concentration</h2>
+            <div class="metric">
+                <span class="metric-label">Top 7 Weight</span>
+                <span class="metric-value">{{ concentration }}%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Status</span>
+                <span class="signal {{ conc_class }}">{{ conc_signal }}</span>
+            </div>
+            <p class="note">{{ conc_note }}</p>
+        </div>
+        
+        <div class="card">
+            <h2>📈 Yield Curve</h2>
+            <div class="metric">
+                <span class="metric-label">10Y Yield</span>
+                <span class="metric-value">{{ yield_10y }}%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">3M Yield</span>
+                <span class="metric-value">{{ yield_3m }}%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Spread (10Y-3M)</span>
+                <span class="metric-value">{{ spread }}%</span>
+            </div>
+            <div class="metric">
+                <span class="metric-label">Status</span>
+                <span class="signal {{ curve_class }}">{{ curve_signal }}</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Alyosha Daemon • Updated weekly
+        </div>
     </div>
-    
-    <div class="summary">
-        <strong>{{ summary.count }}/{{ summary.total }}</strong> signals elevated
-        {% if summary.count >= 2 %}
-        <br>⚠️ Multiple stress signals — increased caution warranted
-        {% else %}
-        <br>✅ No systemic stress detected
-        {% endif %}
-    </div>
-    
-    <p class="timestamp">Last updated: {{ timestamp }}</p>
 </body>
 </html>
 """
 
-def get_latest_data():
-    """Load most recent fragility data, fallback to sample"""
-    try:
-        if DATA_DIR.exists():
-            files = sorted(DATA_DIR.glob('*.json'), reverse=True)
-            if files:
-                with open(files[0]) as f:
-                    return json.load(f), files[0].stem, False
-    except:
-        pass  # Fall through to sample
-    
-    # Fallback to embedded sample data (used on Render)
-    return SAMPLE_DATA, SAMPLE_DATA["timestamp"][:10], True
-
-def format_signals(data):
-    """Format signals for display"""
-    if not data:
-        return [], {"count": 0, "total": 0}
-    
-    signals = []
-    elevated = 0
-    
-    s = data.get("signals", {})
-    
-    # VIX
-    vix = s.get("volatility", {}).get("vix", {})
-    vix_val = vix.get("current", 0)
-    is_elevated = vix_val >= 20
-    signals.append({
-        "name": "VIX",
-        "value": vix_val if vix_val else "N/A",
-        "status_emoji": "⚠️" if is_elevated else "✅",
-        "status_class": "status-elevated" if is_elevated else "status-normal"
-    })
-    if is_elevated:
-        elevated += 1
-    
-    # VVIX
-    vvix = s.get("volatility", {}).get("vvix", {})
-    vvix_val = vvix.get("current", 0)
-    is_elevated = vvix_val > 110
-    signals.append({
-        "name": "VVIX (Vol of Vol)",
-        "value": vvix_val if vvix_val else "N/A",
-        "status_emoji": "⚠️" if is_elevated else "✅",
-        "status_class": "status-elevated" if is_elevated else "status-normal"
-    })
-    if is_elevated:
-        elevated += 1
-    
-    # Concentration
-    conc = s.get("concentration", {})
-    conc_val = conc.get("top7_weight_pct", 0)
-    is_elevated = conc_val > 40
-    signals.append({
-        "name": "Top 7 Concentration",
-        "value": f"{conc_val}%" if conc_val else "N/A",
-        "status_emoji": "⚠️" if is_elevated else "✅",
-        "status_class": "status-elevated" if is_elevated else "status-normal"
-    })
-    if is_elevated:
-        elevated += 1
-    
-    # Yield Curve
-    curve = s.get("curve", {})
-    spread = curve.get("spread", 0)
-    is_inverted = spread < 0
-    signals.append({
-        "name": "Yield Curve (10Y-3M)",
-        "value": f"{spread:+.2f}%" if spread else "N/A",
-        "status_emoji": "🔴" if is_inverted else "✅",
-        "status_class": "status-critical" if is_inverted else "status-normal"
-    })
-    if is_inverted:
-        elevated += 1
-    
-    return signals, {"count": elevated, "total": len(signals)}
+def get_signal_class(signal_text):
+    if "Normal" in signal_text or "✅" in signal_text:
+        return "signal-normal"
+    elif "CONCENTRATED" in signal_text or "⚠️" in signal_text:
+        return "signal-warning"
+    else:
+        return "signal-danger"
 
 @app.route('/')
-def index():
-    data, timestamp, demo_mode = get_latest_data()
-    signals, summary = format_signals(data)
-    return render_template_string(
-        TEMPLATE,
-        signals=signals,
-        summary=summary,
-        timestamp=timestamp,
-        demo_mode=demo_mode
+def dashboard():
+    data = SAMPLE_DATA
+    signals = data['signals']
+    vol = signals['volatility']
+    conc = signals['concentration']
+    curve = signals['curve']
+    
+    return render_template_string(TEMPLATE,
+        timestamp=data['timestamp'],
+        vix=vol['vix']['current'],
+        vix_change=f"{vol['vix']['change_pct']:+.1f}%",
+        vvix=vol['vvix']['current'],
+        vvix_change=f"{vol['vvix']['change_pct']:+.1f}%",
+        vol_signal=vol['signal'].replace('✅ ', '').replace('⚠️ ', ''),
+        vol_class=get_signal_class(vol['signal']),
+        concentration=conc['top7_weight_pct'],
+        conc_signal=conc['signal'].replace('✅ ', '').replace('⚠️ ', ''),
+        conc_class=get_signal_class(conc['signal']),
+        conc_note=conc['note'],
+        yield_10y=curve['10y_yield'],
+        yield_3m=curve['3m_yield'],
+        spread=curve['spread'],
+        curve_signal=curve['signal'].replace('✅ ', '').replace('⚠️ ', ''),
+        curve_class=get_signal_class(curve['signal'])
     )
 
 @app.route('/health')
 def health():
-    return jsonify({"status": "ok"})
-
-@app.route('/api/data')
-def api_data():
-    data, timestamp, demo_mode = get_latest_data()
-    return jsonify({
-        "data": data,
-        "timestamp": timestamp,
-        "demo_mode": demo_mode
-    })
+    return {'status': 'ok', 'timestamp': datetime.utcnow().isoformat()}
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(debug=True, port=5000)
