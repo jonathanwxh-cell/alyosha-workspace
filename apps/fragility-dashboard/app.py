@@ -12,7 +12,32 @@ import os
 
 app = Flask(__name__)
 
+# Try local data first, fallback to embedded sample
 DATA_DIR = Path(__file__).parent.parent.parent / 'data' / 'fragility'
+
+# Embedded sample data for when local data unavailable (Render deployment)
+SAMPLE_DATA = {
+    "timestamp": "2026-02-03T04:20:57.678670",
+    "signals": {
+        "volatility": {
+            "vix": {"current": 16.34, "5d_ago": 16.35, "change_pct": -0.1},
+            "vvix": {"current": 98.77, "5d_ago": 101.26, "change_pct": -2.5},
+            "signal": "✅ Normal"
+        },
+        "credit": {"note": "Need FRED API key for credit spreads"},
+        "concentration": {
+            "top7_weight_pct": 47.2,
+            "signal": "⚠️ CONCENTRATED",
+            "note": "Top 7 stocks as % of S&P 500"
+        },
+        "curve": {
+            "10y_yield": 4.28,
+            "3m_yield": 3.58,
+            "spread": 0.7,
+            "signal": "✅ Normal"
+        }
+    }
+}
 
 TEMPLATE = """
 <!DOCTYPE html>
@@ -48,11 +73,22 @@ TEMPLATE = """
             padding: 15px; border-radius: 8px; margin-top: 20px;
         }
         .timestamp { color: #666; font-size: 0.85em; margin-top: 20px; }
+        .demo-banner {
+            background: #422006; border: 1px solid #f59e0b;
+            padding: 10px; border-radius: 8px; margin-bottom: 20px;
+            font-size: 0.9em;
+        }
     </style>
 </head>
 <body>
     <h1>📊 Fragility Signals</h1>
     <p class="subtitle">Market stress indicators · Updated weekly</p>
+    
+    {% if demo_mode %}
+    <div class="demo-banner">
+        ⚠️ Demo mode — showing sample data. Live data updates weekly.
+    </div>
+    {% endif %}
     
     <div class="card">
         {% for signal in signals %}
@@ -80,15 +116,18 @@ TEMPLATE = """
 """
 
 def get_latest_data():
-    """Load most recent fragility data"""
+    """Load most recent fragility data, fallback to sample"""
     try:
-        files = sorted(DATA_DIR.glob('*.json'), reverse=True)
-        if files:
-            with open(files[0]) as f:
-                return json.load(f), files[0].stem
-        return None, None
-    except:
-        return None, None
+        if DATA_DIR.exists():
+            files = sorted(DATA_DIR.glob('*.json'), reverse=True)
+            if files:
+                with open(files[0]) as f:
+                    return json.load(f), files[0].stem, False
+    except Exception as e:
+        app.logger.error(f"Error loading data: {e}")
+    
+    # Fallback to sample data
+    return SAMPLE_DATA, SAMPLE_DATA["timestamp"][:10], True
 
 def format_signals(data):
     """Format signals for display"""
@@ -102,21 +141,24 @@ def format_signals(data):
     
     # VIX
     vix = s.get("volatility", {}).get("vix", {})
+    vix_val = vix.get("current", 0)
+    is_elevated = vix_val >= 20
     signals.append({
         "name": "VIX",
-        "value": vix.get("current", "N/A"),
-        "status_emoji": "✅" if vix.get("current", 0) < 20 else "⚠️",
-        "status_class": "status-normal" if vix.get("current", 0) < 20 else "status-elevated"
+        "value": vix_val if vix_val else "N/A",
+        "status_emoji": "⚠️" if is_elevated else "✅",
+        "status_class": "status-elevated" if is_elevated else "status-normal"
     })
-    if vix.get("current", 0) >= 20:
+    if is_elevated:
         elevated += 1
     
     # VVIX
     vvix = s.get("volatility", {}).get("vvix", {})
-    is_elevated = vvix.get("current", 0) > 110
+    vvix_val = vvix.get("current", 0)
+    is_elevated = vvix_val > 110
     signals.append({
         "name": "VVIX (Vol of Vol)",
-        "value": vvix.get("current", "N/A"),
+        "value": vvix_val if vvix_val else "N/A",
         "status_emoji": "⚠️" if is_elevated else "✅",
         "status_class": "status-elevated" if is_elevated else "status-normal"
     })
@@ -125,10 +167,11 @@ def format_signals(data):
     
     # Concentration
     conc = s.get("concentration", {})
-    is_elevated = conc.get("top7_weight_pct", 0) > 40
+    conc_val = conc.get("top7_weight_pct", 0)
+    is_elevated = conc_val > 40
     signals.append({
         "name": "Top 7 Concentration",
-        "value": f"{conc.get('top7_weight_pct', 'N/A')}%",
+        "value": f"{conc_val}%" if conc_val else "N/A",
         "status_emoji": "⚠️" if is_elevated else "✅",
         "status_class": "status-elevated" if is_elevated else "status-normal"
     })
@@ -137,37 +180,44 @@ def format_signals(data):
     
     # Yield Curve
     curve = s.get("curve", {})
-    is_inverted = curve.get("spread", 1) < 0
+    spread = curve.get("spread", 0)
+    is_inverted = spread < 0
     signals.append({
-        "name": "10Y-3M Spread",
-        "value": f"{curve.get('spread', 'N/A')}%",
-        "status_emoji": "⚠️" if is_inverted else "✅",
-        "status_class": "status-elevated" if is_inverted else "status-normal"
+        "name": "Yield Curve (10Y-3M)",
+        "value": f"{spread:+.2f}%" if spread else "N/A",
+        "status_emoji": "🔴" if is_inverted else "✅",
+        "status_class": "status-critical" if is_inverted else "status-normal"
     })
     if is_inverted:
         elevated += 1
     
-    return signals, {"count": elevated, "total": 4}
+    return signals, {"count": elevated, "total": len(signals)}
 
 @app.route('/')
 def index():
-    data, date = get_latest_data()
+    data, timestamp, demo_mode = get_latest_data()
     signals, summary = format_signals(data)
-    return render_template_string(TEMPLATE, 
-        signals=signals, 
+    return render_template_string(
+        TEMPLATE,
+        signals=signals,
         summary=summary,
-        timestamp=date or "No data"
+        timestamp=timestamp,
+        demo_mode=demo_mode
     )
-
-@app.route('/api/latest')
-def api_latest():
-    data, date = get_latest_data()
-    return jsonify({"data": data, "date": date})
 
 @app.route('/health')
 def health():
     return jsonify({"status": "ok"})
 
+@app.route('/api/data')
+def api_data():
+    data, timestamp, demo_mode = get_latest_data()
+    return jsonify({
+        "data": data,
+        "timestamp": timestamp,
+        "demo_mode": demo_mode
+    })
+
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5001))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=True)
