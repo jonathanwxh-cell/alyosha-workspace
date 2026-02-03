@@ -6,9 +6,8 @@ services:
   - type: web
     name: fragility-signals
     runtime: python
-    rootDir: apps/fragility-dashboard
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    buildCommand: pip install flask gunicorn
+    startCommand: gunicorn --chdir apps/fragility-dashboard app:app
     envVars:
       - key: PYTHON_VERSION
         value: "3.11"
@@ -18,5 +17,4 @@ services:
 # Future apps go here:
 # - type: web
 #   name: research-dashboard
-#   rootDir: apps/research-dashboard
 #   ...

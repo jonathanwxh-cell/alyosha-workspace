@@ -12,15 +12,28 @@ import os
 
 app = Flask(__name__)
 
-# Try local data first, fallback to embedded sample
-DATA_DIR = Path(__file__).parent.parent.parent / 'data' / 'fragility'
+# Try multiple data locations (handles different deployment setups)
+def find_data_dir():
+    candidates = [
+        Path(__file__).parent.parent.parent / 'data' / 'fragility',  # From app dir
+        Path('/opt/render/project/src/data/fragility'),  # Render absolute
+        Path.cwd() / 'data' / 'fragility',  # From working dir
+        Path(__file__).parent / 'data',  # Local to app
+    ]
+    for p in candidates:
+        if p.exists():
+            return p
+    return None
+
+DATA_DIR = find_data_dir()
 
 # Embedded sample data for when local data unavailable (Render deployment)
+# Updated: 2026-02-03
 SAMPLE_DATA = {
-    "timestamp": "2026-02-03T04:20:57.678670",
+    "timestamp": "2026-02-03T08:59:00.000000",
     "signals": {
         "volatility": {
-            "vix": {"current": 16.34, "5d_ago": 16.35, "change_pct": -0.1},
+            "vix": {"current": 16.24, "5d_ago": 16.35, "change_pct": -0.7},
             "vvix": {"current": 98.77, "5d_ago": 101.26, "change_pct": -2.5},
             "signal": "✅ Normal"
         },
@@ -118,7 +131,7 @@ TEMPLATE = """
 def get_latest_data():
     """Load most recent fragility data, fallback to sample"""
     try:
-        if DATA_DIR.exists():
+        if DATA_DIR and DATA_DIR.exists():
             files = sorted(DATA_DIR.glob('*.json'), reverse=True)
             if files:
                 with open(files[0]) as f:
