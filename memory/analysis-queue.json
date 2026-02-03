@@ -1,0 +1,5 @@
+{
+  "queue": [],
+  "completed": [],
+  "note": "Add tickers here for scheduled Sonnet analysis. Format: {\"ticker\": \"NVDA\", \"added\": \"2026-02-03\", \"priority\": \"normal\"}"
+}

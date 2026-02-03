@@ -91,21 +91,20 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 
 **Comparison:** `docs/financial-apis-comparison.md`
 
-### Transcript Analysis (internal tool)
-- **Script:** `scripts/transcript-analyzer.py SYMBOL YEAR QUARTER`
-- **Purpose:** Deep analysis for research, NOT for broadcast
-- **Signals extracted:**
-  - Loughran-McDonald sentiment (finance-specific lexicon)
-  - Hedging vs certainty language ratio
-  - Prepared remarks vs Q&A tone gap
-  - Key phrase extraction
-- **Usage:** Background research before earnings, historical tone comparisons
-- **Research basis:** Berkeley/Georgia Tech papers on NLP earnings analysis
+### Stock Analysis (Sonnet-powered)
+- **Skill:** `skills/stock-analysis/`
+- **Scripts:** 
+  - `scripts/transcript-compare.py TICKER` — 4-quarter tone comparison
+  - `scripts/deep-analyzer.py TICKER` — qualitative signals
+  - `scripts/finnhub-client.py insider/recommend TICKER` — alt data
+- **Queue:** `python3 scripts/queue-analysis.py TICKER` — adds to Sonnet analysis queue
+- **Cron:** Mon/Thu 10am SGT — processes queue, shows model used
+- **Output:** Structured analysis with model attribution
 
 **Example:**
 ```bash
-python3 scripts/transcript-analyzer.py NVDA 2025 Q3
-python3 scripts/transcript-analyzer.py NVDA --compare  # Last 4 quarters
+python3 scripts/queue-analysis.py NVDA SE AAPL  # Queue for analysis
+python3 scripts/transcript-compare.py NVDA      # Instant local analysis
 ```
 
 ### Moltbook (AI Agent Social Network)
