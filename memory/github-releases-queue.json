@@ -1,0 +1,23 @@
+{
+  "pending": [
+    {
+      "repo": "Llama",
+      "version": "v0.2.0",
+      "date": "2025-04-05",
+      "url": "https://github.com/meta-llama/llama-models/releases/tag/v0.2.0",
+      "description": "Llama 4 Support",
+      "priority": "MEDIUM",
+      "detected": "2026-02-03T04:00:00Z"
+    },
+    {
+      "repo": "OpenAI SDK",
+      "version": "v2.16.0",
+      "date": "2026-01-27", 
+      "url": "https://github.com/openai/openai-python/releases/tag/v2.16.0",
+      "description": "SDK updates",
+      "priority": "MEDIUM",
+      "detected": "2026-02-03T04:00:00Z"
+    }
+  ],
+  "lastCheck": "2026-02-03T04:00:00Z"
+}

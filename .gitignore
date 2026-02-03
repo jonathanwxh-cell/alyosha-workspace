@@ -1,51 +1,40 @@
-# Secrets - NEVER commit these
-.env
-.env.*
-*.env
+# Secrets - NEVER commit
 .secure/
-secrets/
-credentials/
-
-# API keys and tokens
-**/api_key*
-**/apikey*
-**/*token*
+*.env
+**/secrets/
 **/*secret*
+**/*token*
 
-# OpenClaw
-openclaw.json
+# Large binary files - store elsewhere
+*.mp3
+*.wav
+*.ogg
+*.mp4
+*.mov
+*.xlsx
+*.xls
+
+# OS/editor
+.DS_Store
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
 
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
+*.pyc
 .venv/
 venv/
-ENV/
 
 # Node
 node_modules/
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-logs/
-
-# Temp
-tmp/
-temp/
+# Temp files
 *.tmp
+*.bak
+*.log
 
-# Virtual environments
-.venv/
-venv/
-env/
+# Submodules with untracked content (handle separately)
+sg-weather-app/
