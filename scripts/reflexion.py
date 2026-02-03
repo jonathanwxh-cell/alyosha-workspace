@@ -19,6 +19,8 @@ Usage:
     python3 reflexion.py lessons                    # Extract top lessons learned
     python3 reflexion.py recent [n]                 # Show last N reflections (default 5)
     python3 reflexion.py failures                   # Show only failures (best for learning)
+    python3 reflexion.py export                     # Export lessons as markdown for MEMORY.md
+    python3 reflexion.py trends                     # Show success rate trends over time
 
 The daemon should:
 1. BEFORE task: query past reflections for similar tasks
@@ -28,20 +30,29 @@ The daemon should:
 
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 from pathlib import Path
 from collections import Counter
 
 REFLECTIONS_FILE = Path.home() / '.openclaw/workspace/memory/reflections.jsonl'
 
-# Keywords for semantic matching (simple but effective)
+# Keywords for semantic matching (expanded for better categorization)
 CATEGORY_KEYWORDS = {
-    'research': ['research', 'search', 'find', 'discover', 'explore', 'investigate', 'scan'],
-    'analysis': ['analyze', 'analysis', 'evaluate', 'assess', 'compare', 'review'],
-    'writing': ['write', 'draft', 'compose', 'create', 'document', 'article'],
-    'coding': ['code', 'script', 'build', 'implement', 'fix', 'debug', 'program'],
-    'communication': ['send', 'message', 'notify', 'alert', 'surface', 'share'],
-    'planning': ['plan', 'schedule', 'organize', 'prioritize', 'strategy'],
+    'research': ['research', 'search', 'find', 'discover', 'explore', 'investigate', 'scan', 
+                 'paper', 'arxiv', 'study', 'source', 'fetch', 'web_search', 'news'],
+    'analysis': ['analyze', 'analysis', 'evaluate', 'assess', 'compare', 'review', 'deep',
+                 'synthesis', 'insight', 'framework', 'thesis', 'investment', 'stock', 'market'],
+    'writing': ['write', 'draft', 'compose', 'create', 'document', 'article', 'post',
+                'substack', 'blog', 'content', 'summary', 'brief'],
+    'coding': ['code', 'script', 'build', 'implement', 'fix', 'debug', 'program', 'python',
+               'tool', 'cron', 'automat', 'function', 'class', 'api'],
+    'communication': ['send', 'message', 'notify', 'alert', 'surface', 'share', 'telegram',
+                      'email', 'reply', 'respond', 'deliver'],
+    'planning': ['plan', 'schedule', 'organize', 'prioritize', 'strategy', 'goal', 'project'],
+    'meta': ['daemon', 'heartbeat', 'improve', 'evolve', 'self', 'reflexion', 'memory',
+             'pattern', 'lesson', 'learn', 'metacognitive', 'autonomous'],
+    'creative': ['creative', 'art', 'image', 'visual', 'story', 'fiction', 'sonif', 
+                 'generate', 'dall-e', 'aesthetic'],
 }
 
 
@@ -68,12 +79,22 @@ def save_reflection(reflection):
         f.write(json.dumps(reflection) + '\n')
 
 
-def get_category(text):
-    """Determine category from text using keyword matching."""
-    text_lower = text.lower()
+def get_category(text, additional_text=''):
+    """Determine category from text using keyword matching.
+    
+    Args:
+        text: Primary text (task description)
+        additional_text: Secondary text (lesson, reflection) for better matching
+    """
+    combined = f"{text} {additional_text}".lower()
     scores = {}
     for cat, keywords in CATEGORY_KEYWORDS.items():
-        scores[cat] = sum(1 for kw in keywords if kw in text_lower)
+        # Count keyword matches, with partial matching
+        score = 0
+        for kw in keywords:
+            if kw in combined:
+                score += 2 if kw in text.lower() else 1  # Task matches worth more
+        scores[cat] = score
     
     best = max(scores, key=scores.get)
     return best if scores[best] > 0 else 'general'
@@ -161,13 +182,13 @@ def add_reflection_interactive():
     would_repeat = input("Would repeat approach? (y/n): ").strip().lower() == 'y'
     
     entry = {
-        'timestamp': datetime.now().isoformat(),
+        'timestamp': datetime.now(timezone.utc).isoformat(),
         'task': task,
         'outcome': outcome,
         'reflection': reflection,
         'lesson': lesson,
         'would_repeat': would_repeat,
-        'category': get_category(task)
+        'category': get_category(task, f"{reflection} {lesson}")
     }
     
     save_reflection(entry)
@@ -177,13 +198,13 @@ def add_reflection_interactive():
 def add_reflection_direct(task, outcome, reflection, lesson, would_repeat=True):
     """Add reflection programmatically (for daemon use)."""
     entry = {
-        'timestamp': datetime.now().isoformat(),
+        'timestamp': datetime.now(timezone.utc).isoformat(),
         'task': task,
         'outcome': outcome,
         'reflection': reflection,
         'lesson': lesson,
         'would_repeat': would_repeat,
-        'category': get_category(task)
+        'category': get_category(task, f"{reflection} {lesson}")
     }
     save_reflection(entry)
     return entry
@@ -319,6 +340,124 @@ def show_failures():
             print(f"   {pattern}")
 
 
+def export_for_memory():
+    """Export lessons in markdown format suitable for MEMORY.md updates."""
+    reflections = load_reflections()
+    
+    if not reflections:
+        print("📭 No reflections yet")
+        return
+    
+    # Get last 30 days of reflections
+    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
+    recent = []
+    for r in reflections:
+        try:
+            ts = r.get('timestamp', '')
+            if 'Z' in ts:
+                ts = ts.replace('Z', '+00:00')
+            elif '+' not in ts and len(ts) == 19:
+                ts = ts + '+00:00'
+            dt = datetime.fromisoformat(ts)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            if dt > cutoff:
+                recent.append(r)
+        except:
+            recent.append(r)  # Include if date parsing fails
+    
+    # Group by outcome
+    successes = [r for r in recent if r.get('outcome') == 'success' and r.get('lesson')]
+    failures = [r for r in recent if r.get('outcome') in ('failure', 'partial') and r.get('lesson')]
+    
+    # Generate markdown
+    print("## Lessons Learned (from reflections.jsonl)\n")
+    print(f"*Exported: {datetime.now(timezone.utc).strftime('%Y-%m-%d')} | "
+          f"Period: Last 30 days | Total: {len(recent)} reflections*\n")
+    
+    if successes:
+        print("### What Worked\n")
+        seen_lessons = set()
+        for r in sorted(successes, key=lambda x: x.get('timestamp', ''), reverse=True):
+            lesson = r.get('lesson', '')[:100]
+            # Dedupe similar lessons
+            lesson_key = lesson[:30].lower()
+            if lesson_key not in seen_lessons:
+                seen_lessons.add(lesson_key)
+                print(f"- {lesson}")
+        print()
+    
+    if failures:
+        print("### What Didn't Work (Learn From These)\n")
+        seen_lessons = set()
+        for r in sorted(failures, key=lambda x: x.get('timestamp', ''), reverse=True):
+            lesson = r.get('lesson', '')[:100]
+            lesson_key = lesson[:30].lower()
+            if lesson_key not in seen_lessons:
+                seen_lessons.add(lesson_key)
+                outcome_marker = "⚠️" if r.get('outcome') == 'partial' else "❌"
+                print(f"- {outcome_marker} {lesson}")
+        print()
+    
+    # Stats summary
+    total = len(recent)
+    success_count = len([r for r in recent if r.get('outcome') == 'success'])
+    print(f"### Stats\n")
+    print(f"- Success rate: {success_count/total*100:.0f}% ({success_count}/{total})")
+    
+    # Category breakdown
+    cats = Counter(r.get('category', 'general') for r in recent)
+    print(f"- Top categories: {', '.join(f'{c}({n})' for c, n in cats.most_common(3))}")
+    
+    print("\n---")
+    print("*Copy relevant lessons to MEMORY.md → Lessons Learned section*")
+
+
+def show_trends():
+    """Show success rate trends over time."""
+    reflections = load_reflections()
+    
+    if len(reflections) < 5:
+        print("📭 Need more reflections for trend analysis (min 5)")
+        return
+    
+    # Group by week
+    weeks = {}
+    for r in reflections:
+        try:
+            ts = r.get('timestamp', '')[:10]
+            dt = datetime.fromisoformat(ts)
+            week = dt.strftime('%Y-W%W')
+            if week not in weeks:
+                weeks[week] = {'success': 0, 'partial': 0, 'failure': 0, 'total': 0}
+            outcome = r.get('outcome', 'partial')
+            weeks[week][outcome] = weeks[week].get(outcome, 0) + 1
+            weeks[week]['total'] += 1
+        except:
+            pass
+    
+    print("📈 Success Rate Trends by Week\n")
+    
+    for week in sorted(weeks.keys())[-8:]:  # Last 8 weeks
+        stats = weeks[week]
+        total = stats['total']
+        rate = stats['success'] / total * 100 if total > 0 else 0
+        bar = "█" * int(rate / 10)
+        print(f"   {week}: {bar:10} {rate:5.0f}% ({stats['success']}/{total})")
+    
+    # Overall trend
+    sorted_weeks = sorted(weeks.keys())
+    if len(sorted_weeks) >= 2:
+        first_half = sorted_weeks[:len(sorted_weeks)//2]
+        second_half = sorted_weeks[len(sorted_weeks)//2:]
+        
+        first_rate = sum(weeks[w]['success'] for w in first_half) / sum(weeks[w]['total'] for w in first_half) * 100
+        second_rate = sum(weeks[w]['success'] for w in second_half) / sum(weeks[w]['total'] for w in second_half) * 100
+        
+        trend = "📈 Improving" if second_rate > first_rate + 5 else "📉 Declining" if second_rate < first_rate - 5 else "➡️ Stable"
+        print(f"\n{trend}: {first_rate:.0f}% → {second_rate:.0f}%")
+
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
@@ -350,6 +489,12 @@ def main():
     
     elif cmd == 'failures':
         show_failures()
+    
+    elif cmd == 'export':
+        export_for_memory()
+    
+    elif cmd == 'trends':
+        show_trends()
     
     else:
         print(__doc__)
