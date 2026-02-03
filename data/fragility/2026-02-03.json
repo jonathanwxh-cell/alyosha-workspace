@@ -1,17 +1,11 @@
-Fetching fragility signals...
-
-1. VIX/VVIX...
-2. Credit spreads...
-3. Concentration...
-4. Treasury curve...
 {
-  "timestamp": "2026-02-03T04:20:57.678670",
+  "timestamp": "2026-02-03T09:00:08.599595",
   "signals": {
     "volatility": {
       "vix": {
-        "current": 16.34,
+        "current": 16.23,
         "5d_ago": 16.35,
-        "change_pct": -0.1
+        "change_pct": -0.7
       },
       "vvix": {
         "current": 98.77,

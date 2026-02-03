@@ -189,12 +189,30 @@ def format_report(report):
     
     return "\n".join(lines)
 
+def save_report(report):
+    """Save report to data directory for Render deployment"""
+    from pathlib import Path
+    data_dir = Path(__file__).parent.parent / 'data' / 'fragility'
+    data_dir.mkdir(parents=True, exist_ok=True)
+    
+    date_str = report['timestamp'][:10]
+    filepath = data_dir / f"{date_str}.json"
+    
+    with open(filepath, 'w') as f:
+        json.dump(report, f, indent=2)
+    
+    print(f"\n💾 Saved to {filepath}")
+    return filepath
+
 if __name__ == "__main__":
     import sys
     
+    report = generate_report()
+    
     if len(sys.argv) > 1 and sys.argv[1] == "json":
-        report = generate_report()
         print(json.dumps(report, indent=2))
     else:
-        report = generate_report()
         print(format_report(report))
+    
+    # Always save to data dir
+    save_report(report)
