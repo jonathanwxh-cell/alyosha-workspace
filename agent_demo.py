@@ -11,7 +11,7 @@ from datetime import datetime
 import os
 
 # Config
-OPENAI_KEY = "REDACTED"
+OPENAI_KEY = os.getenv("OPENAI_API_KEY", "")
 ALPHA_VANTAGE_KEY = "054D8110ZPMDWOZL"
 TARGET_TICKER = "NVDA"  # NVIDIA - hot topic
 
