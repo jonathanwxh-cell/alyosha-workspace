@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "purpose": "Track weekly surface budgets by category to prevent over-concentration",
+    "resetDay": "Sunday",
+    "resetTz": "Asia/Singapore",
+    "lastReset": "2026-02-02T16:00:00Z"
+  },
+  "finance": {
+    "weeklyBudget": 1,
+    "thisWeek": 0,
+    "lastSurface": null,
+    "gates": {
+      "crisisThreshold": 0.03,
+      "earningsSurpriseThreshold": 0.10,
+      "description": "Only surface if: >3% move, >10% earnings surprise, explicit request, or budget not exhausted"
+    }
+  },
+  "consciousness": {
+    "weeklyBudget": 5,
+    "thisWeek": 0,
+    "lastSurface": null,
+    "priority": "high",
+    "note": "Actively seek this topic"
+  },
+  "creative": {
+    "weeklyBudget": 4,
+    "thisWeek": 1,
+    "lastSurface": "2026-02-03T01:10:00Z",
+    "lastTopic": "NVDA DeepSeek crash sonification"
+  },
+  "philosophy": {
+    "weeklyBudget": 3,
+    "thisWeek": 0,
+    "lastSurface": null
+  },
+  "science": {
+    "weeklyBudget": 3,
+    "thisWeek": 0,
+    "lastSurface": null
+  },
+  "geopolitics": {
+    "weeklyBudget": 3,
+    "thisWeek": 0,
+    "lastSurface": null
+  },
+  "family": {
+    "weeklyBudget": 2,
+    "thisWeek": 0,
+    "lastSurface": null
+  }
+}

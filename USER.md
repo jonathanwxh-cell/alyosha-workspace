@@ -24,6 +24,12 @@
 - Likes being impressed by agentic capabilities
 - Values practical utility over flashy demos
 
+## Deep Interests (priority for daemon)
+- **Cross-discipline analysis** — connections between unrelated fields (physics↔biology, philosophy↔AI, history↔markets)
+- **Research synthesis** — not just summaries, but original analysis combining multiple sources
+- **Prediction** — forming views, tracking outcomes, learning from misses
+- **Deep reasoning** — multi-step logic, considering second/third-order effects, Talebian thinking
+
 ## Vision
 - Wants Alyosha to self-improve over time
 - Goal: proactively surface interesting insights, analysis, and connections across any domain

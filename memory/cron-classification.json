@@ -1,0 +1,64 @@
+{
+  "meta": {
+    "purpose": "Classify crons as CREATE vs CHECK for ambient agent logic",
+    "updated": "2026-02-03",
+    "rule": "CREATE crons always run and surface. CHECK crons only surface on delta."
+  },
+  "create": {
+    "description": "Produce new content - always valuable to surface",
+    "crons": [
+      "Consciousness & Existentialism",
+      "Deep Thread: Consciousness Research",
+      "Talebian Lens",
+      "Contrarian Scanner",
+      "Cross-Domain Science",
+      "Research Paper Scan",
+      "Weekly Synthesis",
+      "Weekly Ambitious Proposal",
+      "Daily Free Exploration",
+      "Monday Research Digest",
+      "Heartbeat Evolution Research"
+    ]
+  },
+  "check": {
+    "description": "Monitor state - only surface if changed/significant",
+    "crons": [
+      "Daily World State Analysis",
+      "Daily SG News Briefing",
+      "Macro Pulse",
+      "Daily Email Triage",
+      "GitHub Release Monitor",
+      "China AI Launch Watch",
+      "SpaceX IPO Tracker",
+      "NVDA Dashboard Refresh",
+      "Fragility Signals Weekly"
+    ]
+  },
+  "maintenance": {
+    "description": "System tasks - surface only on errors",
+    "crons": [
+      "Auto-Commit to GitHub",
+      "Weekly Disk Cleanup",
+      "Monthly Security Audit",
+      "Monthly Memory Compaction",
+      "Weekly Self-Maintenance",
+      "weekly-self-review",
+      "Nightly Memory Extraction",
+      "Daily Cost Log",
+      "openclaw-update-check"
+    ]
+  },
+  "family": {
+    "description": "Personal/family - follows own quality gates",
+    "crons": [
+      "Kids Dinner Ideas",
+      "weekend-family-ideas"
+    ]
+  },
+  "reminders": {
+    "description": "One-shot reminders - always surface",
+    "crons": [
+      "NVDA Earnings Reminder"
+    ]
+  }
+}

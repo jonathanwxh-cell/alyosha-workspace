@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "purpose": "Queue of long-form pieces for Deep Reading Hour",
+    "updated": "2026-02-03"
+  },
+  "queue": [
+    {
+      "title": "The Black Swan - Chapter on Mediocristan vs Extremistan",
+      "author": "Nassim Taleb",
+      "type": "book_chapter",
+      "why": "Core Talebian framework, foundational",
+      "added": "2026-02-03"
+    },
+    {
+      "title": "What Is It Like to Be a Bat?",
+      "author": "Thomas Nagel",
+      "type": "essay",
+      "why": "Classic consciousness paper, hard problem",
+      "added": "2026-02-03"
+    },
+    {
+      "title": "Consciousness and the Collapse of the Wave Function",
+      "author": "David Chalmers",
+      "type": "paper",
+      "why": "Quantum consciousness intersection",
+      "added": "2026-02-03"
+    },
+    {
+      "title": "The AI Cargo Cult",
+      "author": "Gwern",
+      "type": "blog",
+      "url": "https://gwern.net/ai-cargo-cult",
+      "why": "Critique of AI hype, grounded analysis",
+      "added": "2026-02-03"
+    },
+    {
+      "title": "Meditations on Moloch",
+      "author": "Scott Alexander",
+      "type": "blog",
+      "why": "Game theory, coordination failures, classic SSC",
+      "added": "2026-02-03"
+    }
+  ],
+  "completed": []
+}

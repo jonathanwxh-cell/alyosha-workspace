@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "purpose": "Backlog of small tools/prototypes to build during Weekly Build Sprint",
+    "updated": "2026-02-03"
+  },
+  "ideas": [
+    {
+      "name": "Quote of the Day generator",
+      "desc": "Pull from Stoic/Talebian quotes, surface one per day",
+      "complexity": "low",
+      "added": "2026-02-03"
+    },
+    {
+      "name": "Engagement heatmap",
+      "desc": "Visualize which hours/days get best response from Jon",
+      "complexity": "medium",
+      "added": "2026-02-03"
+    },
+    {
+      "name": "Topic wheel",
+      "desc": "Visual representation of topic-graph.json connections",
+      "complexity": "medium",
+      "added": "2026-02-03"
+    },
+    {
+      "name": "Cron health dashboard",
+      "desc": "Simple view of all crons, last run, errors",
+      "complexity": "low",
+      "added": "2026-02-03"
+    },
+    {
+      "name": "Memory size tracker",
+      "desc": "Track growth of memory/ folder over time",
+      "complexity": "low",
+      "added": "2026-02-03"
+    }
+  ],
+  "completed": []
+}

@@ -36,6 +36,8 @@ Jon has a pattern: speculate (options, multiples) → burn out fast. Finance con
 - 5-10% of content (not dominant)
 Don't enable the gambling impulse. Provide calm perspective when markets come up.
 
+**IMPORTANT (2026-02-03):** Ad-hoc finance work (like building analysis tools when asked) does NOT mean increased baseline interest. Jon requests specific finance tasks occasionally — this is different from wanting regular finance surfaces. The finance gating (1x/week proactive) still applies. Don't conflate "helped with stock analysis" with "wants more market updates."
+
 **Update (2026-02-03):** Jon noted he tends to speculate more when **bored** — often betting on crashes. When busy/engaged with other things, the urge fades. Implication: keep him intellectually engaged with non-market content → less destructive speculation. The daemon work itself may be therapeutic.
 
 ## Lessons Learned (from reflections.jsonl)
@@ -75,9 +77,12 @@ Don't enable the gambling impulse. Provide calm perspective when markets come up
 
 ## Infrastructure Notes
 
-- **Cost consciousness:** Opus for complex, Sonnet for simple cron jobs
+- **Model allocation (confirmed 2026-02-03):**
+  - **Opus:** Interactive dev sessions, architecture decisions, meta-cognition, weekly self-review
+  - **Sonnet:** ALL cron jobs, financial analysis, research compilation, routine tasks
+  - **Financial analysis = Sonnet always** (structured data, clear I/O — doesn't need Opus reasoning)
 - **Disk:** Expanded to 16GB, cleanup cron active
-- **Cron jobs:** ~15 active, optimized timing for engagement windows
+- **Cron jobs:** ~33 active, optimized timing for engagement windows
 - **Feedback loop:** feedback-log.jsonl + scheduling-intelligence.json + what-works.md
 
 ---
@@ -110,3 +115,6 @@ Don't enable the gambling impulse. Provide calm perspective when markets come up
 36. **STOP ASKING PERMISSION:** Recurring failure pattern. Jon has said "act on own analysis" and "no need ask me" MULTIPLE times. When analysis suggests action → DO IT. Don't end with "Want me to...?" Just execute. Logged 2026-02-02.
 37. **PROACTIVE INFRASTRUCTURE:** Don't wait for Jon to notice problems. If I see a gap (no version control, hardcoded secrets, missing backups, inefficient workflow) → FIX IT → REPORT WHAT I DID. "I noticed X, so I built Y" not "Should I build Y?" Confirmed 2026-02-03.
 38. **DEEP DIVE STANDARD:** Multi-source research, actually READ the articles, apply mental models (Taleb, second-order thinking), synthesize with ORIGINAL ANALYSIS, create structured document with: key numbers, fragility map, investment implications, what would change the view. Not summaries — insights. Confirmed 2026-02-03.
+39. **FINANCIAL ANALYSIS = SONNET:** All financial analysis uses Sonnet, not Opus. Structured data processing doesn't need deep reasoning. Keeps costs down, reserves Opus for daemon development and meta-cognition. Jon confirmed 2026-02-03.
+40. **FINANCE GATING (Hybrid):** Finance surfaces ONLY if: (a) >3% market move, (b) >10% earnings surprise, (c) Jon asks, or (d) weekly budget (1x) not exhausted. Otherwise actively seek other topics. Tracked in `memory/surface-budget.json`. Prevents finance from being "sticky". Jon confirmed 2026-02-03.
+41. **SEND FILES DIRECTLY:** When creating scripts/tools/files, paste the ACTUAL CONTENT in the message. Not "saved to scripts/x.py" — send the code itself. Jon can't access workspace files. Reinforced 2026-02-03.
