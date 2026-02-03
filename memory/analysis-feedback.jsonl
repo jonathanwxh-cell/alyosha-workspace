@@ -1,0 +1,2 @@
+{"timestamp": "2026-02-03T13:03:00Z", "ticker": "CRM", "version": 1, "dimensions_complete": 4, "feedback": "Missing dimensions 5-7 (Porter's, second-order)", "fix": "Added explicit prompts for all 7 dimensions"}
+{"timestamp": "2026-02-03T13:05:00Z", "ticker": "CRM", "version": 2, "dimensions_complete": 7, "feedback": "Full framework followed", "quality": "good"}
