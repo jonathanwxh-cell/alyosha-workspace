@@ -12,6 +12,9 @@ Usage:
     python3 position-tracker.py check     # Check all open positions
     python3 position-tracker.py alerts    # Only show positions needing attention
     python3 position-tracker.py summary   # One-line summary
+    python3 position-tracker.py add       # Quick-add a new position (interactive)
+    python3 position-tracker.py close TICKER  # Close a position
+    python3 position-tracker.py history   # Show position history with P&L
 """
 
 import json
@@ -255,12 +258,178 @@ def summary():
     print(" | ".join(parts))
 
 
+def add_position():
+    """Quick-add a new position interactively."""
+    print("📝 Add New Position\n")
+    
+    ticker = input("Ticker (e.g., SPY): ").strip().upper()
+    if not ticker:
+        print("❌ Ticker required")
+        return
+    
+    pos_type = input("Type (option/stock) [option]: ").strip().lower() or 'option'
+    direction = input("Direction (long/short) [long]: ").strip().lower() or 'long'
+    
+    notes = ""
+    if pos_type == 'option':
+        strike = input("Strike price: ").strip()
+        opt_type = input("Put/Call (P/C): ").strip().upper()
+        expiry = input("Expiry (YYYY-MM-DD): ").strip()
+        
+        if strike and opt_type and expiry:
+            notes = f"{strike}{opt_type} exp {expiry}"
+        else:
+            notes = input("Notes (manual): ").strip()
+    else:
+        notes = input("Notes: ").strip()
+    
+    entry_price = input("Entry price (optional): ").strip()
+    
+    # Build entry
+    entry = {
+        'timestamp': datetime.now(timezone.utc).isoformat(),
+        'ticker': ticker,
+        'type': pos_type,
+        'direction': direction,
+        'status': 'open',
+        'notes': notes
+    }
+    
+    if entry_price:
+        try:
+            entry['entry_price'] = float(entry_price)
+        except:
+            pass
+    
+    # Append to journal
+    with open(JOURNAL_FILE, 'a') as f:
+        f.write(json.dumps(entry) + '\n')
+    
+    print(f"\n✅ Added: {ticker} {direction} {notes}")
+    
+    # Show current price
+    price = get_quote(ticker)
+    if price:
+        print(f"   Current {ticker}: ${price:.2f}")
+
+
+def close_position(ticker):
+    """Close an open position."""
+    positions = []
+    closed = False
+    
+    if not JOURNAL_FILE.exists():
+        print("No positions found")
+        return
+    
+    with open(JOURNAL_FILE) as f:
+        for line in f:
+            if line.strip():
+                try:
+                    trade = json.loads(line)
+                    positions.append(trade)
+                except:
+                    pass
+    
+    # Find and close matching position
+    for pos in positions:
+        if pos.get('ticker', '').upper() == ticker.upper() and pos.get('status') == 'open':
+            pos['status'] = 'closed'
+            pos['closed_at'] = datetime.now(timezone.utc).isoformat()
+            
+            # Get exit price
+            exit_price = get_quote(ticker)
+            if exit_price:
+                pos['exit_price'] = exit_price
+                
+                # Calculate P&L if entry price exists
+                if 'entry_price' in pos:
+                    entry = pos['entry_price']
+                    direction = pos.get('direction', 'long')
+                    
+                    if direction == 'long':
+                        pnl_pct = ((exit_price - entry) / entry) * 100
+                    else:
+                        pnl_pct = ((entry - exit_price) / entry) * 100
+                    
+                    pos['pnl_pct'] = round(pnl_pct, 2)
+            
+            closed = True
+            print(f"✅ Closed: {ticker}")
+            if 'pnl_pct' in pos:
+                emoji = "🟢" if pos['pnl_pct'] > 0 else "🔴"
+                print(f"   {emoji} P&L: {pos['pnl_pct']:+.1f}%")
+            break
+    
+    if not closed:
+        print(f"❌ No open position found for {ticker}")
+        return
+    
+    # Rewrite journal
+    with open(JOURNAL_FILE, 'w') as f:
+        for pos in positions:
+            f.write(json.dumps(pos) + '\n')
+
+
+def show_history():
+    """Show position history with P&L."""
+    if not JOURNAL_FILE.exists():
+        print("No position history")
+        return
+    
+    positions = []
+    with open(JOURNAL_FILE) as f:
+        for line in f:
+            if line.strip():
+                try:
+                    positions.append(json.loads(line))
+                except:
+                    pass
+    
+    if not positions:
+        print("No position history")
+        return
+    
+    # Separate open and closed
+    open_pos = [p for p in positions if p.get('status') == 'open']
+    closed_pos = [p for p in positions if p.get('status') == 'closed']
+    
+    print(f"📊 **Position History**\n")
+    
+    if open_pos:
+        print(f"**Open ({len(open_pos)}):**")
+        for p in open_pos:
+            print(f"  • {p.get('ticker')} {p.get('direction', '')} - {p.get('notes', '')}")
+    
+    if closed_pos:
+        print(f"\n**Closed ({len(closed_pos)}):**")
+        
+        wins = 0
+        losses = 0
+        total_pnl = 0
+        
+        for p in closed_pos:
+            pnl = p.get('pnl_pct', 0)
+            emoji = "🟢" if pnl > 0 else "🔴" if pnl < 0 else "⚪"
+            print(f"  {emoji} {p.get('ticker')} {p.get('direction', '')} - {pnl:+.1f}%")
+            
+            if pnl > 0:
+                wins += 1
+            elif pnl < 0:
+                losses += 1
+            total_pnl += pnl
+        
+        if wins + losses > 0:
+            win_rate = wins / (wins + losses) * 100
+            print(f"\n**Stats:** {wins}W/{losses}L ({win_rate:.0f}% win rate) | Total: {total_pnl:+.1f}%")
+
+
 def main():
     if len(sys.argv) < 2:
         check_positions()
         return
     
-    cmd = sys.argv[1]
+    cmd = sys.argv[1].lower()
     
     if cmd == 'check':
         check_positions()
@@ -268,9 +437,15 @@ def main():
         show_alerts()
     elif cmd == 'summary':
         summary()
+    elif cmd == 'add':
+        add_position()
+    elif cmd == 'close' and len(sys.argv) >= 3:
+        close_position(sys.argv[2])
+    elif cmd == 'history':
+        show_history()
     else:
         print(f"Unknown command: {cmd}")
-        print("Usage: position-tracker.py [check|alerts|summary]")
+        print(__doc__)
 
 
 if __name__ == '__main__':
