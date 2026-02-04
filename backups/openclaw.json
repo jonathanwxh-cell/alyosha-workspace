@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.1.30",
+    "lastTouchedAt": "2026-02-02T21:15:22.456Z"
+  },
+  "wizard": {
+    "lastRunAt": "2026-01-30T17:30:05.436Z",
+    "lastRunVersion": "2026.1.29",
+    "lastRunCommand": "onboard",
+    "lastRunMode": "local"
+  },
+  "browser": {
+    "enabled": true,
+    "headless": true,
+    "noSandbox": true
+  },
+  "auth": {
+    "profiles": {
+      "anthropic:default": {
+        "provider": "anthropic",
+        "mode": "token"
+      },
+      "openai:default": {
+        "provider": "openai",
+        "mode": "token"
+      },
+      "google:default": {
+        "provider": "google",
+        "mode": "token"
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic/claude-opus-4-5"
+      },
+      "models": {
+        "anthropic/claude-opus-4-5": {
+          "alias": "opus"
+        },
+        "anthropic/claude-sonnet-4": {
+          "alias": "sonnet"
+        },
+        "anthropic/claude-haiku-3": {
+          "alias": "haiku"
+        },
+        "anthropic/claude-sonnet-4-0": {
+          "alias": "sonnet"
+        }
+      },
+      "workspace": "/home/ubuntu/.openclaw/workspace",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "heartbeat": {
+        "every": "30m"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8,
+        "model": {
+          "primary": "anthropic/claude-sonnet-4-0",
+          "fallbacks": [
+            "anthropic/claude-sonnet-4",
+            "anthropic/claude-haiku-3",
+            "anthropic/claude-opus-4-5"
+          ]
+        }
+      }
+    }
+  },
+  "tools": {
+    "web": {
+      "search": {
+        "apiKey": "BSAPqgo35Fy_Zmh2RJWko-DNL9fEMqE"
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions",
+    "tts": {
+      "auto": "off",
+      "provider": "openai",
+      "openai": {
+        "model": "tts-1",
+        "voice": "nova"
+      }
+    }
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto"
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "allowlist",
+      "botToken": "8586657067:AAFVaygU_X9iT5aAQUBKgM8ArYs76Pn-uZk",
+      "allowFrom": [
+        "421085848"
+      ],
+      "groupPolicy": "allowlist",
+      "streamMode": "partial"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "2aa26d9ccd5af3e6eeda9f8eda183b640fe26bb7f0ddf123"
+    },
+    "tailscale": {
+      "mode": "off",
+      "resetOnExit": false
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
+  }
+}
