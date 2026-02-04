@@ -4,6 +4,10 @@
 
 cd /home/ubuntu/.openclaw/workspace
 
+# Backup config before commit (disaster recovery)
+mkdir -p backups
+cp ~/.openclaw/openclaw.json backups/openclaw.json 2>/dev/null || true
+
 # Check if there are changes
 if [[ -z $(git status --porcelain) ]]; then
     echo "No changes to commit"
