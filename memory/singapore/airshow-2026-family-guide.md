@@ -1,5 +1,7 @@
 # Singapore Airshow 2026 — Family Guide
 
+**⚠️ 3 DAYS AWAY — Feb 7-8 (Sat-Sun)**
+
 ## Quick Facts
 - **Dates:** Feb 7-8 (public weekend)
 - **Location:** Changi Exhibition Centre
@@ -38,8 +40,8 @@
 
 ### Timing
 - Go EARLY — crowds build fast
-- Flying displays throughout the day
-- Best viewing: find spot before first display
+- **Flying displays: 11am and 3:30pm** (both days)
+- Best viewing: find spot 30min before first display
 - Leave before 4pm to avoid exit crush
 
 ## Best For Different Ages
