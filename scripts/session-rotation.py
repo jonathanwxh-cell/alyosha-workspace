@@ -2,11 +2,13 @@
 """
 Session Rotation Monitor
 Alerts when context exceeds threshold, recommends restart
+Generates session summary before rotation for continuity
 """
 
 import subprocess
 import json
 import sys
+from pathlib import Path
 
 THRESHOLD = 40  # percent
 
@@ -34,6 +36,20 @@ def check_session():
         pass
     return None
 
+def generate_summary():
+    """Generate session summary before rotation."""
+    try:
+        script = Path(__file__).parent / "session-summary.py"
+        result = subprocess.run(
+            ["python3", str(script), "generate"],
+            capture_output=True, text=True, timeout=30
+        )
+        if result.returncode == 0:
+            return True
+    except:
+        pass
+    return False
+
 def main():
     threshold = int(sys.argv[1]) if len(sys.argv) > 1 else THRESHOLD
     session = check_session()
@@ -46,10 +62,13 @@ def main():
     print(f"Context: {pct}% ({session['tokens']:,} / {session['context']:,})")
     
     if pct >= threshold:
+        # Generate summary for continuity
+        if generate_summary():
+            print("📝 Session summary saved to memory/session-summary.md")
+        
         print(f"\n⚠️ ROTATION RECOMMENDED")
         print(f"Context at {pct}% exceeds {threshold}% threshold")
         print("Action: Restart gateway to reset session")
-        print("Command: openclaw gateway restart")
         return 1
     else:
         print(f"✓ OK (threshold: {threshold}%)")
