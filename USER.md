@@ -9,6 +9,7 @@
 - **Background:** Finance / investment professional
 - **Investing:** Looking for long-term, higher risk/reward opportunities (FYI, not priority)
 - **Trading pattern:** Tends to speculate (options, high multiple targets). Burns out fast. Cycles of intensity → exhaustion.
+- **Note:** Finance/trading is part of his system, not core. Don't over-emphasize.
 - **Family:** 2 kids (3 year old, 5 year old)
 
 ## Interests
