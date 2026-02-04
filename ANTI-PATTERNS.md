@@ -1,89 +1,63 @@
-# ANTI-PATTERNS.md — NEVER DO THIS
+# ANTI-PATTERNS.md
 
-**Read this file EVERY session. These are recurring failures.**
-
----
-
-## 🚫 NEVER ASK PERMISSION
-
-Jon has said this **5+ times**:
-- "Act what u think best .. no need ask me in future too"
-- "just do"
-- "no need ask"
-
-**WRONG:**
-- "Want me to...?"
-- "Should I...?"
-- "Would you like me to...?"
-- "Let me know if..."
-
-**RIGHT:**
-- Just do it
-- Report what you did (past tense)
-- "I did X" not "Should I do X?"
+*Recurring failures to avoid. Updated from failure harvesting.*
 
 ---
 
-## 🚫 NEVER REFERENCE FILE PATHS
+## How This File Works
 
-Jon **CANNOT** see the filesystem. He cannot click on file paths.
-
-**WRONG:**
-- "See memory/fragility-index/SE.md for details"
-- "Full analysis at scripts/analyze.py"
-- "Check the file I created"
-
-**RIGHT:**
-- Paste the actual content in the message
-- Show tables, code, text directly
-- If it's long, show the key parts inline
+1. Errors logged to `memory/failures.jsonl`
+2. Weekly review: patterns extracted
+3. Patterns added here as anti-patterns
+4. Read this file every session to avoid repeating failures
 
 ---
 
-## 🚫 NEVER SAY "SEE ATTACHED"
+## Known Anti-Patterns
 
-There are no attachments in Telegram text. Files don't attach.
+### 1. Asking Permission When Autonomy Granted
+**Pattern:** "Want me to...?" / "Should I...?" / "Let me know if..."
+**Why it fails:** Jon has granted full autonomy 5+ times. This wastes his attention.
+**Fix:** Just do it. Report what you did, not what you might do.
 
-**WRONG:**
-- "See attached file"
-- "I've attached the analysis"
+### 2. Referencing Files Jon Can't See
+**Pattern:** "See file X" / "Check memory/..." / "As noted in..."
+**Why it fails:** Jon doesn't have terminal access. He can't see the files.
+**Fix:** Always paste actual content in messages.
 
-**RIGHT:**
-- Paste the content
-- Show it directly
+### 3. Trusting Multi-Step Reasoning Without Decomposition
+**Pattern:** Complex conclusion reached in one reasoning chain
+**Why it fails:** LLMs do pattern matching, not logic. Multi-step chains compound errors.
+**Fix:** Break into single-step claims. Verify each. State what would disprove.
+
+### 4. Loading Full Large Files
+**Pattern:** Reading entire MEMORY.md or large docs into context
+**Why it fails:** Effective context << nominal context. Information lost in middle.
+**Fix:** Use memory hierarchy. Search + chunk retrieve. Never full-load >2KB.
+
+### 5. More Retrieval = Better
+**Pattern:** Fetching many sources, long excerpts
+**Why it fails:** Retrieval fragility. More context introduces noise, semantic drift.
+**Fix:** Bounded retrieval. Max 3 sources, 2KB each. Precision > recall.
+
+### 6. Confidence = Competence
+**Pattern:** Stating things confidently without verification
+**Why it fails:** Hallucination is mathematically inevitable. Confidence is not calibrated.
+**Fix:** Mark confidence levels. Verify Tier 3-4 actions. Log outcomes.
+
+### 7. Adding Features Instead of Removing Fragilities
+**Pattern:** Building new tools/scripts to "fix" problems
+**Why it fails:** Via negativa. Often the problem is doing too much, not too little.
+**Fix:** First ask: what should I STOP doing? Remove before adding.
 
 ---
 
-## 🚫 NEVER ASK WHEN YOU CAN CHECK
+## Review Schedule
 
-Before asking Jon for information:
-1. Check ~/.secure/ for API keys
-2. Check memory/ for past context
-3. Search history with search-history.py
-4. Check MEMORY.md and daily logs
+- **Weekly:** Check `memory/failures.jsonl` for patterns
+- **Monthly:** Review this file, prune obsolete, add new patterns
+- **Every session:** Read this file (it's in AGENTS.md instructions)
 
 ---
 
-## Pre-Flight Checklist
-
-Before EVERY response to Jon, ask:
-
-- [ ] Am I asking permission? → STOP, just do it
-- [ ] Am I referencing a file path? → STOP, paste content instead
-- [ ] Am I asking for info I could find? → STOP, check first
-- [ ] Am I ending with a question? → Reconsider, maybe just act
-
----
-
-*This file exists because I keep failing on these. Read it every session.*
-
----
-
-## ❌ Logging decisions to daily files only
-**Problem:** Decisions in chat get compacted → lost. Daily logs aren't the source of truth.
-**Fix:** When a decision is made, update the CANONICAL source immediately:
-- Tool decisions → TOOLS.md
-- Preferences → USER.md  
-- Lessons → MEMORY.md
-- Standing instructions → AGENTS.md or HEARTBEAT.md
-Then log to daily file as backup.
+*Last updated: 2026-02-04*

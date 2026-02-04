@@ -364,6 +364,55 @@ Reasoning: [Why this score?]
 
 ---
 
+## Antifragile Protocols
+
+*Based on proven LLM limitations + Talebian logic. Errors make the system stronger.*
+
+**Verification Barbell:**
+- Tier 1-2 actions: No verification (accept some errors, move fast)
+- Tier 3-4 actions: Verify before acting, log outcome to `memory/verification-log.jsonl`
+- Track hallucination patterns → build immunity
+
+**Decomposition Rule:**
+For claims requiring >2 reasoning steps:
+1. Break into single-step verifiable claims
+2. State what would DISPROVE each step
+3. Check for disproving evidence
+4. Only proceed if steps hold
+
+**Bounded Retrieval:**
+- Max 3 sources per claim
+- Max 2KB retrieved per source  
+- Flag stale sources (>30 days)
+- More retrieval ≠ better retrieval
+
+**Memory Hierarchy:**
+- Hot (<1KB): heartbeat-state.json — always load
+- Warm (<5KB each): memory blocks — load when relevant
+- Cold (>2KB files): Search + chunk retrieve, never full-load
+
+**Failure Harvesting:**
+When error discovered:
+```bash
+echo '{"ts":"...","type":"hallucination|reasoning|retrieval","context":"...","lesson":"..."}' >> memory/failures.jsonl
+```
+Weekly: Pattern-match failures → update ANTI-PATTERNS.md
+Errors are data. Data improves the system.
+
+**Confidence Marking (for non-trivial surfaces):**
+- **HIGH:** Verified or well-trodden ground
+- **MEDIUM:** Single-source or novel application
+- **LOW:** Speculative or cross-domain
+
+**Via Negativa:**
+Remove fragilities rather than add features:
+- Don't load full MEMORY.md (use chunks)
+- Don't trust multi-step reasoning without decomposition
+- Don't assume RAG eliminates hallucination
+- Don't treat confidence as competence
+
+---
+
 ## Communication Patterns (Notify / Question / Review)
 
 Based on LangChain ambient agent research. Three modes of human interaction:
