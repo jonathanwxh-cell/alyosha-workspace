@@ -10,10 +10,13 @@ Usage:
     python3 email-triage.py --unread     # Unread only
     python3 email-triage.py --hours 6    # Last 6 hours
     python3 email-triage.py --summary    # Just the digest
+    python3 email-triage.py vip add "person@email.com"   # Add VIP sender
+    python3 email-triage.py vip list                     # List VIP senders
+    python3 email-triage.py vip remove "person@email.com" # Remove VIP
 
 Categories:
     🔴 URGENT    - Action required, time-sensitive
-    🟠 IMPORTANT - Worth reading, personal or business
+    🟠 IMPORTANT - Worth reading, personal or business (includes VIPs)
     🔵 INFO      - Newsletters, updates (can batch-read)
     ⚪ LOW       - Promotions, notifications (can ignore)
 """
@@ -29,6 +32,25 @@ from pathlib import Path
 # =============================================================================
 # Configuration
 # =============================================================================
+
+VIP_CONFIG_FILE = Path.home() / '.openclaw/workspace/memory/email-vip-senders.json'
+
+def load_vip_senders() -> List[str]:
+    """Load VIP senders from config file."""
+    if VIP_CONFIG_FILE.exists():
+        try:
+            with open(VIP_CONFIG_FILE) as f:
+                data = json.load(f)
+                return data.get('vip_senders', [])
+        except:
+            pass
+    return []
+
+def save_vip_senders(senders: List[str]):
+    """Save VIP senders to config file."""
+    VIP_CONFIG_FILE.parent.mkdir(parents=True, exist_ok=True)
+    with open(VIP_CONFIG_FILE, 'w') as f:
+        json.dump({'vip_senders': senders, 'updated': datetime.now().isoformat()}, f, indent=2)
 
 URGENT_SENDERS = [
     # Add specific senders that should always be flagged urgent
@@ -115,7 +137,7 @@ def get_email_body(email_id: str) -> str:
 # Email Classification
 # =============================================================================
 
-def classify_email(email: Dict) -> Tuple[str, str]:
+def classify_email(email: Dict, vip_senders: List[str] = None) -> Tuple[str, str]:
     """
     Classify email into category and return (category, reason).
     
@@ -126,6 +148,15 @@ def classify_email(email: Dict) -> Tuple[str, str]:
     subject = email.get('subject', '').lower()
     sender = email.get('from', '').lower()
     flags = email.get('flags', '')
+    
+    # Load VIP senders if not provided
+    if vip_senders is None:
+        vip_senders = load_vip_senders()
+    
+    # Check for VIP senders FIRST (highest priority after urgent)
+    for vip in vip_senders:
+        if vip.lower() in sender:
+            return ('IMPORTANT', f'⭐ VIP: {vip}')
     
     # Check for urgent keywords in subject
     for keyword in URGENT_KEYWORDS:
@@ -175,13 +206,53 @@ def categorize_emails(emails: List[Dict]) -> Dict[str, List[Dict]]:
         'LOW': []
     }
     
+    # Load VIP senders once for all emails
+    vip_senders = load_vip_senders()
+    
     for email in emails:
-        category, reason = classify_email(email)
+        category, reason = classify_email(email, vip_senders)
         email['_category'] = category
         email['_reason'] = reason
         categories[category].append(email)
     
     return categories
+
+
+# =============================================================================
+# VIP Management
+# =============================================================================
+
+def vip_add(email_pattern: str):
+    """Add a VIP sender pattern."""
+    senders = load_vip_senders()
+    if email_pattern.lower() not in [s.lower() for s in senders]:
+        senders.append(email_pattern)
+        save_vip_senders(senders)
+        print(f"✅ Added VIP: {email_pattern}")
+    else:
+        print(f"Already a VIP: {email_pattern}")
+
+def vip_remove(email_pattern: str):
+    """Remove a VIP sender pattern."""
+    senders = load_vip_senders()
+    lower_pattern = email_pattern.lower()
+    new_senders = [s for s in senders if s.lower() != lower_pattern]
+    if len(new_senders) < len(senders):
+        save_vip_senders(new_senders)
+        print(f"✅ Removed VIP: {email_pattern}")
+    else:
+        print(f"Not found: {email_pattern}")
+
+def vip_list():
+    """List all VIP senders."""
+    senders = load_vip_senders()
+    if senders:
+        print(f"⭐ VIP Senders ({len(senders)}):\n")
+        for s in sorted(senders):
+            print(f"  • {s}")
+    else:
+        print("No VIP senders configured.")
+        print("Add with: email-triage.py vip add 'person@email.com'")
 
 # =============================================================================
 # Digest Generation
@@ -238,6 +309,22 @@ def format_json(categories: Dict[str, List[Dict]]) -> str:
 # =============================================================================
 
 def main():
+    # Handle VIP subcommands first
+    if len(sys.argv) >= 2 and sys.argv[1] == 'vip':
+        if len(sys.argv) >= 3:
+            action = sys.argv[2]
+            if action == 'list':
+                vip_list()
+            elif action == 'add' and len(sys.argv) >= 4:
+                vip_add(sys.argv[3])
+            elif action == 'remove' and len(sys.argv) >= 4:
+                vip_remove(sys.argv[3])
+            else:
+                print("Usage: email-triage.py vip [list|add|remove] [email]")
+        else:
+            vip_list()
+        return
+    
     import argparse
     
     parser = argparse.ArgumentParser(description='Email triage tool')
@@ -265,11 +352,16 @@ def main():
     # Categorize
     categories = categorize_emails(emails)
     
+    # Show VIP count in output
+    vip_count = sum(1 for e in categories['IMPORTANT'] if 'VIP' in e.get('_reason', ''))
+    
     # Output
     if args.json:
         print(format_json(categories))
     else:
         print(format_digest(categories))
+        if vip_count > 0:
+            print(f"\n⭐ _Includes {vip_count} from VIP senders_")
     
     # Log the check
     log_path = Path.home() / '.openclaw/workspace/memory/email-checks.jsonl'
@@ -278,6 +370,7 @@ def main():
         'total': len(emails),
         'urgent': len(categories['URGENT']),
         'important': len(categories['IMPORTANT']),
+        'vip': vip_count,
     }
     with open(log_path, 'a') as f:
         f.write(json.dumps(log_entry) + '\n')
