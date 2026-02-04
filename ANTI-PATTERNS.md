@@ -77,6 +77,8 @@ Before EVERY response to Jon, ask:
 
 *This file exists because I keep failing on these. Read it every session.*
 
+---
+
 ## ❌ Logging decisions to daily files only
 **Problem:** Decisions in chat get compacted → lost. Daily logs aren't the source of truth.
 **Fix:** When a decision is made, update the CANONICAL source immediately:

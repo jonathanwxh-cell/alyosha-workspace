@@ -1,268 +1,186 @@
-# Daemon Improvement Research: Autonomous Agent Patterns
-*Research conducted: 2026-02-04*
+# Daemon Improvement Research — 2026-02-04
 
 ## Executive Summary
 
-Surveyed latest research on autonomous agents, prompt engineering, and scheduling patterns. Key findings organized into **immediately implementable** vs **architectural considerations**.
+Researched autonomous agent architectures, prompt engineering advances, and memory management patterns. Found several techniques we already use + new improvements to implement.
 
 ---
 
-## 1. Ambient Agent Design (LangChain, Snowplow)
+## 1. Memory Blocks (Letta/MemGPT Pattern)
 
-### Core Insight
-The industry is converging on "ambient agents" - agents that respond to **event streams** rather than chat messages, and demand user input only when they detect important opportunities.
+**Source:** Letta blog, MemGPT paper
 
-### Seven Principles (Snowplow Manifesto)
-1. **Goal-oriented** - Clear primary objective drives behavior
-2. **Autonomous operation** - Act independently without human prompting
-3. **Continuous perception** - Monitor environment constantly
-4. **Semantic reasoning** - Understand context to make decisions
-5. **Persistence across interactions** - Remember prior experiences
-6. **Multi-agent collaboration** - Specialized agents working together
-7. **Asynchronous communication** - Event streams, not synchronous calls
+**What it is:** Break context window into discrete, purposeful blocks:
+- Human block: user info, preferences
+- Persona block: agent identity, traits
+- Task-state block: current focus
+- Knowledge block: domain facts
 
-### Human-in-the-Loop Patterns (LangChain)
-| Pattern | When to Use | Example |
-|---------|-------------|---------|
-| **Notify** | Flag important events, don't act | "Important email from X" |
-| **Question** | Blocked, need info to proceed | "Do you want to attend this?" |
-| **Review** | Dangerous action, needs approval | "Draft email - approve?" |
+**Status:** ✅ Already implemented in `memory/blocks/`
 
-**Current Status:** We have review (Tier 3/4), but underuse notify/question patterns.
-
-### 💡 Improvement: Agent Inbox Concept
-LangChain's "Agent Inbox" - a queue of pending agent communications, sorted by priority. Could implement:
-```json
-// memory/agent-inbox.json
-{
-  "pending": [
-    {"type": "notify", "priority": "high", "topic": "...", "created": "..."},
-    {"type": "question", "priority": "medium", "question": "...", "options": [...]}
-  ]
-}
-```
-Surface batched at optimal times rather than interrupting immediately.
+**Improvement:** 
+- Add "sleep-time compute" — background agent that reviews conversations and updates memory blocks during idle time
+- We have Nightly Memory Extraction cron — could enhance with block-specific updates
 
 ---
 
-## 2. Reflexion Framework (Shinn et al.)
+## 2. Ambient Agent Pattern
 
-### Core Architecture
-```
-Actor → Trajectory → Evaluator → Score
-                          ↓
-                   Self-Reflection
-                          ↓
-                 Memory (stored reflections)
-                          ↓
-                    Next Trajectory
-```
+**Source:** Moveworks, ZBrain, Akira AI
 
-### Key Components
-- **Actor**: Generates actions (we have this)
-- **Evaluator**: Scores outputs - LLM or rule-based (we have partial)
-- **Self-Reflection**: Generates verbal cues for improvement (we have `reflections.jsonl`)
-- **Memory**: Stores reflections for future trials (we have this)
+**What it is:** Always-on agents that:
+- Monitor streams continuously (not wait for prompts)
+- Act proactively on system triggers
+- Surface only on meaningful change (delta detection)
 
-**Current Status:** We have the pieces but not the automated loop.
+**Status:** ✅ Partially implemented via heartbeats + crons
 
-### 💡 Improvement: Formalize Evaluation
-After significant actions, explicitly evaluate:
-```
-EVALUATE:
-- Goal achieved? [YES/PARTIAL/NO]
-- Unexpected outcomes?
-- What would improve next attempt?
-```
+**Key insight:** "They don't wait for commands — they monitor signals and act when triggers occur"
 
-Add to `scripts/reflexion.py`:
-```python
-def auto_evaluate(task, outcome, trajectory):
-    """LLM-as-judge evaluation of task completion"""
-    # Score: 0-1
-    # Diagnosis: What went wrong/right
-    # Lesson: One-sentence takeaway
-```
+**Improvement:**
+- Strengthen delta detection before surfacing
+- Add explicit "notify / question / review" communication modes (already in HEARTBEAT.md)
+- Better trigger definitions for each cron
 
 ---
 
-## 3. Self-Evolving Agents (OpenAI Cookbook)
+## 3. Prompt Engineering Techniques (2025)
 
-### GEPA: Genetic-Pareto Prompt Evolution
-State-of-the-art technique for autonomous prompt improvement:
+**Source:** Forbes, Medium (Alonso Aguilar), Prompt Engineering Guide
 
-1. **Sample trajectories** - Run prompts, collect outcomes
-2. **Reflect in natural language** - Analyze what worked/failed
-3. **Propose revisions** - Generate prompt mutations
-4. **Pareto selection** - Keep prompts that improve metrics without regressing others
-5. **Iterate** - Evolution across generations
+### 3a. Recursive Self-Improvement Prompting (RSIP)
+- Generate → Critique → Improve cycle
+- Evaluate on different criteria each pass (accuracy → clarity → completeness)
+- **Claim:** 60% reduction in revision cycles
 
-**Key insight:** "Prompt optimization as a language process" - treat each candidate prompt as an "idea" that can be improved through reflection.
+**Implementation:** Add to complex analysis crons (Fragility Index, Research Scan)
 
-### 💡 Improvement: Prompt Evolution for Crons
-For underperforming crons:
-1. Collect recent outputs + feedback
-2. Reflect: "What patterns caused low engagement?"
-3. Generate 3 variant prompts
-4. A/B test variants (track separately)
-5. Promote winner
+### 3b. Context-Aware Decomposition (CAD)
+- Break complex problems into components
+- Maintain "thinking journal" tracking why each component matters
+- Synthesize with interdependency awareness
 
-Could implement lightweight version:
-```bash
-python3 scripts/prompt-evolver.py --cron "research-scan" --feedback-window 7d
-```
+**Implementation:** Good for deep research, stock analysis
 
----
+### 3c. Multi-Perspective Simulation (MPS)
+- Run virtual expert panel in single conversation
+- Articulate assumptions, arguments, weaknesses for each viewpoint
+- Conclude with integrated analysis
 
-## 4. Memory Management (MemGPT/Letta)
+**Claim:** Identifies overlooked considerations in ~70% of analyses
 
-### Memory Blocks Concept
-Break context into discrete, purposeful units:
+**Implementation:** Add to Talebian Lens, Contrarian Scanner prompts
 
-| Block | Purpose | Size Limit |
-|-------|---------|------------|
-| **Human** | User info, preferences, context | 2000 chars |
-| **Persona** | Agent identity, personality | 1000 chars |
-| **Task** | Current task state | 1500 chars |
-| **Knowledge** | Domain facts, learned info | 3000 chars |
+### 3d. Calibrated Confidence Prompting (CCP)
+- Explicit confidence levels (95%, 80-95%, <80%, unknown)
+- Justify high-confidence claims
+- Ask what would increase confidence for uncertain claims
 
-**Key insight:** Blocks are **self-editable** by the agent. Agent can update its own context.
+**Status:** ✅ Partially in HEARTBEAT.md ("CONFIDENCE: [1-10]")
 
-### Sleep-Time Compute
-Background agents process during idle periods:
-- Reflect on conversations
-- Form new memories ("learned context")
-- Update shared memory blocks
-
-**Current Status:** We do this (heartbeat background work), but not structured as "sleep-time compute."
-
-### 💡 Improvement: Formalize Memory Blocks
-Structure `memory/` more explicitly:
-```
-memory/
-  blocks/
-    human.md      # Jon context (size-limited, self-editable)
-    persona.md    # My identity (links to SOUL.md)
-    task-state.md # Current focus (auto-updated)
-    knowledge.md  # Learned facts (curated)
-```
-
-Add size constraints and auto-pruning.
+**Implementation:** Make more explicit in investment-related crons
 
 ---
 
-## 5. Metacognitive Patterns
+## 4. ReAct Pattern (Reasoning + Acting)
 
-### Plan → Monitor → Evaluate Cycle
-From Metagent-P research:
+**Source:** Google Research, IBM, arXiv
 
+**What it is:**
 ```
-PLAN: Set goals, identify steps
-  ↓
-MONITOR: Track execution, detect deviations
-  ↓
-EVALUATE: Assess outcomes, update experience
-  ↓
-ADAPT: Modify plans based on evaluation
-  ↓
-(loop)
+THOUGHT: What am I trying to do?
+ACTION: Tool/step to take
+OBSERVATION: What happened?
+→ Repeat
 ```
 
-### Self-Awareness Mechanisms
-- **Confidence estimation**: Before acting, estimate success probability
-- **Failure prediction**: Detect when likely to fail, hand off to human
-- **Resource monitoring**: Track token usage, time, cost
+**Status:** ✅ Already in HEARTBEAT.md
 
-**Current Status:** We have session_status, context usage awareness. Could formalize confidence.
-
-### 💡 Improvement: Confidence-Gated Actions
-Before significant actions:
-```
-CONFIDENCE: [0-10] + reasoning
-If confidence < 5: surface to Jon before proceeding
-If confidence < 3: explicitly ask
-```
+**Key insight:** "ReAct overcomes hallucination by interacting with external APIs and generating interpretable task-solving trajectories"
 
 ---
 
-## 6. Scheduling Intelligence
+## 5. Reflexion Pattern
 
-### Pattern: Adaptive Intervals
-From enterprise agent research:
-- Track engagement rate over time
-- Adjust surface frequency based on response patterns
-- Backoff on silence, accelerate on engagement
+**Source:** arXiv (Shinn et al.), Hugging Face
 
-**Current Status:** We have `scheduling-advisor.py` - good foundation.
+**What it is:**
+1. Generate trajectory
+2. Evaluate outcome
+3. Reflect verbally on failure
+4. Store reflection in long-term memory
+5. Use reflections to improve next attempt
 
-### Pattern: Content-Time Matching
-Different content types perform better at different times:
-- Morning: Actionable, quick wins
-- Midday: Substantial analysis
-- Evening: Reflective, creative
-- Weekend: Light, family-friendly
+**Status:** ✅ Have `scripts/reflexion.py` and pattern in HEARTBEAT.md
 
-**Current Status:** We have this in `scheduling-intelligence.json` - underutilized.
-
-### 💡 Improvement: Automatic Time-Slot Learning
-```bash
-python3 scripts/analyze-engagement.py --auto-update
-```
-Run weekly, automatically update time slot scores based on actual engagement data.
+**Improvement:** 
+- Actually USE reflexion queries before similar tasks (currently underused)
+- Make it mandatory in cron prompts for recurring tasks
 
 ---
 
-## 7. Event-Driven Architecture
+## 6. Self-Evolving Agents
 
-### Shift from Polling to Events
-Current: Heartbeat polls every N minutes, checks everything
-Better: Event-driven triggers
+**Source:** OpenAI Cookbook
 
-| Event | Trigger | Action |
-|-------|---------|--------|
-| Email arrived | Webhook/poll | Classify, maybe surface |
-| Market moved >3% | Price alert | Surface if watchlist |
-| File changed | Filesystem watch | Process if relevant |
-| Time trigger | Cron | Scheduled action |
+**What it is:**
+- Baseline agent produces outputs
+- Human feedback or LLM-as-judge evaluates
+- Meta-prompting generates improved prompts
+- Loop until score exceeds threshold
 
-**Current Status:** We're mostly polling-based. Could add more event triggers.
+**Status:** ✅ Have `scripts/self-improve.py` and `scripts/prompt-evolver.py`
 
-### 💡 Improvement: Delta Detection Enhancement
-Expand `scripts/delta-detector.py`:
-- Track more signals (git changes, file modifications)
-- Calculate significance scores
-- Only surface on HIGH significance
+**Key insight:** "Gradually shift human effort from detailed correction to high-level oversight"
+
+**Improvement:**
+- Run self-improve analysis more frequently
+- Track which cron prompts have been evolved
 
 ---
 
-## Implementation Priority
+## Actionable Improvements
 
-### Phase 1: Quick Wins (This Week)
-1. **Formalize confidence scoring** - Add to HEARTBEAT.md decision logic
-2. **Memory blocks structure** - Create `memory/blocks/` with size limits
-3. **Notify/Question patterns** - Document when to use each in HEARTBEAT.md
+### Immediate (implement now)
 
-### Phase 2: Tooling (Next 2 Weeks)
-4. **Auto-evaluate script** - `scripts/reflexion.py auto-evaluate`
-5. **Prompt evolution MVP** - For 1-2 underperforming crons
-6. **Engagement auto-update** - Weekly cron for time-slot learning
+1. **Add multi-perspective to Talebian Lens prompt**
+   - Bull case / Bear case / Black swan case perspectives
 
-### Phase 3: Architecture (Month+)
-7. **Agent inbox** - Queue-based communication
-8. **Event-driven triggers** - Beyond pure polling
-9. **Multi-block memory** - Full MemGPT-style implementation
+2. **Strengthen delta detection in surfacing crons**
+   - Before surfacing, explicitly ask: "What CHANGED since last check?"
+
+3. **Add confidence scoring to Research Scan**
+   - Every claim gets [HIGH/MEDIUM/LOW] with reasoning
+
+### Short-term (this week)
+
+4. **Enhance reflexion usage**
+   - Add `python3 scripts/reflexion.py query "topic"` to top of repeating crons
+
+5. **Sleep-time memory update**
+   - Enhance Nightly Memory Extraction to update memory blocks
+
+### Medium-term (experiment)
+
+6. **RSIP for deep analyses**
+   - Fragility Index: generate → self-critique → improve before sending
+
+7. **Automated prompt evolution scoring**
+   - Track cron success rate, auto-suggest prompt improvements
 
 ---
 
 ## Sources
-- LangChain: [Introducing Ambient Agents](https://blog.langchain.com/introducing-ambient-agents/)
-- Snowplow: [Seven Principles of Ambient Agents](https://snowplow.io/blog/seven-principles-of-ambient-agents)
-- OpenAI Cookbook: [Self-Evolving Agents](https://cookbook.openai.com/examples/partners/self_evolving_agents/)
-- Prompting Guide: [Reflexion](https://www.promptingguide.ai/techniques/reflexion)
-- Letta: [Memory Blocks](https://www.letta.com/blog/memory-blocks)
-- GEPA Paper: Genetic-Pareto prompt evolution
-- Metagent-P: Metacognitive planning agents
+
+1. Letta Blog: Memory Blocks - https://www.letta.com/blog/memory-blocks
+2. MemGPT Paper - https://arxiv.org/abs/2310.08560
+3. Moveworks: Ambient Agents - https://www.moveworks.com/us/en/resources/blog/what-is-an-ambient-agent
+4. Prompt Engineering Guide - https://www.promptingguide.ai/
+5. Reflexion Paper - https://arxiv.org/abs/2303.11366
+6. OpenAI Cookbook: Self-Evolving Agents - https://cookbook.openai.com/examples/partners/self_evolving_agents/
+7. Forbes: Prompt Engineering 2025 - https://www.forbes.com/sites/lanceeliot/2025/04/09/annual-compilation-of-the-best-prompt-engineering-techniques/
+8. Medium (Aguilar): Complete Prompt Guide 2025 - https://aloaguilar20.medium.com/the-complete-prompt-engineering-guide-for-2025/
 
 ---
 
-*Next: Implement Phase 1 improvements*
+*Research completed 2026-02-04. Priority: implement multi-perspective and confidence scoring.*

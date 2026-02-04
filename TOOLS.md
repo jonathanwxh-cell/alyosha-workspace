@@ -121,10 +121,21 @@ python3 scripts/transcript-compare.py NVDA      # Instant local analysis
 ### TTS / Voice
 - **OpenAI TTS:** ✅ Enabled (manual mode)
   - Provider: OpenAI, Model: tts-1, Voice: nova
-  - **COST CONSTRAINT:** Use sparingly — only when voice genuinely adds value
-  - Good for: storytelling, kids content, occasional audio briefing
+  - **BUDGET: $5/month** (set 2026-02-04)
+  - Pricing: $15/1M chars (~$0.02 per 2-min clip)
+  - **Jon prefers text** — only suggest TTS when situation really needs it
+  - OK for: kids stories, special occasions
   - Skip for: regular updates, analysis, quick messages
-- **ElevenLabs:** Not needed unless better voices wanted later
+  - Track usage in memory/audio-usage.jsonl
+
+### Podcast Transcription
+- **OpenAI Whisper:** ✅ Enabled
+  - Skill: openai-whisper-api
+  - **BUDGET: $10/month** (set 2026-02-04)
+  - Pricing: $0.006/min (~$0.36/hr, ~$1.44 for 4hr podcast)
+  - Covers: ~28 hours/month (~7 long podcasts)
+  - Flow: `memory/flows/podcast-transcription-flow.md`
+  - Track usage in memory/whisper-usage.jsonl
 
 Add whatever helps you do your job. This is your cheat sheet.
 

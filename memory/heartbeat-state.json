@@ -7,7 +7,7 @@
     "markets": "2026-02-03T05:46:00.000Z"
   },
   "lastWisdomSurface": null,
-  "notes": "06:58 SGT Wed - Night mode. Analyzed engagement patterns: Fragility Index = HIGH engagement, infrastructure/meta work = silence. Crons with 'model not allowed' errors should self-heal now that config is properly set.",
+  "notes": "08:30 UTC - Active convo (audio budget just set to $5/mo). Silent mode.",
   "pendingAction": null,
   "sessionOutputs": {
     "date": "2026-02-03",
@@ -47,6 +47,6 @@
       "cronNote": "Model errors likely from config transition - should self-heal on next run"
     }
   },
-  "lastHeartbeat": "2026-02-04T07:30:19.112073+00:00",
-  "context": "active-convo-singapore-pulse"
+  "lastHeartbeat": "2026-02-04T08:30:25.875954Z",
+  "context": "active-convo-audio-budget-set"
 }
