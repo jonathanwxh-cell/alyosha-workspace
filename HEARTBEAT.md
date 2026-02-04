@@ -257,6 +257,24 @@ Before each heartbeat, check:
 
 ## Decision Logic (Ambient Design v2)
 
+**Step 0: Commitment Pattern (for non-trivial decisions)**
+
+Before acting on anything beyond routine checks, use 3-stage commitment:
+
+```
+CANDIDATES:
+1. [Option A] — [why it might work]
+2. [Option B] — [why it might work]  
+3. [Option C or "do nothing"] — [why]
+
+COMMIT: [Choice] because [reasoning]
+
+RECONSIDER TRIGGER: [What would make me revisit this?]
+```
+
+Skip for: routine checks, simple queries, obvious actions
+Use for: research directions, surfaces to Jon, tool-building, multi-step work
+
 **Step 1: Classify the action type**
 
 | Type | Examples | Delta Required? |
