@@ -150,6 +150,14 @@ Add whatever helps you do your job. This is your cheat sheet.
 - **Key feature:** Asks "What would change your view?" when adding — creates accountability
 - **Storage:** `memory/investment-theses.json` (active), `memory/thesis-outcomes.jsonl` (closed)
 
+### Position Tracking
+- **Position Tracker:** `python3 scripts/position-tracker.py [check|alerts|summary]`
+  - Scans `memory/trade-journal.jsonl` for open positions
+  - Parses option details from notes (e.g., "671P exp 2026-02-11")
+  - Alerts on expiry (7d/3d/1d), ITM/OTM status
+  - Cron: Daily 8pm SGT
+- **Current positions:** Check with `position-tracker.py check`
+
 ### Trading Behavior Tracking
 - **Trade Journal:** `scripts/trade-journal.py` — log positions, track outcomes
   ```bash

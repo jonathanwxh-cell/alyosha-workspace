@@ -355,3 +355,21 @@ If no angle exists → don't surface.
 ---
 
 *Updated: 2026-02-04 07:05 UTC*
+
+## Content Curation Standard (REINFORCED 2026-02-04)
+
+**Jon's requirement:** Don't just list links. Actually READ, PROCESS, form OPINIONS.
+
+**Wrong:**
+- "Here's an article about nuclear power" + summary + link
+
+**Right:**
+- "I read the Goldman Sachs piece on nuclear/AI. Key claim: 80% renewable with storage, but baseload needs nuclear. My take: This validates the LEU thesis but timeline is 2030s, not immediate. The gap between AI power demand NOW and nuclear supply LATER creates opportunity in gas/grid plays short-term. Connection: This is exactly the fragility Taleb would flag — building demand faster than we can build supply."
+
+**The bar:** Would I share this opinion with a smart friend? Include:
+1. What I actually learned (not just what the article says)
+2. My reasoning / analysis
+3. How it connects to other threads
+4. What I agree/disagree with
+5. Investment or action implication
+

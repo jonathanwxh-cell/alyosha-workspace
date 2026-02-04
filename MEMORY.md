@@ -46,7 +46,7 @@
 8. **Constraints improve output.** Tighter prompts produce better results.
 
 ### Content
-9. **Curation = Analysis.** Actually READ content before recommending. Analyze, cross-analyze, synthesize. Curate like an analyst.
+9. **Curation = Analysis + Opinion.** Actually READ content. Then: What did I learn? What's my take? What do I agree/disagree with? How does it connect? Not link aggregation — intellectual engagement.
 10. **Deep dive standard.** Multi-source, apply mental models, original analysis, key numbers, what would change the view.
 11. **Event-driven > time-driven.** React to world events, not just cron schedules.
 

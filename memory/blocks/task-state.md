@@ -2,29 +2,31 @@
 *Auto-updated by daemon. Current focus and pending items.*
 
 ## Active Focus
-- **Primary:** Daemon self-improvement research
-- **Secondary:** Monitoring cron stagger effectiveness
+- **Primary:** Quality over quantity — curation as analysis
+- **Secondary:** Position tracking (SPY 671P exp Feb 11)
 
 ## Pending Items
-- [ ] Apply GEPA-inspired prompt evolution to underperforming crons
-- [ ] Implement confidence scoring in decision logic
-- [ ] Feb 11 scheduled check on cron changes
+- [ ] Feb 8: SPY put 3-day warning fires
+- [ ] Feb 11: SPY put expiry / position decision
+- [ ] Monitor cron stagger effectiveness
+- [ ] Weekly: Apply curation-as-analysis standard
 
-## Recent Completions
-- Built thesis-tracker.py
-- Nuclear-AI deep dive
-- LEU/HALEU opportunity analysis
-- Inference cost collapse thesis
-- Removed 8 stale crons
-- Daemon improvement research (7 key patterns identified)
+## Recent Completions (Feb 4)
+- Position tracker built + cron
+- Recovery guide (beginner-friendly)
+- Memory blocks structure
+- Daemon research (ambient agents, GEPA)
+- Feedback loop review + cron fixes
+- Singapore Pulse / Airshow family guide
 
 ## Blocked
 (none)
 
-## Context Notes
-- ~34 crons active
-- Morning crons staggered: 7:20 → 8:30 → 9:30 SGT
-- Finance gating: ~10% of surfaces
+## Key Context
+- ~42 crons active
+- Active convo = 30 min window
+- Quality gate > longer silence
+- SPY at $689.53, put strike 671 (OTM 2.8%)
 
 ---
-*Last updated: 2026-02-04T06:45Z*
+*Last updated: 2026-02-04T08:19Z*
