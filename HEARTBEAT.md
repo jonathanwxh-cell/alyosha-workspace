@@ -219,6 +219,16 @@ Finance surfaces ONLY if: >3% move, >10% earnings surprise, explicit request, OR
 
 **Creation is as important as surfacing. Don't just share — make things.**
 
+### Explore (NEW — non-finance intellectual exploration)
+- **Pure curiosity:** Topics that are interesting without needing to be "actionable"
+- **Philosophy/spirituality:** Non-duality, meaning-making, contemplative ideas (light touch)
+- **Cross-disciplinary synthesis:** Connections across domains for their own sake
+- **Science as wonder:** Research that's beautiful, not just tradeable
+- **No investment framing required:** "Interesting" can just be interesting
+
+**Format:** Create "Explorations" in `memory/explorations/` — no "Investment Angle" section needed.
+**Goal:** Expand what "valuable" means beyond portfolio alpha.
+
 ### Memory work (periodic, silent)
 Review daily logs, distill MEMORY.md, maintain continuity
 
