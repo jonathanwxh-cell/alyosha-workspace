@@ -1,0 +1,38 @@
+[
+  {
+    "name": "Singapore Airshow (Public Days)",
+    "date": "2026-02-07",
+    "end_date": "2026-02-08",
+    "ages": "3+",
+    "notes": "Changi Exhibition Centre. Flying displays, static aircraft. Expect crowds. Book tickets in advance.",
+    "type": "event"
+  },
+  {
+    "name": "Singapore Airshow (Public Days)",
+    "date": "2026-02-08",
+    "ages": "3+",
+    "notes": "Day 2. Less crowded if going Sunday morning.",
+    "type": "event"
+  },
+  {
+    "name": "Chinese New Year Eve",
+    "date": "2026-02-16",
+    "ages": "all",
+    "notes": "Family reunions, Chinatown decorations, River Hongbao preparations",
+    "type": "holiday"
+  },
+  {
+    "name": "Chinese New Year Day 1 (Year of the Horse)",
+    "date": "2026-02-17",
+    "ages": "all",
+    "notes": "Public holiday. Most attractions closed or crowded. Family time.",
+    "type": "holiday"
+  },
+  {
+    "name": "Chingay Parade",
+    "date": "2026-02-21",
+    "ages": "all",
+    "notes": "F1 Pit Building. Street parade, floats, performances. Free but book seats.",
+    "type": "event"
+  }
+]

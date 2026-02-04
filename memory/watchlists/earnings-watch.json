@@ -1,0 +1,44 @@
+{
+  "name": "Earnings Watch",
+  "description": "Upcoming earnings with trading implications",
+  "last_updated": "2026-02-04T20:15:00Z",
+  
+  "upcoming": [
+    {
+      "ticker": "TRI",
+      "name": "Thomson Reuters",
+      "date": "2026-02-05",
+      "thesis": "Oversold bounce after 18% Anthropic panic drop",
+      "watch_for": "AI commentary, forward guidance, CoCounsel metrics",
+      "brief": "memory/opportunities/2026-02-04-tri-earnings-bounce.md",
+      "current_price": 93.50,
+      "analyst_pt": 165,
+      "priority": "HIGH"
+    },
+    {
+      "ticker": "WKL",
+      "name": "Wolters Kluwer",
+      "date": "2026-02-19",
+      "thesis": "Peer read-through from TRI reaction",
+      "watch_for": "Legal software AI impact",
+      "priority": "MEDIUM"
+    },
+    {
+      "ticker": "RELX",
+      "name": "Relx",
+      "date": "2026-02-20",
+      "thesis": "LexisNexis AI exposure",
+      "watch_for": "Legal division commentary",
+      "priority": "MEDIUM"
+    },
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA",
+      "date": "2026-02-25",
+      "thesis": "AI capex bellwether",
+      "watch_for": "Data center growth, China revenue, guidance",
+      "brief": "memory/opportunities/2026-02-01-nvda-earnings.md",
+      "priority": "HIGH"
+    }
+  ]
+}

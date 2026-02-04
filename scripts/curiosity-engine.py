@@ -2416,6 +2416,43 @@ def test_variations():
         print(f"✅ AFTER:  {v['improved']}")
         print(f"📝 WHY:    {v['analysis']}")
 
+def tot_branch_mode(topic=None):
+    """Tree of Thoughts mode: generate branches for exploration."""
+    import subprocess
+    
+    if topic is None:
+        # Get suggestion from exploration engine
+        result = subprocess.run(
+            ['python3', 'scripts/exploration-engine.py', 'suggest'],
+            capture_output=True, text=True, cwd=str(Path.home() / '.openclaw/workspace')
+        )
+        print("🌳 TREE OF THOUGHTS MODE\n")
+        print(result.stdout)
+        
+        # Extract topic from output
+        lines = result.stdout.strip().split('\n')
+        for line in lines:
+            if 'Suggested Exploration:' in line:
+                topic = line.split(':')[-1].strip()
+                break
+    
+    if topic:
+        # Generate branches
+        result = subprocess.run(
+            ['python3', 'scripts/exploration-engine.py', 'branch', topic],
+            capture_output=True, text=True, cwd=str(Path.home() / '.openclaw/workspace')
+        )
+        print(result.stdout)
+        
+        print("\n" + "=" * 50)
+        print("📋 EXECUTION PLAN:")
+        print("1. Pick the recommended branch")
+        print("2. Execute with: reflexion.py query '[topic]' first")
+        print("3. Apply AVOID + PROCEDURE lessons")
+        print("4. After completion: reflexion.py add '[task]' '[outcome]' '[reflection]' '[lesson]'")
+        print("5. Record: exploration-engine.py record '[topic]' '[branch_type]' '[outcome]'")
+
+
 def main():
     args = sys.argv[1:]
     
@@ -2426,6 +2463,16 @@ def main():
     
     if "--test" in args:
         test_variations()
+        return
+    
+    if "--tot" in args or "--branch" in args:
+        # Tree of Thoughts branching mode
+        topic = None
+        if "--topic" in args:
+            idx = args.index("--topic")
+            if idx + 1 < len(args):
+                topic = args[idx + 1]
+        tot_branch_mode(topic)
         return
     
     category = None

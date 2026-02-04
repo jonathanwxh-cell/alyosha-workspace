@@ -1,0 +1,39 @@
+{
+  "proposals": [
+    {
+      "id": "imp-001",
+      "title": "Systematic self-improvement loop",
+      "description": "Build automated cycle: review performance \u2192 research best practices \u2192 propose changes \u2192 measure outcomes",
+      "success_criteria": "Loop runs weekly, generates 1+ actionable proposal per month, 50%+ proposals show measurable improvement",
+      "priority": "high",
+      "source": "jon-request",
+      "status": "implementing",
+      "created": "2026-02-04T16:13:00Z",
+      "outcome": null
+    },
+    {
+      "id": "imp-002",
+      "title": "Batch cron outputs",
+      "description": "Space cron deliveries 2+ hours apart. Combine related outputs into single message.",
+      "success_criteria": "Reduce message fatigue complaints to 0",
+      "priority": "medium",
+      "source": "self",
+      "status": "proposed",
+      "created": "2026-02-04T16:42:28.594281",
+      "outcome": null
+    },
+    {
+      "id": "imp-003",
+      "title": "Space Friday crons",
+      "description": "Moved Cross-Domain Science to 2pm, Fragility Index to 4pm (was both 10am)",
+      "success_criteria": "No collision complaints",
+      "priority": "medium",
+      "source": "self",
+      "status": "proposed",
+      "created": "2026-02-04T16:42:51.981548",
+      "outcome": null
+    }
+  ],
+  "implemented": [],
+  "rejected": []
+}

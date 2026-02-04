@@ -1,0 +1,84 @@
+{
+  "name": "AI Disruption Casualties",
+  "created": "2026-02-04",
+  "thesis": "Companies being disrupted by AI tools - potential short or bounce opportunities",
+  "trigger_event": "Anthropic Claude Cowork legal tool launch",
+  
+  "tickers": {
+    "TRI": {
+      "name": "Thomson Reuters",
+      "sector": "Legal Data",
+      "drop_date": "2026-02-04",
+      "drop_pct": -18,
+      "disruption_risk": "HIGH",
+      "notes": "Direct competitor to Claude legal. Earnings Feb 6.",
+      "watch_for": "Bounce opportunity, earnings reaction"
+    },
+    "RELX": {
+      "name": "Relx (London)",
+      "sector": "Info/Analytics",
+      "drop_date": "2026-02-04",
+      "drop_pct": -14,
+      "disruption_risk": "HIGH",
+      "notes": "LexisNexis legal division directly exposed",
+      "watch_for": "Earnings Feb 20"
+    },
+    "WKL": {
+      "name": "Wolters Kluwer",
+      "sector": "Legal Software",
+      "drop_date": "2026-02-04",
+      "drop_pct": -13,
+      "disruption_risk": "HIGH",
+      "notes": "European legal software, directly in crosshairs",
+      "watch_for": "Earnings Feb 19"
+    },
+    "LSEG": {
+      "name": "London Stock Exchange Group",
+      "sector": "Data Services",
+      "drop_date": "2026-02-04",
+      "drop_pct": -13,
+      "disruption_risk": "MEDIUM",
+      "notes": "Data business exposed, but exchange business different",
+      "watch_for": "Collateral or direct impact"
+    },
+    "SGE.L": {
+      "name": "Sage Group",
+      "sector": "Business Software",
+      "drop_date": "2026-02-04",
+      "drop_pct": -10,
+      "disruption_risk": "MEDIUM",
+      "notes": "Accounting/HR software, automation fear",
+      "watch_for": "AI product announcements"
+    },
+    "PSON.L": {
+      "name": "Pearson",
+      "sector": "Publishing/Education",
+      "drop_date": "2026-02-04",
+      "drop_pct": -8,
+      "disruption_risk": "MEDIUM",
+      "notes": "Education content vs AI tutoring",
+      "watch_for": "AI education partnerships"
+    },
+    "EXPN.L": {
+      "name": "Experian",
+      "sector": "Credit Reporting",
+      "drop_date": "2026-02-04",
+      "drop_pct": -7,
+      "disruption_risk": "LOW",
+      "notes": "Data moat stronger, but fear contagion",
+      "watch_for": "Potential bounce candidate"
+    }
+  },
+  
+  "pattern": "DeepSeek playbook - AI launch causes incumbent panic, often oversold",
+  
+  "next_catalysts": [
+    {"date": "2026-02-06", "event": "Thomson Reuters earnings"},
+    {"date": "2026-02-19", "event": "Wolters Kluwer earnings"},
+    {"date": "2026-02-20", "event": "Relx earnings"}
+  ],
+  
+  "key_question": "Are these Kodaks or Amazons? Does AI complement or substitute?",
+  
+  "last_updated": "2026-02-04T19:30:00Z"
+}

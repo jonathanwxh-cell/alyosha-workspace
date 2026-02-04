@@ -21,6 +21,11 @@ Usage:
     python3 reflexion.py failures                   # Show only failures (best for learning)
     python3 reflexion.py export                     # Export lessons as markdown for MEMORY.md
     python3 reflexion.py trends                     # Show success rate trends over time
+    
+    # MARS Framework commands (Metacognitive Agent Reflective Self-improvement)
+    python3 reflexion.py avoid [n]                  # Principle-based lessons: what NOT to do
+    python3 reflexion.py procedures [n]             # Procedural lessons: what TO do
+    python3 reflexion.py mars                       # Combined MARS view (both types)
 
 The daemon should:
 1. BEFORE task: query past reflections for similar tasks
@@ -195,8 +200,29 @@ def add_reflection_interactive():
     print(f"\n✅ Reflection saved to {REFLECTIONS_FILE.name}")
 
 
-def add_reflection_direct(task, outcome, reflection, lesson, would_repeat=True):
-    """Add reflection programmatically (for daemon use)."""
+def add_reflection_direct(task, outcome, reflection, lesson, would_repeat=True, lesson_type=None):
+    """Add reflection programmatically (for daemon use).
+    
+    Args:
+        task: What was attempted
+        outcome: 'success', 'partial', or 'failure'
+        reflection: What happened
+        lesson: What to remember
+        would_repeat: Whether approach should be repeated
+        lesson_type: 'avoid' (principle-based) or 'procedure' (success strategy)
+                     If None, auto-detected from outcome
+    
+    Based on MARS framework (NTU Singapore 2026):
+    - Principle-based learning: Rules to AVOID errors
+    - Procedural learning: Steps to REPLICATE success
+    """
+    # Auto-detect lesson type if not provided
+    if lesson_type is None:
+        if outcome == 'failure' or not would_repeat:
+            lesson_type = 'avoid'  # Principle-based: what NOT to do
+        else:
+            lesson_type = 'procedure'  # Procedural: what TO do
+    
     entry = {
         'timestamp': datetime.now(timezone.utc).isoformat(),
         'task': task,
@@ -204,10 +230,47 @@ def add_reflection_direct(task, outcome, reflection, lesson, would_repeat=True):
         'reflection': reflection,
         'lesson': lesson,
         'would_repeat': would_repeat,
+        'lesson_type': lesson_type,  # NEW: 'avoid' or 'procedure'
         'category': get_category(task, f"{reflection} {lesson}")
     }
     save_reflection(entry)
     return entry
+
+
+def query_by_type(lesson_type, limit=10):
+    """Query reflections by lesson type (avoid or procedure).
+    
+    Based on MARS framework - separate what-to-avoid from what-works.
+    """
+    reflections = load_reflections()
+    
+    # Filter by type (with backwards compatibility)
+    typed = []
+    for r in reflections:
+        r_type = r.get('lesson_type')
+        if r_type is None:
+            # Infer type for old entries
+            if r.get('outcome') == 'failure' or not r.get('would_repeat', True):
+                r_type = 'avoid'
+            else:
+                r_type = 'procedure'
+        
+        if r_type == lesson_type and r.get('lesson'):
+            typed.append(r)
+    
+    # Sort by recency
+    typed = sorted(typed, key=lambda x: x.get('timestamp', ''), reverse=True)[:limit]
+    
+    type_emoji = '🚫' if lesson_type == 'avoid' else '✅'
+    type_label = 'AVOID (principle-based)' if lesson_type == 'avoid' else 'PROCEDURE (success strategies)'
+    
+    print(f"{type_emoji} {type_label} ({len(typed)} lessons)\n")
+    
+    for r in typed:
+        cat = r.get('category', 'general')
+        print(f"  [{cat}] {r.get('lesson', '')[:75]}")
+    
+    return typed
 
 
 def show_stats():
@@ -495,6 +558,26 @@ def main():
     
     elif cmd == 'trends':
         show_trends()
+    
+    elif cmd == 'avoid':
+        # Show principle-based lessons (what NOT to do)
+        n = int(sys.argv[2]) if len(sys.argv) >= 3 else 10
+        query_by_type('avoid', n)
+    
+    elif cmd == 'procedures' or cmd == 'procedure':
+        # Show procedural lessons (what TO do)
+        n = int(sys.argv[2]) if len(sys.argv) >= 3 else 10
+        query_by_type('procedure', n)
+    
+    elif cmd == 'mars':
+        # Show both types side by side (MARS framework view)
+        print("🧠 MARS Framework View: Metacognitive Reflections\n")
+        print("=" * 60)
+        query_by_type('avoid', 5)
+        print()
+        query_by_type('procedure', 5)
+        print("\nTip: Before tasks, check 'avoid' to prevent errors,")
+        print("     then 'procedures' to replicate success.")
     
     else:
         print(__doc__)

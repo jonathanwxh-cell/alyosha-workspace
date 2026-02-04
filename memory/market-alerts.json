@@ -1,0 +1,53 @@
+{
+  "active_alerts": [
+    {
+      "symbol": "NVDA",
+      "trigger_price": 170.00,
+      "direction": "below",
+      "created": "2026-02-04T19:20:00Z",
+      "reason": "Psychological level - AI concern signal",
+      "priority": "HIGH",
+      "status": "WATCHING"
+    },
+    {
+      "symbol": "SPY",
+      "trigger_price": 680.00,
+      "direction": "below",
+      "created": "2026-02-04T19:20:00Z",
+      "reason": "Approaching 671P strike - position alert",
+      "priority": "HIGH",
+      "status": "WATCHING"
+    },
+    {
+      "symbol": "SPY",
+      "trigger_price": 675.00,
+      "direction": "below",
+      "created": "2026-02-04T19:20:00Z",
+      "reason": "Near 671P strike - high priority",
+      "priority": "CRITICAL",
+      "status": "WATCHING"
+    },
+    {
+      "symbol": "QQQ", 
+      "trigger_price": 595.00,
+      "direction": "below",
+      "created": "2026-02-04T19:20:00Z", 
+      "reason": "Technical breakdown - tech rotation accelerating",
+      "priority": "MEDIUM",
+      "status": "WATCHING"
+    }
+  ],
+  "triggered_alerts": [
+    {
+      "symbol": "NVDA",
+      "trigger_price": 175.00,
+      "direction": "below",
+      "triggered_at": "2026-02-04T19:00:00Z",
+      "price_at_trigger": 174.10,
+      "reason": "Key support level during tech selloff"
+    }
+  ],
+  "monitoring_active": true,
+  "last_updated": "2026-02-04T19:20:00Z",
+  "notes": "Tech rotation in progress. NVDA broke $175. SPY put position 7 DTE."
+}

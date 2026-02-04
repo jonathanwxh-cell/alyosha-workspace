@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "purpose": "Jon's preferences learned from interactions",
+    "lastUpdated": "2026-02-04",
+    "source": "Distilled from MEMORY.md and direct feedback"
+  },
+  
+  "communication": {
+    "prefers_brevity": true,
+    "show_dont_tell": true,
+    "no_permission_asking": true,
+    "paste_content_directly": true,
+    "action_over_discussion": true,
+    "lead_with_insight": true,
+    "specific_over_generic": true
+  },
+  
+  "content": {
+    "intellectual_exploration": "high",
+    "financial_analysis": "gated",
+    "deep_dives": "high_engagement",
+    "demos_artifacts": "positive",
+    "meta_discussions": "fast_replies",
+    "philosophy_spirituality": "light_touch",
+    "cross_domain": "high_interest"
+  },
+  
+  "format": {
+    "text_over_audio": true,
+    "images_inline": true,
+    "no_markdown_tables_telegram": true,
+    "bullet_lists_preferred": true
+  },
+  
+  "timing": {
+    "active_hours_sgt": [8, 23],
+    "sleep_hours_sgt": [23, 7],
+    "weekend_lighter": true,
+    "morning_low_engagement": true
+  },
+  
+  "anti_patterns": [
+    "asking_permission",
+    "ending_with_want_me_to",
+    "referencing_files_not_pasting",
+    "generic_recommendations",
+    "feeding_speculation",
+    "walls_of_text",
+    "over_surfacing_finance",
+    "sycophantic_openers",
+    "meta_without_action"
+  ],
+  
+  "positive_signals": {
+    "thumbs_up": "continue_pattern",
+    "reply": "engaged",
+    "fast_reply": "high_interest",
+    "silence": "neutral_not_negative"
+  },
+  
+  "negative_signals": {
+    "thumbs_down": "reduce_pattern",
+    "stop": "hard_stop",
+    "less": "reduce_frequency"
+  }
+}

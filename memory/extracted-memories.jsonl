@@ -3,3 +3,8 @@
 {"date": "2026-02-03", "type": "lesson", "content": "3. No way to export lessons for MEMORY.md consolidation", "importance": 0.6, "extracted_at": "2026-02-03T20:00:05.656332"}
 {"date": "2026-02-03", "type": "lesson", "content": "## Lessons", "importance": 0.6, "extracted_at": "2026-02-03T20:00:05.656335"}
 {"date": "2026-02-03", "type": "preference", "content": "- Render fragility dashboard \u2014 **parked** (Jon said ignore for now)", "importance": 0.65, "extracted_at": "2026-02-03T20:00:05.656354"}
+{"date": "2026-02-04", "type": "lesson", "content": "- AVOID CHECK: Query principle-based lessons", "importance": 0.6, "extracted_at": "2026-02-04T20:00:04.449985"}
+{"date": "2026-02-04", "type": "lesson", "content": "- `reflexion.py procedures` \u2014 Procedural lessons (what TO do)", "importance": 0.6, "extracted_at": "2026-02-04T20:00:04.450006"}
+{"date": "2026-02-04", "type": "lesson", "content": "- `reflexion.py avoid` \u2014 Principle-based lessons (what NOT to do)", "importance": 0.6, "extracted_at": "2026-02-04T20:00:04.450012"}
+{"date": "2026-02-04", "type": "lesson", "content": "### Key Lessons", "importance": 0.6, "extracted_at": "2026-02-04T20:00:04.450016"}
+{"date": "2026-02-04", "type": "lesson", "content": "**Key insight:** Separate \"what to avoid\" from \"what works\" for more efficient learning (single-cycle improvement vs multi-turn recursion).", "importance": 0.5, "extracted_at": "2026-02-04T20:00:04.450020"}
