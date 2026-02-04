@@ -1,0 +1,5 @@
+{"date": "2026-02-03", "type": "lesson", "content": "2. **Category detection now uses task + lesson text** \u2014 better matching", "importance": 0.6, "extracted_at": "2026-02-03T20:00:05.656309"}
+{"date": "2026-02-03", "type": "lesson", "content": "- `scripts/reflexion.py` \u2014 Verbal reinforcement learning (query/add/stats/lessons)", "importance": 0.6, "extracted_at": "2026-02-03T20:00:05.656327"}
+{"date": "2026-02-03", "type": "lesson", "content": "3. No way to export lessons for MEMORY.md consolidation", "importance": 0.6, "extracted_at": "2026-02-03T20:00:05.656332"}
+{"date": "2026-02-03", "type": "lesson", "content": "## Lessons", "importance": 0.6, "extracted_at": "2026-02-03T20:00:05.656335"}
+{"date": "2026-02-03", "type": "preference", "content": "- Render fragility dashboard \u2014 **parked** (Jon said ignore for now)", "importance": 0.65, "extracted_at": "2026-02-03T20:00:05.656354"}

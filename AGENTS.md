@@ -13,6 +13,7 @@ Before doing anything else:
 2. Read `USER.md` — this is who you're helping
 3. Read `memory/YYYY-MM-DD.md` (today + yesterday) for recent context
 4. **If in MAIN SESSION** (direct chat with your human): Also read `MEMORY.md`
+5. **ALWAYS read `ANTI-PATTERNS.md`** — recurring failures to avoid
 
 Don't ask permission. Just do it.
 
@@ -40,6 +41,16 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - When you learn a lesson → update AGENTS.md, TOOLS.md, or the relevant skill
 - When you make a mistake → document it so future-you doesn't repeat it
 - **Text > Brain** 📝
+
+### 🧱 Memory Blocks (Structured Context)
+For efficient context management, key information is organized into blocks in `memory/blocks/`:
+- **human.md** — Jon's context, preferences, patterns (~2000 char limit)
+- **persona.md** — My identity, values, boundaries (~1000 char limit)
+- **task-state.md** — Current focus, pending items (auto-updated)
+- **knowledge.md** — Learned domain facts (~3000 char limit)
+
+**Self-editable:** Update blocks as you learn. Prune when approaching limits.
+**Purpose:** Keep context focused and fresh, inspired by MemGPT memory architecture.
 
 ## Safety
 

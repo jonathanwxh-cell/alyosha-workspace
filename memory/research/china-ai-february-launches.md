@@ -1,6 +1,6 @@
 # China AI February 2026 Launch Tracker
 
-*Last updated: 2026-02-03 01:00 UTC*
+*Last updated: 2026-02-04 01:00 UTC*
 
 ## 🚀 Imminent Launches (February 2026)
 

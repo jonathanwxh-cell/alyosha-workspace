@@ -1,0 +1,48 @@
+{
+  "models": {
+    "claude-sonnet-5": {
+      "provider": "anthropic",
+      "codename": "Fennec",
+      "rumored_date": "2026-02-03",
+      "status": "rumored",
+      "context": "500K-1M tokens rumored",
+      "notes": "Vertex AI ID: claude-sonnet-5@20260203",
+      "check_cmd": null
+    },
+    "claude-opus-5": {
+      "provider": "anthropic",
+      "status": "not_announced",
+      "notes": "Expected after Sonnet 5"
+    },
+    "gpt-5": {
+      "provider": "openai",
+      "status": "announced",
+      "notes": "In testing, no public release date"
+    },
+    "gemini-2.5-pro": {
+      "provider": "google",
+      "status": "released",
+      "release_date": "2025-12",
+      "notes": "Available via API"
+    },
+    "llama-4": {
+      "provider": "meta",
+      "codename": "Avocado",
+      "status": "testing",
+      "notes": "Meta TBD unit testing, $115-135B capex planned"
+    },
+    "deepseek-v4": {
+      "provider": "deepseek",
+      "status": "not_announced",
+      "notes": "V3 still current, watch for efficiency improvements"
+    },
+    "qwen-3.5": {
+      "provider": "alibaba",
+      "status": "not_announced",
+      "notes": "Qwen 3 235B current"
+    }
+  },
+  "last_check": "2026-02-04T04:29:10.499346",
+  "alerts": [],
+  "history": []
+}

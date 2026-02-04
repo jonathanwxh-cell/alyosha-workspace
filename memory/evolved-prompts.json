@@ -1,0 +1,11 @@
+{
+  "generated": "2026-02-03T18:09:46.239869+00:00",
+  "prompts": [
+    {
+      "type": "lesson_derived",
+      "lesson_source": "ALWAYS run scripts/analyze-stock.py TICKER for any",
+      "new_prompt": "DEEP ANALYSIS MODE: Pick ONE topic. Spend 20 minutes going deep. Read primary sources. Extract non-obvious insight. Success = genuine understanding, not surface summary.",
+      "rationale": "Deep analysis appears in successful task reflections"
+    }
+  ]
+}

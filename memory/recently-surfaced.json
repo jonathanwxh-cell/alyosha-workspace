@@ -9,10 +9,15 @@
       "topic": "Singapore Space Agency",
       "timestamp": "2026-02-03T11:55:06.728690",
       "source": "singapore-pulse"
+    },
+    {
+      "topic": "Singapore Gulf Bank stablecoin",
+      "timestamp": "2026-02-03T12:24:45.013548",
+      "source": "singapore-pulse"
     }
   ],
   "meta": {
     "created": "2026-02-03T09:50:36.391657",
-    "updated": "2026-02-03T11:55:06.728701"
+    "updated": "2026-02-03T12:24:45.013560"
   }
 }

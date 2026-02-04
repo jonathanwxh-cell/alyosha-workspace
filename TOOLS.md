@@ -67,27 +67,13 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
   - No API key needed, good for quick quotes
   - Use as backup when FMP unavailable
 
-- **Benzinga:** ⏳ **CLIENT READY — NEEDS KEY**
-  - Client: `scripts/benzinga-client.py`
-  - Commands: `news`, `ratings`, `earnings`, `watchlist`, `test`
-  - Best for: Real-time news, analyst ratings, earnings calendar
-  - Status: Waiting for API key (~$300/mo)
-  - **To activate:** 
-    ```bash
-    echo "BENZINGA_API_KEY=your_key" > ~/.secure/benzinga.env
-    python3 scripts/benzinga-client.py test
-    ```
+- **Benzinga:** ❌ **NOT NEEDED**
+  - Client exists: `scripts/benzinga-client.py`
+  - Decision: Evaluated, not worth ~$300/mo. FMP + free sources sufficient.
 
-- **Danelfin:** ⏳ **CLIENT READY — NEEDS KEY**
-  - Client: `scripts/danelfin-client.py`
-  - Commands: `score`, `top`, `watchlist`, `sectors`
-  - Best for: AI stock scores (1-10), screening top picks
-  - Status: Waiting for API key
-  - **To activate:**
-    ```bash
-    echo "DANELFIN_API_KEY=your_key" > ~/.secure/danelfin.env
-    python3 scripts/danelfin-client.py score NVDA
-    ```
+- **Danelfin:** ❌ **NOT NEEDED**
+  - Client exists: `scripts/danelfin-client.py`
+  - Decision: Evaluated, not needed. Own analysis framework works.
 
 **Comparison:** `docs/financial-apis-comparison.md`
 
@@ -141,6 +127,45 @@ python3 scripts/transcript-compare.py NVDA      # Instant local analysis
 - **ElevenLabs:** Not needed unless better voices wanted later
 
 Add whatever helps you do your job. This is your cheat sheet.
+
+### Memory Blocks
+- **Manager:** `python3 scripts/memory-blocks.py [status|check]`
+- **Location:** `memory/blocks/`
+- **Blocks:** human.md (2000), persona.md (1000), task-state.md (1500), knowledge.md (3000)
+- **Purpose:** Structured, size-limited context (MemGPT-inspired)
+- **Self-editable:** Update as you learn, prune when approaching limits
+
+### Investment Thesis Tracker
+- **Thesis Tracker:** `scripts/thesis-tracker.py` — track investment theses and learn from outcomes
+  ```bash
+  python3 scripts/thesis-tracker.py add TICKER                    # Interactive add
+  python3 scripts/thesis-tracker.py add TICKER --quick "thesis" --conviction 7
+  python3 scripts/thesis-tracker.py list                          # All active theses
+  python3 scripts/thesis-tracker.py show TICKER                   # Detail + current price
+  python3 scripts/thesis-tracker.py check                         # Alerts (big moves, stale, conviction mismatch)
+  python3 scripts/thesis-tracker.py close TICKER                  # Close and record lesson
+  python3 scripts/thesis-tracker.py review                        # Win rate, avg return, lessons
+  python3 scripts/thesis-tracker.py remind                        # Stale theses (>30 days)
+  ```
+- **Key feature:** Asks "What would change your view?" when adding — creates accountability
+- **Storage:** `memory/investment-theses.json` (active), `memory/thesis-outcomes.jsonl` (closed)
+
+### Trading Behavior Tracking
+- **Trade Journal:** `scripts/trade-journal.py` — log positions, track outcomes
+  ```bash
+  python3 scripts/trade-journal.py add NVDA --type option --direction long --notes "earnings play"
+  python3 scripts/trade-journal.py close NVDA --outcome win --pnl 25 --lesson "held through volatility"
+  python3 scripts/trade-journal.py stats     # Win rate, patterns
+  python3 scripts/trade-journal.py patterns  # Day-of-week, time patterns
+  ```
+- **Speculation Guard:** `scripts/speculation-guard.py` — detect boredom patterns
+  ```bash
+  python3 scripts/speculation-guard.py log "thinking about SPY puts"
+  python3 scripts/speculation-guard.py check   # Analyze recent activity
+  python3 scripts/speculation-guard.py suggest # Get engaging alternative
+  ```
+- **Purpose:** Jon speculates when bored. These tools track patterns and suggest redirects.
+- **When to use:** Log when Jon mentions options, shorts, crash bets, leveraged trades
 
 ### Security
 - **fail2ban:** ✅ Installed, protecting SSH (5 retries, 1hr ban)

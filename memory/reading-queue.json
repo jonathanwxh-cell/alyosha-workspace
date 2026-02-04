@@ -41,5 +41,12 @@
       "added": "2026-02-03"
     }
   ],
-  "completed": []
+  "completed": [
+    {
+      "title": "Meditations on Moloch",
+      "author": "Scott Alexander", 
+      "date_completed": "2026-02-03",
+      "notes": "Foundational framework for coordination failures"
+    }
+  ]
 }

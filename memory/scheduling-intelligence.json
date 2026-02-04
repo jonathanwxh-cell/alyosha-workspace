@@ -22,9 +22,11 @@
     "enabled": true,
     "scores": {
       "6": {
-        "score": 0.88,
-        "samples": 8,
-        "note": "Early morning - high engagement observed"
+        "score": 0.897,
+        "samples": 10,
+        "engaged": 9,
+        "confidence": "medium",
+        "lastUpdated": "2026-02-03T14:25:29.015807"
       },
       "8": {
         "score": 0.6,
@@ -44,17 +46,23 @@
       "14": {
         "score": 1.0,
         "samples": 1,
-        "note": "Afternoon - 100% engagement observed"
+        "engaged": 1,
+        "confidence": "insufficient",
+        "lastUpdated": "2026-02-03T14:25:29.015819"
       },
       "15": {
-        "score": 0.75,
-        "samples": 0,
-        "note": "Afternoon - assumed good"
+        "score": 0.929,
+        "samples": 5,
+        "engaged": 5,
+        "confidence": "low",
+        "lastUpdated": "2026-02-03T14:25:29.015823"
       },
       "16": {
-        "score": 0.75,
-        "samples": 0,
-        "note": "Afternoon - assumed good"
+        "score": 0.917,
+        "samples": 4,
+        "engaged": 4,
+        "confidence": "low",
+        "lastUpdated": "2026-02-03T14:25:29.015825"
       },
       "20": {
         "score": 0.7,
@@ -70,6 +78,34 @@
         "score": 0.6,
         "samples": 0,
         "note": "Late evening - lower priority"
+      },
+      "19": {
+        "score": 0.667,
+        "samples": 1,
+        "engaged": 1,
+        "confidence": "insufficient",
+        "lastUpdated": "2026-02-03T14:25:29.015835"
+      },
+      "0": {
+        "score": 0.333,
+        "samples": 1,
+        "engaged": 0,
+        "confidence": "insufficient",
+        "lastUpdated": "2026-02-03T14:25:29.015840"
+      },
+      "1": {
+        "score": 0.333,
+        "samples": 1,
+        "engaged": 0,
+        "confidence": "insufficient",
+        "lastUpdated": "2026-02-03T14:25:29.015844"
+      },
+      "2": {
+        "score": 0.333,
+        "samples": 1,
+        "engaged": 0,
+        "confidence": "insufficient",
+        "lastUpdated": "2026-02-03T14:25:29.015846"
       }
     },
     "defaultScore": 0.5,
@@ -260,49 +296,76 @@
           "total": 1
         },
         "meta": {
-          "engaged": 3,
-          "total": 3
+          "engaged": 4,
+          "total": 5
         },
         "deep_dive": {
           "engaged": 1,
           "total": 2
         },
         "proactive_alert": {
-          "engaged": 1,
+          "engaged": 0,
           "total": 1
         },
         "agent_improvement": {
           "engaged": 1,
           "total": 1
         },
+        "creation_style": {
+          "engaged": 1,
+          "total": 1
+        },
+        "scheduling": {
+          "engaged": 0,
+          "total": 1
+        },
+        "privacy": {
+          "engaged": 1,
+          "total": 1
+        },
         "infrastructure": {
           "engaged": 2,
           "total": 2
+        },
+        "capability": {
+          "engaged": 1,
+          "total": 1
+        },
+        "autonomy": {
+          "engaged": 1,
+          "total": 1
+        },
+        "creative": {
+          "engaged": 0,
+          "total": 1
+        },
+        "skill_demo": {
+          "engaged": 0,
+          "total": 1
+        },
+        "tool_building": {
+          "engaged": 0,
+          "total": 1
         }
       },
-      "recommendations": {
-        "project_ideation": {
-          "engagement_rate": 1.0,
-          "sample_size": 2,
-          "recommendation": "high_value"
+      "lastUpdated": "2026-02-03T14:25:29.015852"
+    },
+    "dayEngagement": {
+      "data": {
+        "Mon": {
+          "engaged": 6,
+          "total": 6
         },
-        "meta": {
-          "engagement_rate": 1.0,
-          "sample_size": 3,
-          "recommendation": "high_value"
+        "Tue": {
+          "engaged": 0,
+          "total": 6
         },
-        "deep_dive": {
-          "engagement_rate": 0.5,
-          "sample_size": 2,
-          "recommendation": "normal"
-        },
-        "infrastructure": {
-          "engagement_rate": 1.0,
-          "sample_size": 2,
-          "recommendation": "high_value"
+        "Sun": {
+          "engaged": 14,
+          "total": 18
         }
       },
-      "lastUpdated": "2026-02-02T13:01:03.431259"
+      "lastUpdated": "2026-02-03T14:25:29.015854"
     }
   },
   "adaptiveRules": {
@@ -426,10 +489,10 @@
       "note": "Track reply rate of last 10 surfaces to calibrate frequency"
     },
     "messageFatigue": {
-      "maxUnrepliedSurfaces": 3,
-      "windowCycles": 7,
-      "action": "batch_or_skip",
-      "note": "If 3+ surfaces without any reaction/reply within 7 heartbeat cycles, batch or skip."
+      "maxNegativeSignals": 2,
+      "windowDays": 7,
+      "action": "pause",
+      "note": "ONLY explicit negative signals (👎, 'stop', 'less', 'too much') trigger fatigue. Silence = neutral (passive reading). 2+ negatives in 7 days = pause."
     },
     "engagementSignals": {
       "countsAsEngaged": [
@@ -461,6 +524,8 @@
       "2026-02-02: Added timeSlotScoring with learned weights",
       "2026-02-02: Added contentTimeMatching rules",
       "2026-02-02: Added adaptiveIntervals with rolling engagement"
-    ]
+    ],
+    "lastLearningUpdate": "2026-02-03T14:25:29.015856",
+    "learningDataPoints": 30
   }
 }

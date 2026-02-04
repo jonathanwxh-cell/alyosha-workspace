@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-02-03T06:03:31.680124",
+  "timestamp": "2026-02-04T05:00:20.531627",
   "memory_hashes": {
     "goals.json": "0a5028a9",
     "active-projects.json": "a668723c",
-    "exploration-state.json": "7c821d57",
+    "exploration-state.json": "3b648e98",
     "curiosities.json": "bd36ffc9",
     "topic-graph.json": "d1d65835",
     "surface-budget.json": "ffd1628c"
@@ -14,12 +14,25 @@
   "heartbeat_state_hash": null,
   "recent_logs": [],
   "cron_errors": 0,
-  "daily_log_size": 3603,
+  "daily_log_size": 8092,
   "recent_research": [
-    "china-ai-wave-feb2026.md",
-    "vector-db-analysis.md",
+    "nuclear-ai-power-nexus-2026-02-04.md",
+    "china-ai-pulse-2026-02-04.md",
+    "prompt-engineering-2026-02-03.md",
+    "daemon-improvement-research-2026-02-04.md",
+    "singapore-pulse-2026-02-03.md",
+    "agent-patterns-2026-02-03.md",
+    "self-improvement-mechanisms-2026-02-04.md",
+    "daemon-improvement-research-2026-02-03.md",
+    "prompt-engineering-research-2026-02-04.md",
     "china-ai-february-launches.md",
-    "consciousness-threads.md",
-    "atlantic-council-ai-geopolitics-2026.md"
+    "daemon-improvement-2026-02-03.md",
+    "nvda-deep-analysis-template.md",
+    "ai-releases-2026-02-03.md",
+    "creativity-integration-2026-02-03.md",
+    "consciousness-continual-learning-bridge-2026-02-03.md",
+    "nvda-full-analysis-2026-02-03.md",
+    "singapore-airshow-day1-2026-02-03.md",
+    "self-improvement-patterns-2026-02-03.md"
   ]
 }

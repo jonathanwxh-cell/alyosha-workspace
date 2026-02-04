@@ -1,13 +1,13 @@
 {
-  "generated_at": "2026-02-01T23:10:58.424772",
+  "generated_at": "2026-02-04T00:15:12.085191",
   "ticker": "NVDA",
   "company": "NVIDIA Corporation",
   "current": {
-    "price": 191.13,
-    "change_pct": -0.7168484,
-    "market_cap": 4653442400256,
-    "pe_ratio": 47.66334,
-    "forward_pe": 24.93913,
+    "price": 180.34,
+    "change_pct": -2.839289,
+    "market_cap": 4390737936384,
+    "pe_ratio": 44.528393,
+    "forward_pe": 23.531223,
     "fifty_two_week_high": 212.19,
     "fifty_two_week_low": 86.62
   },
@@ -42,16 +42,6 @@
     ]
   },
   "price_history": [
-    {
-      "date": "2025-07-31",
-      "close": 177.85,
-      "volume": 221685400
-    },
-    {
-      "date": "2025-08-01",
-      "close": 173.7,
-      "volume": 204529000
-    },
     {
       "date": "2025-08-04",
       "close": 179.98,
@@ -675,7 +665,17 @@
     {
       "date": "2026-01-30",
       "close": 191.13,
-      "volume": 178936900
+      "volume": 179489500
+    },
+    {
+      "date": "2026-02-02",
+      "close": 185.61,
+      "volume": 165794100
+    },
+    {
+      "date": "2026-02-03",
+      "close": 180.34,
+      "volume": 195713884
     }
   ],
   "analysts": {
@@ -688,13 +688,21 @@
       {
         "period": "0m",
         "strongBuy": 12,
-        "buy": 48,
+        "buy": 47,
         "hold": 3,
         "sell": 1,
         "strongSell": 0
       },
       {
         "period": "-1m",
+        "strongBuy": 12,
+        "buy": 48,
+        "hold": 3,
+        "sell": 1,
+        "strongSell": 0
+      },
+      {
+        "period": "-2m",
         "strongBuy": 11,
         "buy": 49,
         "hold": 3,
@@ -702,7 +710,7 @@
         "strongSell": 0
       },
       {
-        "period": "-2m",
+        "period": "-3m",
         "strongBuy": 11,
         "buy": 49,
         "hold": 3,

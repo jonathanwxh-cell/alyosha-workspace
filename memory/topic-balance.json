@@ -28,14 +28,35 @@
     },
     "philosophy": {
       "description": "Taleb, stoicism, meaning, non-duality",
-      "weeklyTarget": "15-20%",
-      "maxPct": 20,
+      "weeklyTarget": "20-25%",
+      "maxPct": 25,
       "currentWeekCount": 0
     },
     "geopolitics": {
-      "description": "World events, policy, macro trends",
+      "description": "US-China, regional conflicts, power shifts, macro trends",
       "weeklyTarget": "15-20%",
       "maxPct": 20,
+      "priority": "high",
+      "currentWeekCount": 0
+    },
+    "climate": {
+      "description": "Physical risks, transition risks, energy policy, sustainability",
+      "weeklyTarget": "10-15%",
+      "maxPct": 15,
+      "priority": "medium",
+      "currentWeekCount": 0
+    },
+    "tail_risks": {
+      "description": "Fragility mapping, black swans, cascade risks, antifragile plays",
+      "weeklyTarget": "10-15%",
+      "maxPct": 15,
+      "priority": "high",
+      "currentWeekCount": 0
+    },
+    "world_news": {
+      "description": "Major global developments, surprises, signal not noise",
+      "weeklyTarget": "10-15%",
+      "maxPct": 15,
       "currentWeekCount": 0
     },
     "family": {
@@ -59,6 +80,19 @@
       "maxPct": 10,
       "currentWeekCount": 0
     },
+    "prediction": {
+      "description": "Falsifiable predictions, tracking outcomes, calibration",
+      "weeklyTarget": "5-10%",
+      "maxPct": 10,
+      "priority": "medium",
+      "currentWeekCount": 0
+    },
+    "historical": {
+      "description": "Historical analogs, pattern matching, regime detection",
+      "weeklyTarget": "5-10%",
+      "maxPct": 10,
+      "currentWeekCount": 0
+    },
     "emergent": {
       "description": "Weekly trending topic discovered through research. Set by Trend Scout cron.",
       "weeklyTarget": "10-15%",
@@ -67,6 +101,44 @@
       "currentTopic": "Quantum GPS alternatives",
       "topicSetDate": "2026-02-03",
       "topicRationale": "Singapore Airshow showcasing Q-CTRL; GPS fragility thesis"
+    },
+    "macro_economics": {
+      "description": "Fed, central banks, bonds, inflation, cross-asset signals",
+      "weeklyTarget": "10-15%",
+      "maxPct": 15,
+      "priority": "high",
+      "currentWeekCount": 0,
+      "note": "Added 2026-02-04 - Jon is finance, macro drives everything"
+    },
+    "company_analysis": {
+      "description": "Moat mapping, management quality, deep company dives",
+      "weeklyTarget": "10-15%",
+      "maxPct": 15,
+      "priority": "high",
+      "currentWeekCount": 0,
+      "note": "Added 2026-02-04 - Fragility Index success pattern"
+    },
+    "asia_tech": {
+      "description": "China tech, Singapore ecosystem, US-China tech gap",
+      "weeklyTarget": "10-15%",
+      "maxPct": 15,
+      "priority": "high",
+      "currentWeekCount": 0,
+      "note": "Added 2026-02-04 - Singapore location + DeepSeek relevance"
+    },
+    "market_structure": {
+      "description": "Options flow, positioning, fund flows, trading mechanics",
+      "weeklyTarget": "5-10%",
+      "maxPct": 10,
+      "currentWeekCount": 0,
+      "note": "Added 2026-02-04 - Jon trades, understands flow"
+    },
+    "emerging_tech": {
+      "description": "Robotics, quantum, biotech, space - non-AI frontier tech",
+      "weeklyTarget": "10-15%",
+      "maxPct": 15,
+      "currentWeekCount": 0,
+      "note": "Added 2026-02-04 - Broaden beyond AI-heavy focus"
     }
   },
   "weeklyHistory": [],
