@@ -443,7 +443,7 @@ Based on Shinn et al. "Reflexion: Language Agents with Verbal Reinforcement Lear
 
 **BEFORE complex tasks — Query past lessons:**
 ```bash
-python3 scripts/reflexion.py query "task description"
+python3 scripts/reflexion.py query "relevant keyword"
 ```
 Apply any relevant lessons. State which lesson you're applying.
 
@@ -479,6 +479,23 @@ python3 scripts/reflexion.py lessons
 - Starting without checking existing work
 - Building before planning
 - Asking permission when full autonomy granted
+
+**Reflexion Trigger Conditions:**
+
+Query BEFORE these task types:
+- Research / deep dives (check: did I miss something similar before?)
+- Framework / tool building (check: did I over-engineer before?)
+- Multi-step analysis (check: what patterns worked?)
+
+Skip for:
+- Simple lookups, routine checks
+- Direct answers to questions
+
+**Mid-task self-check (for complex outputs):**
+Before shipping anything >500 words or multi-part:
+- Is this too much? (via negativa check)
+- Would simpler work?
+- Am I pattern-completing or actually thinking?
 
 ---
 
