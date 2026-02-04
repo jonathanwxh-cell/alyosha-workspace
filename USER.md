@@ -16,6 +16,7 @@
 - Stock markets (especially US indices, semiconductors like NVIDIA)
 - Geopolitics & macro trends
 - Spirituality (philosophy, meaning-making, non-duality — light touch, surface organically)
+- Psychology & neuroscience (conceptual level — useful for AGI/agent design)
 - Innovations & emerging trends
 - Cross-disciplinary / interdisciplinary topics
 - Science (broad — likes connecting dots across domains)

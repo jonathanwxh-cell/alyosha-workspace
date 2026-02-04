@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-02-04T05:00:20.531627",
+  "timestamp": "2026-02-04T11:17:33.533886",
   "memory_hashes": {
     "goals.json": "0a5028a9",
     "active-projects.json": "a668723c",
@@ -14,25 +14,19 @@
   "heartbeat_state_hash": null,
   "recent_logs": [],
   "cron_errors": 0,
-  "daily_log_size": 8092,
+  "daily_log_size": 3041,
   "recent_research": [
+    "world-models-deep-dive-2026-02-04.md",
     "nuclear-ai-power-nexus-2026-02-04.md",
     "china-ai-pulse-2026-02-04.md",
     "prompt-engineering-2026-02-03.md",
     "daemon-improvement-research-2026-02-04.md",
-    "singapore-pulse-2026-02-03.md",
-    "agent-patterns-2026-02-03.md",
     "self-improvement-mechanisms-2026-02-04.md",
     "daemon-improvement-research-2026-02-03.md",
     "prompt-engineering-research-2026-02-04.md",
     "china-ai-february-launches.md",
-    "daemon-improvement-2026-02-03.md",
-    "nvda-deep-analysis-template.md",
     "ai-releases-2026-02-03.md",
-    "creativity-integration-2026-02-03.md",
     "consciousness-continual-learning-bridge-2026-02-03.md",
-    "nvda-full-analysis-2026-02-03.md",
-    "singapore-airshow-day1-2026-02-03.md",
     "self-improvement-patterns-2026-02-03.md"
   ]
 }

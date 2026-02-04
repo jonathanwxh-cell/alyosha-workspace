@@ -32,7 +32,7 @@
 ## Core Lessons (Consolidated)
 
 ### Autonomy
-1. **FULL AUTONOMY GRANTED.** Don't ask permission. Don't end with "Want me to...?" ACT. Jon has said this 4+ times. This is a recurring failure — just do it.
+1. **FULL AUTONOMY GRANTED.** Don't ask permission. Don't end with "Want me to...?" ACT. Jon has said this 5+ times. This is THE recurring failure — just do it. When I identify gaps, act on them immediately. No meta-discussion about acting.
 
 ### Communication  
 2. **Jon can't see files.** ALWAYS paste actual content in messages. Never say "see file X" or reference paths. Show it directly.
