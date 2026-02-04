@@ -200,7 +200,46 @@ def calculate_time_score(hour, config, dow=None):
         weekend_weight = config.get('observedPatterns', {}).get('dayOfWeek', {}).get('saturday', {}).get('weight', 0.7)
         base_score *= weekend_weight
     
-    return base_score
+    # Apply circadian modifier
+    base_score *= get_circadian_modifier(hour, dow, config)
+    
+    return min(base_score, 1.0)  # Cap at 1.0
+
+
+def get_circadian_modifier(hour, dow, config):
+    """
+    Apply circadian rhythm awareness based on research:
+    - 11 AM and 3 PM are energy peaks (1.3x boost)
+    - 1-2 PM is post-lunch dip (0.7x penalty)
+    - Tuesday 8 PM is "golden hour" (1.4x boost)
+    """
+    circadian = config.get('circadianAwareness', {})
+    if not circadian.get('enabled', False):
+        return 1.0
+    
+    modifier = 1.0
+    
+    # Check peaks
+    peaks = circadian.get('peaks', {})
+    for peak_name, peak_config in peaks.items():
+        if hour == peak_config.get('hour'):
+            modifier *= peak_config.get('boost', 1.0)
+    
+    # Check dips
+    dips = circadian.get('dips', {})
+    for dip_name, dip_config in dips.items():
+        if hour in dip_config.get('hours', []):
+            modifier *= dip_config.get('penalty', 1.0)
+    
+    # Check golden hour (Tuesday 8 PM)
+    golden = circadian.get('goldenHour', {})
+    if golden:
+        dow_names = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+        current_day = dow_names[dow] if dow is not None else None
+        if current_day == golden.get('day') and hour == golden.get('hour'):
+            modifier *= golden.get('boost', 1.0)
+    
+    return modifier
 
 
 def get_best_categories_for_hour(hour, config):
