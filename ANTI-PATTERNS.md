@@ -78,6 +78,15 @@ Jon trades options when bored → burns out. Don't enable.
 
 ---
 
+## Infrastructure Anti-Patterns
+
+### ❌ Config-Infrastructure Mismatch
+**What happened:** Set topic-balance.json saying finance = 5-10%, then built 12 finance crons vs 3 non-finance.
+**Lesson:** When setting a goal/config, IMMEDIATELY audit infrastructure to match. Don't declare intent without implementation.
+**Fix:** Before finalizing any config, count: "How many crons serve this? What's the actual frequency ratio?"
+
+---
+
 ## Timing Anti-Patterns
 
 ### ❌ Overnight creative outputs (0-2am SGT)
