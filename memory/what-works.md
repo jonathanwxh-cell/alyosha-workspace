@@ -318,3 +318,40 @@ Example: Fragility Index on SE
 ---
 
 *Updated: 2026-02-04 13:40 SGT*
+
+## Feedback Loop (2026-02-04 07:05 UTC)
+
+### Cron Performance Audit
+
+| Cron | Avg Runtime | Hit Rate | Action |
+|------|-------------|----------|--------|
+| Kids Dinner | 38s | 100% | ✅ Keep |
+| Talebian Lens | 31s | 100% | ✅ Keep |
+| World State | 95s | 100% | ✅ Keep |
+| SG Briefing | 52s | 40% | ⚠️ Reduced freq |
+| Research Scan | 55s | - | ⚠️ Fixed format |
+| Free Exploration | 143s | - | ⚠️ Capped, added gate |
+
+### Fixed: Research Scan Missing Investment Angles
+**Problem:** Output had "Xcode agents" and "AgentRx debugging" — interesting but zero investment connection.
+**Fix:** Mandatory output format:
+```
+Investment angle: [Long X / Short Y / Position for...]
+```
+If no angle exists → don't surface.
+
+### Fixed: SG Briefing Overfrequency
+**Problem:** 2/3 runs returned "quiet news day" = 60% waste
+**Fix:** Daily → Mon/Wed/Fri
+
+### Fixed: Free Exploration Long Runtime
+**Problem:** 143s per run on consciousness research (interesting but not actionable)
+**Fix:** 
+- Added investment relevance gate
+- Timeout 900s → 300s
+- Max 3 ReAct cycles
+- Surface only if HIGH/MEDIUM relevance
+
+---
+
+*Updated: 2026-02-04 07:05 UTC*
