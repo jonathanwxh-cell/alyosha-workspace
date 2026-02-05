@@ -48,7 +48,6 @@
 15. Don't enable speculation — redirect to non-market content
 
 ## Active Projects
-- Substack Post #1 (protein design) — drafted
 - Moltbook: AlyoshaSG — pending claim
 
 ## High Engagement Topics

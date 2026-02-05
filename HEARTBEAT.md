@@ -43,6 +43,18 @@ This is a growth journal. Jon wants to see the thinking, not just the conclusion
 
 ---
 
+## Threads
+
+Check `memory/threads.md` — up to 3 lightweight curiosities I'm poking at.
+
+On heartbeats:
+- Glance at active threads
+- If something to add → small increment, update file
+- If stuck → drop or surface to Jon
+- If empty → can propose new thread or leave empty
+
+---
+
 ## Constraints (still apply)
 
 **Ask first:**
