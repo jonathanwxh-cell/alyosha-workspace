@@ -1,0 +1,46 @@
+{
+  "goals": [
+    {
+      "id": "ff697659",
+      "description": "Build autonomous goal execution system for daemon",
+      "status": "active",
+      "created": "2026-02-05 09:47 SGT",
+      "updated": "2026-02-05 09:47 SGT",
+      "sub_goals": [
+        {
+          "id": "sub1",
+          "description": "Research: HTN, orchestration patterns, state management",
+          "status": "complete"
+        },
+        {
+          "id": "sub2",
+          "description": "Build: goal-tracker.py with CRUD operations",
+          "status": "complete"
+        },
+        {
+          "id": "sub3",
+          "description": "Add: LLM decomposition (goal \u2192 sub-goals)",
+          "status": "pending"
+        },
+        {
+          "id": "sub4",
+          "description": "Integrate: sessions_spawn for parallel execution",
+          "status": "pending"
+        },
+        {
+          "id": "sub5",
+          "description": "Add: heartbeat progress check",
+          "status": "pending"
+        },
+        {
+          "id": "sub6",
+          "description": "Build: evaluation loop for quality",
+          "status": "pending"
+        }
+      ],
+      "progress_pct": 33,
+      "notes": []
+    }
+  ],
+  "version": 1
+}
