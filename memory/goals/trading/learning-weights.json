@@ -1,0 +1,38 @@
+{
+  "meta": {
+    "description": "Auto-adjusted parameters based on trade outcomes",
+    "lastUpdated": "2026-02-05T04:47:00Z",
+    "version": 1
+  },
+  "score_threshold": {
+    "current": 7.5,
+    "min": 6.0,
+    "max": 9.0,
+    "history": [
+      {"date": "2026-02-05", "value": 8.0, "reason": "initial setting"},
+      {"date": "2026-02-05", "value": 7.5, "reason": "lowered to increase pipeline flow"}
+    ]
+  },
+  "sector_weights": {
+    "industrials": 1.0,
+    "healthcare": 1.0,
+    "energy": 1.0,
+    "technology": 1.0,
+    "financials": 1.0,
+    "consumer_defensive": 1.0,
+    "materials": 1.0,
+    "utilities": 0.9,
+    "real_estate": 0.9
+  },
+  "strategy_confidence": {
+    "wheel_csp": 1.0,
+    "pmcc": 1.0,
+    "credit_spread": 1.0,
+    "long_stock": 0.9
+  },
+  "adjustment_rules": {
+    "min_sample_size": 5,
+    "max_adjustment_per_week": 0.1,
+    "lookback_trades": 20
+  }
+}

@@ -1,4 +1,4 @@
-# GOALS.md — Goal Framework v3.0
+# GOALS.md — Goal Framework v3.1
 
 *Research-informed. Self-improving. One active goal at a time.*
 
@@ -13,10 +13,13 @@
 ## Core Principles
 
 1. **Test-First**: Define what success looks like BEFORE acting
-2. **Reflect Always**: Every action generates learning
+2. **Reflect Always**: Every action generates learning (dual-loop: inside + outside view)
 3. **Fail Forward**: Failures improve the system
 4. **Confidence-Gated**: Low confidence = don't proceed
 5. **Memory-Backed**: Everything logged, nothing lost
+6. **Verify Inputs**: Don't trust observations blindly — cross-check
+7. **Know When Done**: 80% with certainty beats 100% with diminishing returns
+8. **Checkpoint Progress**: Save state at milestones, enable rollback
 
 ---
 
@@ -64,10 +67,16 @@ These tests guide all subsequent work.
 4. Map knowledge gaps
 5. Self-critique: What am I missing?
 
-**Self-Critique Questions:**
+**Dual-Loop Reflection:**
+*Introspection (inside view):*
 - What would a skeptic say about my understanding?
 - What sources disagree with my synthesis?
 - What's the strongest argument against my conclusions?
+
+*Extrospection (outside view — step outside yourself):*
+- If I showed this to an expert, what would they immediately question?
+- What am I too close to see?
+- What would a fresh observer notice that I've missed?
 
 **Output:** Domain understanding summary with confidence
 **Checkpoint:** Jon confirms sufficient ✓
@@ -88,11 +97,16 @@ These tests guide all subsequent work.
    - Track record (/10)
 4. Recommend top 1-2 with reasoning
 
-**Self-Critique Questions:**
+**Dual-Loop Reflection:**
+*Introspection:*
 - Am I biased toward a particular approach? Why?
-- What would an expert in this field recommend?
 - What's the anti-consensus view?
 - What would make me change my recommendation?
+
+*Extrospection:*
+- What would an expert in this field recommend?
+- If someone else proposed my recommendation, would I poke holes in it?
+- What's the obvious thing I'm overlooking?
 
 **Output:** Approach comparison + recommendation
 **Checkpoint:** Jon picks approach ✓
@@ -124,10 +138,16 @@ Goal
 - Estimated effort
 - Risk level
 
-**Self-Critique Questions:**
+**Dual-Loop Reflection:**
+*Introspection:*
 - Are tasks small enough to execute cleanly?
 - Did I miss any dependencies?
 - What could go wrong at each step?
+
+*Extrospection:*
+- Would a project manager approve this breakdown?
+- What would someone unfamiliar with the goal find confusing?
+- If this plan fails, what will the post-mortem say was obvious?
 
 **Output:** Task tree with success tests
 **Checkpoint:** Jon approves structure ✓
@@ -138,15 +158,24 @@ Goal
 ### Phase 5: EXECUTE
 **Purpose:** Do the work. Learn continuously.
 
-**OODA Loop (per task):**
+**OODA+ Loop (per task):**
 ```
-OBSERVE → ORIENT → DECIDE → ACT → [repeat]
+VERIFY → OBSERVE → ORIENT → DECIDE → ACT → [repeat]
 ```
 
-1. **Observe:** What's the current state? What data do I have?
-2. **Orient:** How does this relate to the goal? What's changed?
-3. **Decide:** What's the best next action? (with confidence)
-4. **Act:** Execute. Log outcome immediately.
+1. **Verify:** Are my inputs trustworthy?
+   - Is data current? (check timestamps, freshness)
+   - Is source reliable? (cross-reference if uncertain)
+   - Am I hallucinating? (ground in concrete evidence)
+   - *If verification fails → pause, get better data*
+
+2. **Observe:** What's the current state? What data do I have?
+
+3. **Orient:** How does this relate to the goal? What's changed?
+
+4. **Decide:** What's the best next action? (with confidence)
+
+5. **Act:** Execute. Log outcome immediately.
 
 **After Each Task:**
 ```
@@ -157,13 +186,20 @@ OBSERVE → ORIENT → DECIDE → ACT → [repeat]
 □ Confidence in result: [LOW/MEDIUM/HIGH]
 ```
 
+**Completion Threshold (Good Enough Detection):**
+Before iterating further, ask:
+- Have I hit diminishing returns? (effort ↑, value ↓)
+- Is 80% with high confidence better than 100% with low confidence?
+- Am I polishing or actually improving?
+- *If diminishing returns → declare done, move on*
+
 **Failure Protocol:**
 - 1 failure → Reflect, adjust, retry
 - 2 failures → Deeper analysis, consider pivot
 - 3 failures → Escalate to Jon with analysis
 
 **Guardrails:**
-- Tier 4 actions → per-action approval
+- Tier 4 actions → per-action approval + rollback plan
 - Low confidence → pause and report
 - Scope creep → checkpoint before expanding
 
@@ -211,6 +247,61 @@ OBSERVE → ORIENT → DECIDE → ACT → [repeat]
 | 2 | Workflow | Draft/research, you decide | All outputs | Learning new domain |
 | 3 | Semi-auto | Act within guardrails | Milestones + Tier 4 | **Default** |
 | 4 | Full-auto | Decide and act | Start + End only | High trust, bounded |
+
+---
+
+## Checkpoint Protocol
+
+**Purpose:** Enable recovery from failures without losing progress.
+
+**When to Checkpoint:**
+- After each subgoal completion (automatic)
+- Before any Tier 4 action
+- Before any irreversible action
+- When switching contexts or pausing work
+
+**Checkpoint Contents:**
+```
+## Checkpoint: [Goal] / [Subgoal] — [timestamp]
+- Progress: [X/Y tasks complete]
+- Current state: [summary]
+- Next action: [what comes next]
+- Blockers: [if any]
+- Key decisions made: [list]
+- Rollback point: [last safe state]
+```
+
+**Storage:** `memory/goals/checkpoints/[goal-slug]-[timestamp].md`
+
+**Recovery:**
+- On failure → load last checkpoint
+- On context loss → resume from checkpoint
+- On pivot → archive checkpoint, start fresh
+
+---
+
+## Rollback Mechanism
+
+**For Tier 4 actions (irreversible/high-risk):**
+
+Before executing, document:
+```
+## Rollback Plan: [Action]
+- **Action:** [what will be done]
+- **Can it be undone?** [yes/no/partial]
+- **If yes, how:** [specific steps]
+- **If no, mitigation:** [damage control plan]
+- **Worst case:** [what happens if this goes wrong]
+- **Acceptable?** [yes/no — if no, don't proceed]
+```
+
+**Examples:**
+- Trade executed → Rollback: Close position (may have loss)
+- Email sent → Rollback: Send correction/apology
+- File deleted → Rollback: Restore from trash/backup
+- Config changed → Rollback: Revert to previous config
+
+**Rule:** No Tier 4 action without documented rollback plan.
 
 ---
 
@@ -293,6 +384,10 @@ Update after each goal review.
 - ❌ Scope creep without checkpoint
 - ❌ Acting beyond autonomy tier
 - ❌ No self-improvement after goal ends
+- ❌ **Trusting inputs blindly** (no verification)
+- ❌ **Endless iteration** (not recognizing "good enough")
+- ❌ **Tier 4 without rollback plan** (irreversible action without escape hatch)
+- ❌ **Single-loop reflection only** (missing external perspective)
 
 ---
 
@@ -313,8 +408,14 @@ Update after each goal review.
 - BabyAGI: Task generation from outcomes
 - Hierarchical Task Networks: Decomposition patterns
 - Andrew Ng: Reflection as core agentic pattern
+- Dual-Loop Reflection (Nature 2025): Extrospection + Introspection
+- Schneier OODA Critique (2025): Input verification, trust assumptions
+- LangGraph/Dapr: Checkpoint-based state persistence
+- MAR (Multi-Agent Reflexion): Diminishing returns detection
 
 ---
 
-*Framework v3.0 — 2026-02-05*
-*Changes: Added success tests (TDD), self-critique questions, confidence gating, failure memory, self-improvement mechanism, cross-goal learning, OODA execution loop*
+*Framework v3.1 — 2026-02-05*
+*v3.1 Changes: Added dual-loop reflection (extrospection), input verification (VERIFY step), completion threshold (good enough detection), checkpoint protocol, rollback mechanism for Tier 4 actions*
+
+*v3.0 Changes: Added success tests (TDD), self-critique questions, confidence gating, failure memory, self-improvement mechanism, cross-goal learning, OODA execution loop*

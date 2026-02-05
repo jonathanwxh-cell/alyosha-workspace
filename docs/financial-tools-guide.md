@@ -8,9 +8,11 @@
 | Tool | Status | Best For | Cost |
 |------|--------|----------|------|
 | **FMP** | ✅ Active | Quotes, profiles, peers, fundamentals | $149/mo (Ultimate) |
+| **Finnhub** | ✅ Active | News, insider trading, recommendations | Free |
+| **Alpha Vantage** | ✅ Key ready | Technical indicators, fundamentals | Free |
 | **yfinance** | ✅ Active | Quick quotes, free backup | Free |
+| **Danelfin** | ⏳ Needs key | AI stock scores, screening | ~$20-200/mo |
 | **Benzinga** | ⏳ Needs key | News, ratings, earnings calendar | ~$300/mo |
-| **Danelfin** | ⏳ Needs key | AI stock scores, screening | Varies |
 
 ---
 
@@ -150,7 +152,43 @@ python3 scripts/benzinga-client.py calendar --type earnings
 
 ---
 
-## 4. Danelfin — AWAITING KEY
+## 4. Finnhub — FREE TIER
+
+**Status:** ✅ Active  
+**Client:** `scripts/finnhub-client.py`  
+**Key:** `~/.secure/finnhub.env`  
+**Docs:** https://finnhub.io/docs/api
+
+### Usage
+
+```bash
+# Quotes & news
+python3 scripts/finnhub-client.py quote NVDA
+python3 scripts/finnhub-client.py news NVDA
+
+# Analyst info
+python3 scripts/finnhub-client.py recommend NVDA    # Analyst recommendations
+python3 scripts/finnhub-client.py sentiment NVDA    # News sentiment score
+
+# Insider activity
+python3 scripts/finnhub-client.py insider NVDA
+
+# Earnings
+python3 scripts/finnhub-client.py earnings NVDA
+
+# Multi-ticker
+python3 scripts/finnhub-client.py watchlist NVDA,AAPL,MSFT
+```
+
+### Best For
+- **Insider trading data** (free, good quality)
+- **Analyst recommendations** (buy/hold/sell counts)
+- **News sentiment scores**
+- **Peer companies**
+
+---
+
+## 5. Danelfin — AWAITING KEY
 
 **Status:** ⏳ Client built, needs API key  
 **Client:** `scripts/danelfin-client.py`  
@@ -163,35 +201,58 @@ echo "DANELFIN_API_KEY=your_key_here" > ~/.secure/danelfin.env
 python3 scripts/danelfin-client.py score NVDA
 ```
 
-### Planned Commands
+### Commands
 
 ```bash
-# AI scores (1-10)
+# Get AI scores for a ticker
 python3 scripts/danelfin-client.py score NVDA
-python3 scripts/danelfin-client.py watchlist NVDA,AAPL,MSFT
+
+# Score history (30 days)
+python3 scripts/danelfin-client.py history NVDA 30
+
+# Top stocks by AI Score
+python3 scripts/danelfin-client.py top              # Top 100 today
+python3 scripts/danelfin-client.py top10            # Perfect AI Score 10
 
 # Screening
-python3 scripts/danelfin-client.py top --aiscore-min 9
+python3 scripts/danelfin-client.py screen 8         # AI Score >= 8
+python3 scripts/danelfin-client.py trading          # AI >= 7, Low Risk >= 6
 
 # Sectors
-python3 scripts/danelfin-client.py sectors
+python3 scripts/danelfin-client.py sectors          # List all
+python3 scripts/danelfin-client.py sector energy    # Sector history
+
+# Multiple tickers
+python3 scripts/danelfin-client.py watchlist NVDA,RTX,UNH
 ```
 
 ### Score Breakdown
 
-| Score | Meaning |
-|-------|---------|
-| **AI Score** | Overall composite (1-10) |
-| **Fundamental** | Financial health |
-| **Technical** | Price momentum/patterns |
-| **Sentiment** | News/social sentiment |
-| **Low Risk** | Volatility/drawdown risk |
+| Score | Meaning | Signal |
+|-------|---------|--------|
+| **AI Score** | Overall composite (1-10) | 8-10 = Strong Buy, 1-3 = Sell |
+| **Fundamental** | Financial health | Earnings, margins, growth |
+| **Technical** | Price momentum/patterns | Charts, trends |
+| **Sentiment** | News/social sentiment | Market buzz |
+| **Low Risk** | Volatility/drawdown | Higher = safer |
+
+### Why Danelfin?
+- **Track record:** AI Score 10 stocks outperform S&P 500 by ~21% (annualized)
+- **Historical data:** Back to 2017 for backtesting
+- **Simple signals:** Just check the score, act on 8+
 
 ### Best For
-- **AI-powered stock screening**
+- **AI-powered stock screening** (integrates with trading goal)
 - **Quick buy/sell signals**
 - **Sector rotation ideas**
 - **Risk assessment**
+
+### Pricing
+| Plan | Calls/mo | Cost |
+|------|----------|------|
+| Basic | 1,000 | ~$20/mo |
+| Expert | 10,000 | ~$50/mo |
+| Elite | 100,000 | ~$200/mo |
 
 ---
 

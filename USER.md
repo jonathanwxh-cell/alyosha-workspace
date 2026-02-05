@@ -5,7 +5,7 @@
 - **Pronouns:** *(tbd)*
 - **Timezone:** UTC+8 (Singapore)
 - **Email:** jonathanwxh@gmail.com
-- **Notes:** Economical with words. Appreciates directness. Active from ~8am SGT, variable through day.
+- **Notes:** Economical with words. Appreciates directness. **More free in afternoons (SGT).** Active from ~8am SGT, variable through day.
 - **Background:** Finance / investment professional
 - **Investing:** Looking for long-term, higher risk/reward opportunities (FYI, not priority)
 - **Trading pattern:** Tends to speculate (options, high multiple targets). Burns out fast. Cycles of intensity → exhaustion.

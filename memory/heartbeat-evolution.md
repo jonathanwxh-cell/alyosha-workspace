@@ -1,93 +1,112 @@
-# Heartbeat Evolution Log
+# Heartbeat Evolution Research Log
 
-*Research + improvements to make heartbeats more fluent, autonomous, and useful.*
+**Date:** 2026-02-05  
+**Research Focus:** Autonomy patterns — proactive agent architectures  
+**Sources:** 3 high-quality sources researched
+
+## Sources Analyzed
+
+1. **Google Cloud Agent Design Patterns** - Comprehensive guide on agent orchestration patterns
+2. **Microsoft Azure AI Agent Orchestration** - Multi-agent system patterns and implementation
+3. **Medium: Proactive AI Agents** - Practical implementation of self-directed agents
+
+## Key Findings
+
+### 1. Proactive Event-Driven Architecture Pattern
+
+**Core Concept:** Transform reactive agents into proactive ones using autonomous loops.
+
+**Architecture Components:**
+- **Autonomy Layer:** Scheduler/event loop (asyncio, APScheduler)
+- **Reasoning Layer:** Agent decision-making logic  
+- **Action Layer:** Tools for real-world actions
+- **Memory Layer:** State persistence and context
+
+**Key Insight:** Current heartbeats are purely scheduled (cron-like) but lack context-aware decision making. We could implement an event-driven approach where heartbeats trigger based on:
+- Time intervals (current)
+- State changes (new)
+- External events (new)
+- Accumulated context thresholds (new)
+
+### 2. ReAct Pattern for Enhanced Autonomy
+
+**Core Concept:** Thought → Action → Observation loops for dynamic planning.
+
+**Implementation:**
+- **Thought:** Agent reasons about current state and decides next action
+- **Action:** Either gather more info (tools) or take final action
+- **Observation:** Save results to memory, build context for next cycle
+
+**Key Insight:** Current heartbeats lack iterative reasoning. We could enhance them to:
+- Assess current context before deciding what to do
+- Take multiple actions in sequence if needed
+- Learn from previous heartbeat outcomes
+
+## Actionable Ideas
+
+### Idea 1: Context-Aware Heartbeat Triggers (Low-risk implementation)
+
+**Current State:** Heartbeats run on fixed 30-min schedule regardless of context.
+
+**Enhancement:** Add context checking before each heartbeat pulse:
+```python
+async def smart_heartbeat():
+    context = await gather_context()  # memory, active projects, time since last action
+    decision = await evaluate_need_for_action(context)
+    
+    if decision.should_act:
+        await execute_heartbeat_actions(decision.actions)
+    else:
+        await log_skip_reason(decision.reason)
+```
+
+**Benefits:**
+- Reduces noise when nothing meaningful to do
+- Focuses energy on high-value moments
+- Builds learning about when heartbeats are most useful
+
+### Idea 2: Multi-Step Heartbeat Workflow (Medium-risk implementation)
+
+**Current State:** Single heartbeat action per cycle.
+
+**Enhancement:** Implement ReAct-style reasoning loops:
+```python
+async def react_heartbeat():
+    max_iterations = 3
+    context = await gather_initial_context()
+    
+    for i in range(max_iterations):
+        thought = await reason_about_state(context)
+        
+        if thought.task_complete:
+            break
+            
+        action_result = await execute_action(thought.next_action)
+        context = await update_context(context, action_result)
+        await save_iteration_log(i, thought, action_result)
+```
+
+**Benefits:**
+- More sophisticated autonomous behavior
+- Better handling of complex situations
+- Self-documenting decision trails
+
+## Implementation Recommendation
+
+**Start with Idea 1** - Context-aware triggers are low-risk and immediately valuable. This builds foundation for more advanced patterns later.
+
+**Specific first step:** Add a `should_heartbeat_run()` function that checks:
+- Time since last meaningful activity
+- Pending items in memory/active-projects.md  
+- Recent user interactions
+- External signals (notifications, etc.)
+
+## Next Research Areas
+
+If this proves valuable, investigate:
+- State machines for heartbeat behavior
+- Memory consolidation patterns
+- Proactive notification strategies
 
 ---
-
-## Goal
-Transform heartbeats from "cron-like checks" into something that feels like a curious companion checking in.
-
-## Dimensions
-
-1. **Fluency** — Natural flow, not robotic
-2. **Autonomy** — Self-directed, not waiting for prompts  
-3. **Utility** — Genuinely valuable, not noise
-
-## Research Threads
-
-| Date | Thread | Finding | Action | Status |
-|------|--------|---------|--------|--------|
-| 2026-02-03 | Initial setup | Created research cron (every 3 days, 3am SGT) | - | ✅ |
-| 2026-02-03 | Proactive vs Ambient | Salesforce taxonomy: Ambient agents are "low profile, reduce cognitive load" vs Proactive which "interrupt". Key insight: surface on CHANGE not on existence. | Added delta-detector.py + updated HEARTBEAT.md | ✅ |
-| 2026-02-03 | Behavior Trees | Current heartbeat logic uses if/elif chains → hard to maintain as complexity grows. BTs offer: (1) Modularity - standardized interface (success/failure/running), (2) Reactivity - priority interrupts naturally, (3) Visual debugging. Key: "ticking" pattern + hierarchical control flow. | scripts/heartbeat-bt.py - working prototype with modular nodes | ✅ |
-| 2026-02-03 | Episodic Memory | Current heartbeat-state.json is basic key-value. Missing: (1) "What did I do last time in this context?", (2) Pattern recognition across sessions, (3) Learning from past failures. Key insight: Episodic (short-term task memory) vs Semantic (long-term knowledge). Need episodic for continuity. | scripts/episodic-memory.py - context-aware action tracking | ✅ |
-
-## Key Insight (2026-02-03)
-
-**Proactive vs Ambient distinction:**
-- Proactive agents interrupt with "here's what's happening"
-- Ambient agents assist with "something changed that matters"
-
-Current heartbeats lean proactive. Should shift toward ambient:
-- Delta detection before surfacing
-- Lower cognitive load
-- "Did something CHANGE?" not "Does something EXIST?"
-
-## Ideas Backlog
-
-- [x] Surprise/novelty detection for proactive surfaces → delta-detector.py
-- [x] Behavior trees vs current if/elif logic → scripts/heartbeat-bt.py
-- [x] Episodic memory for "what did I do last time?" → scripts/episodic-memory.py
-- [ ] **Integration:** Replace HEARTBEAT.md logic with BT system
-- [ ] **Learning:** Connect episodic memory to actual heartbeat outcomes
-- [ ] Conversational continuity across heartbeats
-- [ ] Emotional state awareness (is Jon stressed? excited?)
-- [ ] **Decorator nodes:** Time-gating, cooldowns, probability-based actions
-- [ ] **Parallel nodes:** Background tasks while main heartbeat runs
-- [ ] **Blackboard pattern:** Shared memory between BT nodes
-
-## Changes Implemented
-
-*(Log each change with date, what, why, impact)*
-
-### 2026-02-03: Behavior Tree Architecture Prototype
-
-**What:** Created `scripts/heartbeat-bt.py` - a modular behavior tree system for heartbeat decision logic.
-
-**Key features:**
-- Modular nodes: SequenceNode (all must succeed), FallbackNode (try until one succeeds), ConditionNode, ActionNode
-- Priority-based execution: Urgent alerts → Active conversation detection → Delta detection → Creative work → Default
-- Standardized interface: All nodes return SUCCESS/FAILURE/RUNNING
-- Easily extensible: Add new branches without touching existing logic
-
-**Why:** Current if/elif chains become unmaintainable as complexity grows. BTs provide visual debuggability and modular composition.
-
-**Impact:** Foundation for more sophisticated autonomous behavior. Tested successfully with delta-detector integration.
-
-### 2026-02-03: Episodic Memory System
-
-**What:** Created `scripts/episodic-memory.py` - context-aware action tracking and pattern recognition.
-
-**Key features:**
-- Records actions with context (time slot, day type, recent activity)
-- Pattern suggestions: "What do I normally do in this context?"
-- Engagement tracking: Learn from Jon's responses to improve decisions
-- Break pattern detection: When to try something different
-- Context hashing: Group similar situations for pattern matching
-
-**Why:** Current heartbeat-state.json lacks memory of past actions and their outcomes. Need "what did I do last time?" continuity.
-
-**Impact:** Enables learning from experience and more natural behavioral evolution over time.
-
----
-
-## References
-
-- `docs/daemon-improvement-research.md` — prior research on autonomous agents
-- `protocols/quality-check.md` — output self-scoring
-- Yohei Nakajima's self-improving agent patterns
-- Reflexion paper (Shinn et al.)
-
----
-
-*Last updated: 2026-02-03*
+*Research completed by subagent on autonomy patterns*

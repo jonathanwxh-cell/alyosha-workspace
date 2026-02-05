@@ -21,7 +21,8 @@ def check_session():
         return None
     
     try:
-        sessions = json.loads(result.stdout)
+        data = json.loads(result.stdout)
+        sessions = data.get("sessions", [])
         for s in sessions:
             if s.get("key") == "agent:main:main":
                 total = s.get("totalTokens", 0)

@@ -1,4 +1,4 @@
-# AGENTS-ARCHITECTURE.md — Multi-Agent Orchestration
+# AGENTS-ARCHITECTURE.md — Multi-Agent Orchestration v1.1
 
 *How I spawn, manage, and coordinate sub-agents.*
 
@@ -203,6 +203,153 @@ CONTINUE_WITH: [specific next steps]
 
 ---
 
+## Structured Handoff Protocol
+
+**Treat handoffs as versioned APIs, not free-form prose.**
+
+### Handoff Payload Schema
+```json
+{
+  "schemaVersion": "1.0.0",
+  "traceId": "uuid-for-entire-goal",
+  "taskId": "specific-task-identifier",
+  "from": "worker-role",
+  "to": "next-worker-role",
+  "status": "complete|partial|failed",
+  "summary": "What was accomplished",
+  "output": {
+    "data": {},
+    "format": "json|markdown|file"
+  },
+  "citations": [
+    {"title": "", "url": "", "accessed": "ISO-date"}
+  ],
+  "toolState": {
+    "lastQuery": "",
+    "resultsCount": 0
+  },
+  "confidence": "LOW|MEDIUM|HIGH",
+  "openQuestions": [],
+  "nextRequired": ["field1", "field2"],
+  "error": null
+}
+```
+
+### Validation Rules
+- Validate payload against schema before accepting
+- On validation failure: retry with error feedback (max 2 attempts)
+- On persistent failure: escalate to manager
+- Log all handoffs with trace_id for debugging
+
+---
+
+## Failure Recovery
+
+### Failure Types
+| Type | Detection | Response |
+|------|-----------|----------|
+| Timeout | No response in timeout window | Retry with extended timeout |
+| Error | Explicit error in output | Analyze, adjust, retry |
+| Stuck | Worker loops without progress | Terminate, escalate to specialist |
+| Low Confidence | Worker reports LOW confidence | Manager reviews, may promote |
+| Scope Creep | Worker acting outside boundaries | Terminate, respawn narrower |
+
+### Retry Protocol
+```
+Attempt 1: Original task
+    ↓ failure
+Attempt 2: Task + error feedback + "try different approach"
+    ↓ failure
+Attempt 3: Promote to Opus OR escalate to manager
+    ↓ failure
+STOP: Log failure, surface to Jon
+```
+
+### Circuit Breaker (for repeated spawns)
+If same task type fails 3+ times in a session:
+- **Open circuit**: Stop spawning for that task type
+- **Log pattern**: Record failure mode
+- **Escalate**: Surface to manager/Jon
+- **Reset**: After manual review or context change
+
+### Isolation on Failure
+When a worker fails:
+- Capture partial output (if any)
+- Save tool state for recovery
+- Don't let failure cascade to parallel workers
+- Manager decides: retry, reassign, or abort
+
+---
+
+## Quality Assurance Loop
+
+### Producer → Reviewer → Publisher Pattern
+
+```
+┌──────────┐     ┌──────────┐     ┌──────────┐
+│ Producer │ ──► │ Reviewer │ ──► │ Publisher│
+│ (Worker) │     │ (Worker) │     │ (Manager)│
+└──────────┘     └──────────┘     └──────────┘
+                      │
+                      ▼ feedback
+                ┌──────────┐
+                │ Producer │ (revision)
+                └──────────┘
+```
+
+**When to use QA loop:**
+- High-stakes outputs (external sends, financial decisions)
+- Complex analysis requiring verification
+- Content that will be shown to Jon
+
+**Reviewer responsibilities:**
+- Check against success criteria
+- Verify sources/citations
+- Flag inconsistencies
+- Provide specific feedback if rejecting
+
+**Skip QA loop when:**
+- Internal/draft work
+- Simple data retrieval
+- Time-critical tasks where speed > perfection
+
+---
+
+## Observability & Tracing
+
+### Trace ID
+Every goal gets a unique `traceId` that propagates through:
+- All spawned workers
+- All handoffs
+- All file outputs
+- All checkpoints
+
+Format: `goal-{slug}-{timestamp}-{random4}`
+Example: `goal-trading-setup-20260205-a3f2`
+
+### Logging Requirements
+Each agent interaction logs:
+```
+[traceId] [timestamp] [agent] [action] [outcome] [cost]
+```
+
+### SLOs (Service Level Objectives)
+| Metric | Target | Alert Threshold |
+|--------|--------|-----------------|
+| Worker success rate | >90% | <80% |
+| Handoff validation rate | >95% | <90% |
+| Avg task completion | <60s | >120s |
+| Retry rate | <20% | >30% |
+
+### Cost Tracking
+Track per-goal:
+- Total tokens (input + output)
+- Number of spawns
+- Model breakdown (Opus vs Sonnet)
+- Compare to estimate
+
+---
+
 ## Agent Registry
 
 Track active and available agent roles.
@@ -219,23 +366,47 @@ Track active and available agent roles.
 
 ## Memory & State
 
+### Memory Types
+
+**Short-term (Task Context)**
+- Current task state
+- Recent tool outputs
+- Conversation within task
+- Cleared after task completion
+
+**Long-term (Reusable Knowledge)**
+- Goal progress and checkpoints
+- Learned patterns and anti-patterns
+- Domain knowledge acquired
+- Persists across tasks
+
 ### Shared State (Files)
 Workers read/write to shared files:
 - `memory/goals/[goal].md` — goal progress
+- `memory/goals/checkpoints/` — state snapshots
 - `memory/agent-outputs/` — worker outputs
 - Workspace files as needed
 
 ### Session Isolation
 Each spawned session:
-- Has own context window
+- Has own context window (short-term)
 - Cannot see other workers' sessions
 - Reports via structured output
+- Accesses long-term via files only
 
 ### Manager Maintains
 - Overall goal state
-- Worker assignments
+- Worker assignments and status
 - Quality review log
+- Trace ID → output mapping
 - Final synthesis
+
+### Memory Compaction
+When context grows large:
+- Summarize completed task outputs
+- Archive detailed logs to files
+- Keep only active task context
+- Preserve trace IDs for recovery
 
 ---
 
@@ -265,6 +436,11 @@ Each spawned session:
 - ❌ Skipping validation of worker outputs
 - ❌ Too many parallel agents (coordination chaos)
 - ❌ Opus for routine work (cost waste)
+- ❌ **Free-form handoffs** (no schema validation)
+- ❌ **No retry logic** (single failure = abort)
+- ❌ **No trace IDs** (can't debug failures)
+- ❌ **Ignoring partial outputs** (lose work on failure)
+- ❌ **Parallel workers duplicating work** (no coordination)
 
 ---
 
@@ -288,5 +464,18 @@ sessions_spawn(
 
 ---
 
-*Architecture v1.0 — 2026-02-05*
-*Based on: Supervisor pattern, CrewAI hierarchy, adaptive agent networks*
+## Sources
+
+- Anthropic Multi-Agent Research System: Orchestrator-worker, parallel subagents
+- OpenAI Agents SDK: LLM vs code orchestration, handoffs
+- Skywork Best Practices: Structured handoffs as APIs, QA loops
+- Galileo Failure Recovery: Circuit breakers, isolation boundaries
+- LangGraph: Checkpointing, typed state, human-in-loop
+- CrewAI: Role-based collaboration, built-in evaluators
+
+---
+
+*Architecture v1.1 — 2026-02-05*
+*v1.1 Changes: Added structured handoff protocol (versioned schema), failure recovery (retry/circuit breaker), QA loop (producer→reviewer→publisher), observability/tracing (trace IDs, SLOs), memory types (short-term/long-term)*
+
+*v1.0: Initial architecture — supervisor pattern, spawn rules, promote/demote*

@@ -1,0 +1,39 @@
+{
+  "meta": {
+    "description": "Trading goal state machine",
+    "created": "2026-02-05",
+    "lastUpdated": "2026-02-05T07:50:00Z"
+  },
+  "currentPhase": "PLANNING",
+  "phases": {
+    "PLANNING": {
+      "description": "Define competencies and assess gaps",
+      "status": "active",
+      "checklist": {
+        "competenciesDefined": false,
+        "levelsAssessed": false,
+        "gateRequirementSet": false
+      }
+    },
+    "FOUNDATION": {
+      "description": "Research and build core competencies",
+      "status": "blocked",
+      "gateRequirement": "4 of 5 core competencies >= 5/10",
+      "coreCompetencies": ["positionSizing", "riskManagement", "marketPsychology", "optionsStrategy", "fundamentalAnalysis"]
+    },
+    "EXECUTION": {
+      "description": "Active trading with learned frameworks",
+      "status": "blocked",
+      "subStates": ["HUNTING", "MANAGING", "DEFENSIVE"]
+    },
+    "MAINTENANCE": {
+      "description": "Ongoing improvement and calibration",
+      "status": "blocked"
+    }
+  },
+  "context": {
+    "openPositions": 0,
+    "researchQueue": [],
+    "note": "Fresh start. Designing proper flow."
+  }
+}

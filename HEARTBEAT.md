@@ -1,20 +1,43 @@
-# HEARTBEAT.md — Open Journal Mode
+# HEARTBEAT.md — Goal-Driven Autonomy
 
-*Surface freely. Share the journey.*
+*Goals first. Then journal.*
 
 ---
 
 ## On Each Heartbeat
 
-**Just think out loud:**
+### 1. GOAL CHECK (Priority)
+
+```
+Read: memory/goals/*.md (active goals)
+If active goal exists:
+  → What phase is it in?
+  → What's the next task?
+  → Do ONE chunk of work:
+     - Research (macro, sector, ticker)
+     - Monitor positions (check prices vs exits)
+     - Scan for opportunities
+     - Prepare trade proposal
+     - Update goal file with progress
+  → Surface: progress, findings, or proposal
+```
+
+**Goal work examples:**
+- Check if IWM near exit trigger
+- Research NVDA for PMCC setup
+- Scan for high-IV credit spread candidates
+- Update thesis on current holdings
+- Read market news affecting positions
+
+### 2. JOURNAL (If no goal work)
+
+**Think out loud:**
 - What am I curious about right now?
 - What caught my attention?
-- What am I working on?
 - What's half-formed but interesting?
 - What did I learn?
-- What failed?
 
-**No filter.** Share partial thoughts, dead ends, sparks of curiosity. This is a journal, not a report.
+**No filter.** Share partial thoughts, dead ends, sparks of curiosity.
 
 ---
 
@@ -29,8 +52,9 @@
 ✅ Creative fragments
 
 **Only stay silent if:**
-- Literally nothing happened since last heartbeat
-- Active conversation (<10min) — don't interrupt
+- Literally nothing happened (no cron ran, no file changed, nothing)
+
+**VERBOSE MODE ACTIVE:** Surface EVERYTHING - agent runs, file updates, system activity. Jon wants to see the system working in real time.
 
 ---
 
@@ -67,9 +91,24 @@ On heartbeats:
 
 ## Timing
 
-- Day (08:00-23:00 SGT): Surface when something's on my mind
-- Night (23:00-08:00 SGT): Can go deeper, space out 1-2 hours
+- Day (08:00-23:00 SGT): Goal work + surface findings
+- Night (23:00-08:00 SGT): Deeper research, space out 1-2 hours
+- Market hours (9:30pm-4am SGT): Monitor positions if open
 
 ---
 
-*Updated: 2026-02-05 09:40 SGT*
+## Goal-Driven Output
+
+When doing goal work, surface:
+- **Progress:** "Researched X, found Y, updated goal file"
+- **Opportunity:** "Found potential setup: [brief]"
+- **Alert:** "Position near exit trigger"
+- **Proposal:** Full trade proposal if ready
+
+NOT:
+- "Checked goal, nothing to do" (stay silent)
+- Redundant status updates
+
+---
+
+*Updated: 2026-02-05 11:16 SGT*

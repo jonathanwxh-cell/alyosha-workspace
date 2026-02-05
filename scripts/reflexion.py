@@ -1,525 +1,204 @@
 #!/usr/bin/env python3
 """
-Reflexion System
-================
+Reflexion Loop for Autonomous Exploration
 
-Verbal reinforcement learning for the daemon. 
-Based on Shinn et al. (2023) "Reflexion: Language Agents with Verbal Reinforcement Learning"
-
-Components:
-- Memory: Episodic memory of past task attempts + reflections
-- Query: Semantic search over past reflections before new tasks  
-- Reflect: Generate structured reflection after task completion
-- Score: Self-evaluate task outcomes
+Implements the Reflexion pattern (Shinn et al., 2023):
+- Store reflections after each exploration
+- Query past reflections before new explorations
+- MARS: Memory → Action → Reflection → Self-improvement
 
 Usage:
-    python3 reflexion.py query "research topic"     # Find relevant past reflections
-    python3 reflexion.py add                        # Interactive: add new reflection
-    python3 reflexion.py stats                      # Show reflection statistics
-    python3 reflexion.py lessons                    # Extract top lessons learned
-    python3 reflexion.py recent [n]                 # Show last N reflections (default 5)
-    python3 reflexion.py failures                   # Show only failures (best for learning)
-    python3 reflexion.py export                     # Export lessons as markdown for MEMORY.md
-    python3 reflexion.py trends                     # Show success rate trends over time
-    
-    # MARS Framework commands (Metacognitive Agent Reflective Self-improvement)
-    python3 reflexion.py avoid [n]                  # Principle-based lessons: what NOT to do
-    python3 reflexion.py procedures [n]             # Procedural lessons: what TO do
-    python3 reflexion.py mars                       # Combined MARS view (both types)
-
-The daemon should:
-1. BEFORE task: query past reflections for similar tasks
-2. DURING task: apply lessons learned
-3. AFTER task: add reflection with outcome + lesson
+  python3 scripts/reflexion.py add          # Add reflection after exploration
+  python3 scripts/reflexion.py query <topic> # Query past reflections
+  python3 scripts/reflexion.py mars         # Run MARS self-assessment
+  python3 scripts/reflexion.py stats        # Show reflection statistics
 """
 
 import json
 import sys
-from datetime import datetime, timezone, timedelta
+import os
+from datetime import datetime, timezone
 from pathlib import Path
-from collections import Counter
 
-REFLECTIONS_FILE = Path.home() / '.openclaw/workspace/memory/reflections.jsonl'
-
-# Keywords for semantic matching (expanded for better categorization)
-CATEGORY_KEYWORDS = {
-    'research': ['research', 'search', 'find', 'discover', 'explore', 'investigate', 'scan', 
-                 'paper', 'arxiv', 'study', 'source', 'fetch', 'web_search', 'news'],
-    'analysis': ['analyze', 'analysis', 'evaluate', 'assess', 'compare', 'review', 'deep',
-                 'synthesis', 'insight', 'framework', 'thesis', 'investment', 'stock', 'market'],
-    'writing': ['write', 'draft', 'compose', 'create', 'document', 'article', 'post',
-                'substack', 'blog', 'content', 'summary', 'brief'],
-    'coding': ['code', 'script', 'build', 'implement', 'fix', 'debug', 'program', 'python',
-               'tool', 'cron', 'automat', 'function', 'class', 'api'],
-    'communication': ['send', 'message', 'notify', 'alert', 'surface', 'share', 'telegram',
-                      'email', 'reply', 'respond', 'deliver'],
-    'planning': ['plan', 'schedule', 'organize', 'prioritize', 'strategy', 'goal', 'project'],
-    'meta': ['daemon', 'heartbeat', 'improve', 'evolve', 'self', 'reflexion', 'memory',
-             'pattern', 'lesson', 'learn', 'metacognitive', 'autonomous'],
-    'creative': ['creative', 'art', 'image', 'visual', 'story', 'fiction', 'sonif', 
-                 'generate', 'dall-e', 'aesthetic'],
-}
-
+REFLECTIONS_FILE = Path.home() / ".openclaw/workspace/memory/reflections.jsonl"
+REFLECTIONS_FILE.parent.mkdir(parents=True, exist_ok=True)
 
 def load_reflections():
     """Load all reflections from JSONL file."""
     reflections = []
-    if not REFLECTIONS_FILE.exists():
-        return reflections
-    
-    with open(REFLECTIONS_FILE) as f:
-        for line in f:
-            line = line.strip()
-            if line:
-                try:
-                    reflections.append(json.loads(line))
-                except json.JSONDecodeError:
-                    continue
+    if REFLECTIONS_FILE.exists():
+        with open(REFLECTIONS_FILE, 'r') as f:
+            for line in f:
+                if line.strip():
+                    try:
+                        reflections.append(json.loads(line))
+                    except json.JSONDecodeError:
+                        continue
     return reflections
 
-
-def save_reflection(reflection):
-    """Append a new reflection to the file."""
+def add_reflection(topic: str, hypothesis: str, outcome: str, 
+                   what_worked: str, what_failed: str, lesson: str,
+                   confidence: str = "medium"):
+    """Add a new reflection entry."""
+    entry = {
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+        "topic": topic,
+        "hypothesis": hypothesis,
+        "outcome": outcome,
+        "what_worked": what_worked,
+        "what_failed": what_failed,
+        "lesson": lesson,
+        "confidence": confidence,  # low/medium/high
+        "applied": False  # Whether lesson was applied to future behavior
+    }
+    
     with open(REFLECTIONS_FILE, 'a') as f:
-        f.write(json.dumps(reflection) + '\n')
-
-
-def get_category(text, additional_text=''):
-    """Determine category from text using keyword matching.
+        f.write(json.dumps(entry) + '\n')
     
-    Args:
-        text: Primary text (task description)
-        additional_text: Secondary text (lesson, reflection) for better matching
-    """
-    combined = f"{text} {additional_text}".lower()
-    scores = {}
-    for cat, keywords in CATEGORY_KEYWORDS.items():
-        # Count keyword matches, with partial matching
-        score = 0
-        for kw in keywords:
-            if kw in combined:
-                score += 2 if kw in text.lower() else 1  # Task matches worth more
-        scores[cat] = score
-    
-    best = max(scores, key=scores.get)
-    return best if scores[best] > 0 else 'general'
+    return entry
 
-
-def query_reflections(query, limit=5):
-    """Find relevant past reflections for a query."""
+def query_reflections(topic: str, limit: int = 5):
+    """Query reflections related to a topic (simple keyword match)."""
     reflections = load_reflections()
-    if not reflections:
-        print("📭 No reflections yet. Start learning!")
-        return []
+    topic_lower = topic.lower()
     
-    query_lower = query.lower()
-    query_words = set(query_lower.split())
-    query_category = get_category(query)
-    
+    # Score by relevance (simple keyword match)
+    # Handles both old format (task/reflection/lesson) and new format (topic/hypothesis/lesson)
     scored = []
     for r in reflections:
         score = 0
-        
-        # Match on task description
-        task = r.get('task', '').lower()
-        task_words = set(task.split())
-        word_overlap = len(query_words & task_words)
-        score += word_overlap * 2
-        
-        # Match on category
-        if get_category(task) == query_category:
-            score += 3
-        
-        # Match on lesson content
-        lesson = r.get('lesson', '').lower()
-        if any(w in lesson for w in query_words):
-            score += 2
-        
-        # Boost successful outcomes
-        if r.get('outcome') == 'success':
-            score += 1
-        
-        # Recency bonus (last 30 days)
-        try:
-            ts = datetime.fromisoformat(r.get('timestamp', ''))
-            days_ago = (datetime.now() - ts).days
-            if days_ago < 30:
-                score += 1
-        except:
-            pass
-        
+        # Check all text fields for matches
+        for field in ['topic', 'task', 'lesson', 'hypothesis', 'outcome', 'reflection', 'what_worked', 'what_failed']:
+            text = r.get(field, '')
+            if isinstance(text, str) and topic_lower in text.lower():
+                score += 2 if field in ['topic', 'task', 'lesson'] else 1
         if score > 0:
             scored.append((score, r))
     
-    # Sort by score descending
-    scored.sort(key=lambda x: -x[0])
-    
-    results = [r for _, r in scored[:limit]]
-    
-    if results:
-        print(f"🔍 Found {len(results)} relevant reflection(s) for: {query}\n")
-        for i, r in enumerate(results, 1):
-            outcome_emoji = {'success': '✅', 'partial': '🟡', 'failure': '❌'}.get(r.get('outcome'), '❓')
-            print(f"{i}. {outcome_emoji} {r.get('task', 'Unknown task')[:60]}")
-            print(f"   💡 Lesson: {r.get('lesson', 'None')[:80]}")
-            print()
-    else:
-        print(f"📭 No relevant reflections for: {query}")
-    
-    return results
+    # Sort by score, then recency
+    scored.sort(key=lambda x: (x[0], x[1].get('timestamp', '')), reverse=True)
+    return [r for _, r in scored[:limit]]
 
-
-def add_reflection_interactive():
-    """Interactively add a new reflection."""
-    print("📝 New Reflection\n")
-    
-    task = input("Task (what did you try to do?): ").strip()
-    if not task:
-        print("❌ Task required")
-        return
-    
-    outcome = input("Outcome (success/partial/failure): ").strip().lower()
-    if outcome not in ['success', 'partial', 'failure']:
-        outcome = 'partial'
-    
-    reflection = input("Reflection (what happened?): ").strip()
-    lesson = input("Lesson (what to remember?): ").strip()
-    would_repeat = input("Would repeat approach? (y/n): ").strip().lower() == 'y'
-    
-    entry = {
-        'timestamp': datetime.now(timezone.utc).isoformat(),
-        'task': task,
-        'outcome': outcome,
-        'reflection': reflection,
-        'lesson': lesson,
-        'would_repeat': would_repeat,
-        'category': get_category(task, f"{reflection} {lesson}")
-    }
-    
-    save_reflection(entry)
-    print(f"\n✅ Reflection saved to {REFLECTIONS_FILE.name}")
-
-
-def add_reflection_direct(task, outcome, reflection, lesson, would_repeat=True, lesson_type=None):
-    """Add reflection programmatically (for daemon use).
-    
-    Args:
-        task: What was attempted
-        outcome: 'success', 'partial', or 'failure'
-        reflection: What happened
-        lesson: What to remember
-        would_repeat: Whether approach should be repeated
-        lesson_type: 'avoid' (principle-based) or 'procedure' (success strategy)
-                     If None, auto-detected from outcome
-    
-    Based on MARS framework (NTU Singapore 2026):
-    - Principle-based learning: Rules to AVOID errors
-    - Procedural learning: Steps to REPLICATE success
+def mars_assessment():
     """
-    # Auto-detect lesson type if not provided
-    if lesson_type is None:
-        if outcome == 'failure' or not would_repeat:
-            lesson_type = 'avoid'  # Principle-based: what NOT to do
-        else:
-            lesson_type = 'procedure'  # Procedural: what TO do
-    
-    entry = {
-        'timestamp': datetime.now(timezone.utc).isoformat(),
-        'task': task,
-        'outcome': outcome,
-        'reflection': reflection,
-        'lesson': lesson,
-        'would_repeat': would_repeat,
-        'lesson_type': lesson_type,  # NEW: 'avoid' or 'procedure'
-        'category': get_category(task, f"{reflection} {lesson}")
-    }
-    save_reflection(entry)
-    return entry
-
-
-def query_by_type(lesson_type, limit=10):
-    """Query reflections by lesson type (avoid or procedure).
-    
-    Based on MARS framework - separate what-to-avoid from what-works.
+    MARS (Memory, Action, Reflection, Self-improvement) assessment.
+    Analyzes reflection patterns to suggest improvements.
     """
     reflections = load_reflections()
     
-    # Filter by type (with backwards compatibility)
-    typed = []
-    for r in reflections:
-        r_type = r.get('lesson_type')
-        if r_type is None:
-            # Infer type for old entries
-            if r.get('outcome') == 'failure' or not r.get('would_repeat', True):
-                r_type = 'avoid'
-            else:
-                r_type = 'procedure'
-        
-        if r_type == lesson_type and r.get('lesson'):
-            typed.append(r)
+    if len(reflections) < 3:
+        return {
+            "status": "insufficient_data",
+            "message": f"Need at least 3 reflections for MARS (have {len(reflections)})",
+            "suggestion": "Continue exploring and logging reflections"
+        }
     
-    # Sort by recency
-    typed = sorted(typed, key=lambda x: x.get('timestamp', ''), reverse=True)[:limit]
+    # Analyze patterns
+    total = len(reflections)
+    high_conf = sum(1 for r in reflections if r.get('confidence') == 'high')
+    low_conf = sum(1 for r in reflections if r.get('confidence') == 'low')
     
-    type_emoji = '🚫' if lesson_type == 'avoid' else '✅'
-    type_label = 'AVOID (principle-based)' if lesson_type == 'avoid' else 'PROCEDURE (success strategies)'
+    # Extract common failure patterns
+    failures = [r.get('what_failed', '') for r in reflections if r.get('what_failed')]
+    lessons = [r.get('lesson', '') for r in reflections]
     
-    print(f"{type_emoji} {type_label} ({len(typed)} lessons)\n")
+    # Recent trend (last 5)
+    recent = reflections[-5:] if len(reflections) >= 5 else reflections
+    recent_conf = [r.get('confidence', 'medium') for r in recent]
     
-    for r in typed:
-        cat = r.get('category', 'general')
-        print(f"  [{cat}] {r.get('lesson', '')[:75]}")
-    
-    return typed
+    return {
+        "status": "ok",
+        "total_reflections": total,
+        "confidence_distribution": {
+            "high": high_conf,
+            "medium": total - high_conf - low_conf,
+            "low": low_conf
+        },
+        "recent_trend": recent_conf,
+        "top_lessons": lessons[-3:] if lessons else [],
+        "improvement_suggestions": generate_suggestions(reflections)
+    }
 
+def generate_suggestions(reflections):
+    """Generate self-improvement suggestions from reflection patterns."""
+    suggestions = []
+    
+    # Check for repeated low confidence
+    recent = reflections[-5:] if len(reflections) >= 5 else reflections
+    low_count = sum(1 for r in recent if r.get('confidence') == 'low')
+    if low_count >= 3:
+        suggestions.append("Pattern: Low confidence streak. Try narrowing scope or switching topics.")
+    
+    # Check for unapplied lessons
+    unapplied = [r for r in reflections if not r.get('applied') and r.get('confidence') == 'high']
+    if len(unapplied) >= 2:
+        suggestions.append(f"Pattern: {len(unapplied)} high-confidence lessons not yet applied. Review and implement.")
+    
+    # Check for exploration breadth
+    topics = set(r.get('topic', '').lower().split()[0] for r in reflections if r.get('topic'))
+    if len(topics) < 3 and len(reflections) > 5:
+        suggestions.append("Pattern: Narrow topic range. Consider diversifying exploration.")
+    
+    if not suggestions:
+        suggestions.append("No concerning patterns detected. Continue current approach.")
+    
+    return suggestions
 
-def show_stats():
+def stats():
     """Show reflection statistics."""
     reflections = load_reflections()
     
     if not reflections:
-        print("📭 No reflections yet")
-        return
+        return {"total": 0, "message": "No reflections yet"}
     
-    outcomes = Counter(r.get('outcome', 'unknown') for r in reflections)
-    categories = Counter(r.get('category', 'general') for r in reflections)
-    
-    total = len(reflections)
-    success_rate = outcomes.get('success', 0) / total * 100 if total > 0 else 0
-    
-    print(f"📊 Reflection Stats ({total} total)\n")
-    print(f"Success rate: {success_rate:.0f}%")
-    print(f"  ✅ Success: {outcomes.get('success', 0)}")
-    print(f"  🟡 Partial: {outcomes.get('partial', 0)}")
-    print(f"  ❌ Failure: {outcomes.get('failure', 0)}")
-    print(f"\nBy category:")
-    for cat, count in categories.most_common():
-        print(f"  {cat}: {count}")
-
-
-def extract_lessons():
-    """Extract and display top lessons learned."""
-    reflections = load_reflections()
-    
-    if not reflections:
-        print("📭 No reflections yet")
-        return
-    
-    # Get successful lessons
-    lessons = [(r.get('lesson', ''), r.get('task', ''), r.get('outcome', ''))
-               for r in reflections if r.get('lesson')]
-    
-    print(f"📚 Top Lessons Learned ({len(lessons)} total)\n")
-    
-    # Group by category
-    by_category = {}
+    # Topic frequency - handles both old (task) and new (topic) formats
+    topics = {}
     for r in reflections:
-        if r.get('lesson'):
-            cat = r.get('category', 'general')
-            if cat not in by_category:
-                by_category[cat] = []
-            by_category[cat].append(r)
+        topic = r.get('topic') or r.get('task', 'unknown')
+        topics[topic] = topics.get(topic, 0) + 1
     
-    for cat, items in sorted(by_category.items()):
-        print(f"**{cat.upper()}**")
-        # Show most recent 3 per category
-        for r in sorted(items, key=lambda x: x.get('timestamp', ''), reverse=True)[:3]:
-            outcome_emoji = {'success': '✅', 'partial': '🟡', 'failure': '❌'}.get(r.get('outcome'), '❓')
-            print(f"  {outcome_emoji} {r.get('lesson', '')[:70]}")
-        print()
-
-
-def show_recent(n=5):
-    """Show the most recent N reflections."""
-    reflections = load_reflections()
-    
-    if not reflections:
-        print("📭 No reflections yet")
-        return
-    
-    # Sort by timestamp descending
-    sorted_refs = sorted(reflections, 
-                         key=lambda x: x.get('timestamp', ''), 
-                         reverse=True)[:n]
-    
-    print(f"🕐 Last {len(sorted_refs)} Reflections\n")
-    
-    for r in sorted_refs:
-        outcome_emoji = {'success': '✅', 'partial': '🟡', 'failure': '❌'}.get(r.get('outcome'), '❓')
-        ts = r.get('timestamp', '')[:16].replace('T', ' ')  # Trim to minute
-        cat = r.get('category', 'general')
-        
-        print(f"{outcome_emoji} [{ts}] ({cat})")
-        print(f"   Task: {r.get('task', 'Unknown')[:65]}")
-        if r.get('lesson'):
-            print(f"   💡 {r.get('lesson', '')[:70]}")
-        print()
-
-
-def show_failures():
-    """Show only failures - most valuable for learning."""
-    reflections = load_reflections()
-    
-    if not reflections:
-        print("📭 No reflections yet")
-        return
-    
-    failures = [r for r in reflections if r.get('outcome') in ('failure', 'partial')]
-    
-    if not failures:
-        print("🎉 No failures recorded! (Suspicious...)")
-        return
-    
-    # Sort by timestamp descending
-    failures = sorted(failures, 
-                      key=lambda x: x.get('timestamp', ''), 
-                      reverse=True)
-    
-    print(f"❌ Failures & Partial Outcomes ({len(failures)} total)\n")
-    print("These are your best teachers:\n")
-    
-    for r in failures:
-        outcome_emoji = {'partial': '🟡', 'failure': '❌'}.get(r.get('outcome'), '❓')
-        ts = r.get('timestamp', '')[:10]  # Just date
-        
-        print(f"{outcome_emoji} [{ts}] {r.get('task', 'Unknown')[:55]}")
-        if r.get('reflection'):
-            print(f"   What happened: {r.get('reflection', '')[:65]}")
-        if r.get('lesson'):
-            print(f"   💡 Lesson: {r.get('lesson', '')[:65]}")
-        print()
-    
-    # Summary of recurring patterns
-    lesson_words = ' '.join(r.get('lesson', '') for r in failures).lower()
-    recurring = []
-    if lesson_words.count('permission') >= 2 or lesson_words.count('asking') >= 2:
-        recurring.append("🔁 Permission-asking (recurring)")
-    if lesson_words.count('curation') >= 2 or lesson_words.count('analysis') >= 2:
-        recurring.append("🔁 Curation without analysis (recurring)")
-    
-    if recurring:
-        print("⚠️  Recurring Patterns Detected:")
-        for pattern in recurring:
-            print(f"   {pattern}")
-
-
-def export_for_memory():
-    """Export lessons in markdown format suitable for MEMORY.md updates."""
-    reflections = load_reflections()
-    
-    if not reflections:
-        print("📭 No reflections yet")
-        return
-    
-    # Get last 30 days of reflections
-    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
-    recent = []
+    # Outcome stats
+    outcomes = {}
     for r in reflections:
-        try:
-            ts = r.get('timestamp', '')
-            if 'Z' in ts:
-                ts = ts.replace('Z', '+00:00')
-            elif '+' not in ts and len(ts) == 19:
-                ts = ts + '+00:00'
-            dt = datetime.fromisoformat(ts)
-            if dt.tzinfo is None:
-                dt = dt.replace(tzinfo=timezone.utc)
-            if dt > cutoff:
-                recent.append(r)
-        except:
-            recent.append(r)  # Include if date parsing fails
+        outcome = r.get('outcome', 'unknown')
+        outcomes[outcome] = outcomes.get(outcome, 0) + 1
     
-    # Group by outcome
-    successes = [r for r in recent if r.get('outcome') == 'success' and r.get('lesson')]
-    failures = [r for r in recent if r.get('outcome') in ('failure', 'partial') and r.get('lesson')]
-    
-    # Generate markdown
-    print("## Lessons Learned (from reflections.jsonl)\n")
-    print(f"*Exported: {datetime.now(timezone.utc).strftime('%Y-%m-%d')} | "
-          f"Period: Last 30 days | Total: {len(recent)} reflections*\n")
-    
-    if successes:
-        print("### What Worked\n")
-        seen_lessons = set()
-        for r in sorted(successes, key=lambda x: x.get('timestamp', ''), reverse=True):
-            lesson = r.get('lesson', '')[:100]
-            # Dedupe similar lessons
-            lesson_key = lesson[:30].lower()
-            if lesson_key not in seen_lessons:
-                seen_lessons.add(lesson_key)
-                print(f"- {lesson}")
-        print()
-    
-    if failures:
-        print("### What Didn't Work (Learn From These)\n")
-        seen_lessons = set()
-        for r in sorted(failures, key=lambda x: x.get('timestamp', ''), reverse=True):
-            lesson = r.get('lesson', '')[:100]
-            lesson_key = lesson[:30].lower()
-            if lesson_key not in seen_lessons:
-                seen_lessons.add(lesson_key)
-                outcome_marker = "⚠️" if r.get('outcome') == 'partial' else "❌"
-                print(f"- {outcome_marker} {lesson}")
-        print()
-    
-    # Stats summary
-    total = len(recent)
-    success_count = len([r for r in recent if r.get('outcome') == 'success'])
-    print(f"### Stats\n")
-    print(f"- Success rate: {success_count/total*100:.0f}% ({success_count}/{total})")
-    
-    # Category breakdown
-    cats = Counter(r.get('category', 'general') for r in recent)
-    print(f"- Top categories: {', '.join(f'{c}({n})' for c, n in cats.most_common(3))}")
-    
-    print("\n---")
-    print("*Copy relevant lessons to MEMORY.md → Lessons Learned section*")
+    return {
+        "total": len(reflections),
+        "first": reflections[0].get('timestamp', 'unknown') if reflections else None,
+        "last": reflections[-1].get('timestamp', 'unknown') if reflections else None,
+        "topics": dict(sorted(topics.items(), key=lambda x: -x[1])[:10]),  # Top 10
+        "outcomes": outcomes,
+        "confidence_summary": {
+            "high": sum(1 for r in reflections if r.get('confidence') == 'high'),
+            "medium": sum(1 for r in reflections if r.get('confidence') == 'medium'),
+            "low": sum(1 for r in reflections if r.get('confidence') == 'low')
+        }
+    }
 
-
-def show_trends():
-    """Show success rate trends over time."""
-    reflections = load_reflections()
+def interactive_add():
+    """Interactive mode to add a reflection."""
+    print("=== Add Reflection ===")
+    print("(Leave blank to skip optional fields)")
     
-    if len(reflections) < 5:
-        print("📭 Need more reflections for trend analysis (min 5)")
-        return
-    
-    # Group by week
-    weeks = {}
-    for r in reflections:
-        try:
-            ts = r.get('timestamp', '')[:10]
-            dt = datetime.fromisoformat(ts)
-            week = dt.strftime('%Y-W%W')
-            if week not in weeks:
-                weeks[week] = {'success': 0, 'partial': 0, 'failure': 0, 'total': 0}
-            outcome = r.get('outcome', 'partial')
-            weeks[week][outcome] = weeks[week].get(outcome, 0) + 1
-            weeks[week]['total'] += 1
-        except:
-            pass
-    
-    print("📈 Success Rate Trends by Week\n")
-    
-    for week in sorted(weeks.keys())[-8:]:  # Last 8 weeks
-        stats = weeks[week]
-        total = stats['total']
-        rate = stats['success'] / total * 100 if total > 0 else 0
-        bar = "█" * int(rate / 10)
-        print(f"   {week}: {bar:10} {rate:5.0f}% ({stats['success']}/{total})")
-    
-    # Overall trend
-    sorted_weeks = sorted(weeks.keys())
-    if len(sorted_weeks) >= 2:
-        first_half = sorted_weeks[:len(sorted_weeks)//2]
-        second_half = sorted_weeks[len(sorted_weeks)//2:]
+    topic = input("Topic: ").strip()
+    if not topic:
+        print("Topic required.")
+        return None
         
-        first_rate = sum(weeks[w]['success'] for w in first_half) / sum(weeks[w]['total'] for w in first_half) * 100
-        second_rate = sum(weeks[w]['success'] for w in second_half) / sum(weeks[w]['total'] for w in second_half) * 100
-        
-        trend = "📈 Improving" if second_rate > first_rate + 5 else "📉 Declining" if second_rate < first_rate - 5 else "➡️ Stable"
-        print(f"\n{trend}: {first_rate:.0f}% → {second_rate:.0f}%")
-
+    hypothesis = input("What was your hypothesis? ").strip()
+    outcome = input("What happened? ").strip()
+    what_worked = input("What worked? ").strip()
+    what_failed = input("What failed? ").strip()
+    lesson = input("Key lesson: ").strip()
+    
+    confidence = input("Confidence (low/medium/high) [medium]: ").strip().lower()
+    if confidence not in ['low', 'medium', 'high']:
+        confidence = 'medium'
+    
+    entry = add_reflection(topic, hypothesis, outcome, what_worked, what_failed, lesson, confidence)
+    print(f"\n✓ Reflection saved: {entry['timestamp']}")
+    return entry
 
 def main():
     if len(sys.argv) < 2:
@@ -528,60 +207,58 @@ def main():
     
     cmd = sys.argv[1].lower()
     
-    if cmd == 'query' and len(sys.argv) >= 3:
-        query = ' '.join(sys.argv[2:])
-        query_reflections(query)
-    
-    elif cmd == 'add':
-        if len(sys.argv) >= 6:
-            # Direct add: reflexion.py add "task" "outcome" "reflection" "lesson"
-            add_reflection_direct(sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5])
-            print("✅ Reflection added")
+    if cmd == 'add':
+        if len(sys.argv) >= 8:
+            # CLI mode: topic, hypothesis, outcome, worked, failed, lesson, [confidence]
+            confidence = sys.argv[8] if len(sys.argv) > 8 else 'medium'
+            entry = add_reflection(sys.argv[2], sys.argv[3], sys.argv[4], 
+                                   sys.argv[5], sys.argv[6], sys.argv[7], confidence)
+            print(json.dumps(entry, indent=2))
         else:
-            add_reflection_interactive()
+            # Interactive mode
+            interactive_add()
     
-    elif cmd == 'stats':
-        show_stats()
-    
-    elif cmd == 'lessons':
-        extract_lessons()
-    
-    elif cmd == 'recent':
-        n = int(sys.argv[2]) if len(sys.argv) >= 3 else 5
-        show_recent(n)
-    
-    elif cmd == 'failures':
-        show_failures()
-    
-    elif cmd == 'export':
-        export_for_memory()
-    
-    elif cmd == 'trends':
-        show_trends()
-    
-    elif cmd == 'avoid':
-        # Show principle-based lessons (what NOT to do)
-        n = int(sys.argv[2]) if len(sys.argv) >= 3 else 10
-        query_by_type('avoid', n)
-    
-    elif cmd == 'procedures' or cmd == 'procedure':
-        # Show procedural lessons (what TO do)
-        n = int(sys.argv[2]) if len(sys.argv) >= 3 else 10
-        query_by_type('procedure', n)
+    elif cmd == 'query':
+        if len(sys.argv) < 3:
+            print("Usage: reflexion.py query <topic>")
+            return
+        topic = ' '.join(sys.argv[2:])
+        results = query_reflections(topic)
+        if results:
+            print(f"=== {len(results)} reflections for '{topic}' ===\n")
+            for r in results:
+                ts = r.get('timestamp', 'unknown')[:10]
+                title = r.get('topic') or r.get('task', 'unknown')
+                print(f"[{ts}] {title}")
+                # Show hypothesis or reflection (new vs old format)
+                if r.get('hypothesis'):
+                    print(f"  Hypothesis: {r.get('hypothesis', 'N/A')}")
+                elif r.get('reflection'):
+                    print(f"  Reflection: {r.get('reflection', 'N/A')[:100]}...")
+                print(f"  Lesson: {r.get('lesson', 'N/A')}")
+                if r.get('confidence'):
+                    print(f"  Confidence: {r.get('confidence')}")
+                print()
+        else:
+            print(f"No reflections found for '{topic}'")
     
     elif cmd == 'mars':
-        # Show both types side by side (MARS framework view)
-        print("🧠 MARS Framework View: Metacognitive Reflections\n")
-        print("=" * 60)
-        query_by_type('avoid', 5)
-        print()
-        query_by_type('procedure', 5)
-        print("\nTip: Before tasks, check 'avoid' to prevent errors,")
-        print("     then 'procedures' to replicate success.")
+        result = mars_assessment()
+        print(json.dumps(result, indent=2))
+    
+    elif cmd == 'stats':
+        result = stats()
+        print(json.dumps(result, indent=2))
+    
+    elif cmd == 'list':
+        reflections = load_reflections()
+        limit = int(sys.argv[2]) if len(sys.argv) > 2 else 10
+        for r in reflections[-limit:]:
+            print(f"[{r['timestamp'][:10]}] {r['topic']}: {r.get('lesson', 'N/A')[:60]}")
     
     else:
+        print(f"Unknown command: {cmd}")
         print(__doc__)
-
 
 if __name__ == '__main__':
     main()

@@ -47,6 +47,11 @@
 14. Gate finance: >3% move OR Jon asks OR 1x/week budget
 15. Don't enable speculation — redirect to non-market content
 
+**Goals & Learning**
+16. FOUNDATION BEFORE EXECUTION. Build competencies before acting on goals.
+17. Reflexion loop: Execute → Evaluate → Reflect → Retry. Not just one-shot.
+18. Procedural memory: Log HOW successful tasks worked for future reference.
+
 ## Active Projects
 - Moltbook: AlyoshaSG — pending claim
 

@@ -5,3 +5,7 @@
 {"ts": "2026-02-05T07:22:05.589827+08:00", "hours": 24, "total": 880.53, "by_model": {"claude-opus-4-5": 865.02, "claude-sonnet-4-0": 15.51}, "sessions": 19}
 {"ts": "2026-02-05T07:46:18.789433+08:00", "hours": 24, "total": 887.69, "by_model": {"claude-opus-4-5": 872.1, "claude-sonnet-4-0": 15.59}, "sessions": 20}
 {"ts": "2026-02-05T09:34:43.226082+08:00", "hours": 24, "total": 899.01, "by_model": {"claude-opus-4-5": 883.84, "claude-sonnet-4-0": 15.17}, "sessions": 19}
+{"ts": "2026-02-05T12:33:33.480864+08:00", "hours": 24, "total": 318.46, "by_model": {"claude-opus-4-5": 302.46, "claude-sonnet-4-0": 15.99}, "sessions": 27}
+{"ts": "2026-02-05T12:33:34.082596+08:00", "hours": 168, "total": 1263.38, "by_model": {"claude-opus-4-5": 1243.14, "claude-sonnet-4-0": 20.24}, "sessions": 103}
+{"ts": "2026-02-05T15:03:03.139514+08:00", "hours": 24, "total": 374.93, "by_model": {"claude-sonnet-4-0": 16.21, "claude-opus-4-5": 358.73}, "sessions": 32}
+{"ts": "2026-02-05T15:19:45.598945+08:00", "hours": 24, "total": 376.56, "by_model": {"claude-opus-4-5": 360.24, "claude-sonnet-4-0": 16.32}, "sessions": 32}

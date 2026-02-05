@@ -3,36 +3,52 @@
 Danelfin API Client
 ===================
 
-Python client for Danelfin AI Stock Scores.
+AI-powered stock scoring - integrates with trading goal for better screening.
 
 Setup:
-    export DANELFIN_API_KEY=your_key_here
-    # OR create .secure/danelfin.env with: DANELFIN_API_KEY=your_key
+    1. Subscribe at https://danelfin.com/pricing/api
+    2. export DANELFIN_API_KEY=your_key_here
+       OR create ~/.secure/danelfin.env with: DANELFIN_API_KEY=your_key
 
 Usage:
-    python3 danelfin-client.py score NVDA
-    python3 danelfin-client.py score NVDA --date 2024-01-15
-    python3 danelfin-client.py top --aiscore-min 9
-    python3 danelfin-client.py sectors
-    python3 danelfin-client.py watchlist NVDA,AAPL,MSFT
+    python3 danelfin-client.py score NVDA              # Get current AI scores
+    python3 danelfin-client.py history NVDA 30         # 30-day score history
+    python3 danelfin-client.py top                     # Today's top 100 stocks
+    python3 danelfin-client.py top10                   # Top 10 by AI Score
+    python3 danelfin-client.py screen 8                # Stocks with AI Score >= 8
+    python3 danelfin-client.py sector technology       # Sector scores
+    python3 danelfin-client.py watchlist NVDA,RTX,UNH  # Score multiple tickers
 
-API Docs: https://danelfin.com/docs/api
+Scores (1-10, higher = better):
+    - AI Score: Overall AI-powered ranking
+    - Technical: Technical analysis rating
+    - Fundamental: Fundamental analysis rating
+    - Sentiment: Market sentiment analysis
+    - Low Risk: Risk assessment (higher = lower risk)
+
+API Tiers:
+    - Basic: 1,000 calls/month, 120/min
+    - Expert: 10,000 calls/month, 240/min
+    - Elite: 100,000 calls/month, 1,200/min
+
+Docs: https://danelfin.com/docs/api
 """
 
 import os
 import sys
 import json
 import urllib.request
-import urllib.error
-from typing import Optional, List, Dict, Any
+import urllib.parse
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timedelta
+from typing import Dict, List, Any, Optional
 
 BASE_URL = "https://apirest.danelfin.com"
 API_KEY = None
 
+
 def get_api_key() -> str:
-    """Load Danelfin API key from environment or .secure/danelfin.env"""
+    """Load API key from environment or file"""
     key = os.environ.get('DANELFIN_API_KEY')
     if key:
         return key
@@ -40,312 +56,318 @@ def get_api_key() -> str:
     env_paths = [
         Path.home() / '.secure/danelfin.env',
         Path('.secure/danelfin.env'),
-        Path('danelfin.env'),
     ]
     
     for path in env_paths:
         if path.exists():
-            with open(path) as f:
-                for line in f:
-                    if line.startswith('DANELFIN_API_KEY='):
-                        return line.split('=', 1)[1].strip()
+            content = path.read_text().strip()
+            for line in content.split('\n'):
+                if line.startswith('DANELFIN_API_KEY='):
+                    return line.split('=', 1)[1].strip()
     
-    raise ValueError(
-        "DANELFIN_API_KEY not found.\n"
-        "Set it via: export DANELFIN_API_KEY=your_key\n"
-        "Or create: .secure/danelfin.env with DANELFIN_API_KEY=your_key"
-    )
+    return None
 
-def init():
-    """Initialize client with API key"""
+
+def api_request(endpoint: str, params: Dict = None) -> Dict:
+    """Make API request to Danelfin"""
     global API_KEY
-    API_KEY = get_api_key()
-
-def _request(endpoint: str, params: dict = None) -> Any:
-    """Make API request with authentication"""
-    if API_KEY is None:
-        init()
+    if not API_KEY:
+        API_KEY = get_api_key()
+        if not API_KEY:
+            print("ERROR: No API key found. Set DANELFIN_API_KEY or create ~/.secure/danelfin.env")
+            sys.exit(1)
     
-    # Build query string
-    params = params or {}
-    query = '&'.join(f"{k}={v}" for k, v in params.items() if v is not None)
     url = f"{BASE_URL}/{endpoint}"
-    if query:
-        url = f"{url}?{query}"
+    if params:
+        url += "?" + urllib.parse.urlencode(params)
     
-    # Create request with API key header
     req = urllib.request.Request(url)
     req.add_header('x-api-key', API_KEY)
     req.add_header('Accept', 'application/json')
     
     try:
-        with urllib.request.urlopen(req, timeout=15) as response:
-            return json.loads(response.read().decode())
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            return json.loads(resp.read().decode())
     except urllib.error.HTTPError as e:
-        body = e.read().decode() if e.fp else ""
-        return {"error": f"HTTP {e.code}: {e.reason}", "detail": body}
-    except Exception as e:
-        return {"error": str(e)}
-
-# ============================================================
-# Core Functions
-# ============================================================
-
-def get_score(ticker: str, date: str = None) -> Dict:
-    """
-    Get AI scores for a specific ticker.
-    
-    Args:
-        ticker: Stock symbol (e.g., NVDA)
-        date: Optional date in YYYY-MM-DD format
-    
-    Returns:
-        Dict with aiscore, fundamental, technical, sentiment, low_risk
-    """
-    params = {'ticker': ticker.upper()}
-    if date:
-        params['date'] = date
-    return _request('ranking', params)
-
-def get_top_stocks(
-    aiscore_min: int = None,
-    fundamental_min: int = None,
-    technical_min: int = None,
-    sentiment_min: int = None,
-    low_risk_min: int = None,
-    sector: str = None,
-    industry: str = None,
-    asset: str = 'stock',
-    date: str = None
-) -> Dict:
-    """
-    Get top-ranked stocks with optional filters.
-    
-    Args:
-        aiscore_min: Minimum AI score (1-10)
-        fundamental_min: Minimum fundamental score
-        technical_min: Minimum technical score
-        sentiment_min: Minimum sentiment score
-        low_risk_min: Minimum low risk score
-        sector: Sector slug (e.g., 'information-technology')
-        industry: Industry slug
-        asset: 'stock' or 'etf'
-        date: Date in YYYY-MM-DD (defaults to today)
-    
-    Returns:
-        Dict of tickers with their scores
-    """
-    params = {
-        'date': date or datetime.now().strftime('%Y-%m-%d'),
-        'asset': asset,
-    }
-    
-    if aiscore_min:
-        params['aiscore_min'] = aiscore_min
-    if fundamental_min:
-        params['fundamental_min'] = fundamental_min
-    if technical_min:
-        params['technical_min'] = technical_min
-    if sentiment_min:
-        params['sentiment_min'] = sentiment_min
-    if low_risk_min:
-        params['low_risk_min'] = low_risk_min
-    if sector:
-        params['sector'] = sector
-    if industry:
-        params['industry'] = industry
-    
-    return _request('ranking', params)
-
-def get_sectors() -> List[Dict]:
-    """Get list of all sectors with their slugs."""
-    return _request('sectors')
-
-def get_sector_scores(sector_slug: str) -> Dict:
-    """
-    Get historical scores for a sector.
-    
-    Args:
-        sector_slug: e.g., 'information-technology', 'energy'
-    """
-    return _request(f'sectors/{sector_slug}')
-
-def get_industries() -> List[Dict]:
-    """Get list of all industries with their slugs."""
-    return _request('industries')
-
-# ============================================================
-# Composite Functions
-# ============================================================
-
-def watchlist_scores(tickers: List[str], date: str = None) -> str:
-    """
-    Generate a formatted score summary for a watchlist.
-    
-    Args:
-        tickers: List of stock symbols
-        date: Optional date
-    
-    Returns:
-        Formatted string for display/Telegram
-    """
-    lines = ["📊 **Danelfin AI Scores**\n"]
-    
-    for ticker in tickers:
-        result = get_score(ticker.upper(), date)
-        
-        if 'error' in result:
-            lines.append(f"❌ **{ticker}**: {result.get('error', 'Unknown error')}")
-            continue
-        
-        # Find the score data (could be nested by date)
-        scores = None
-        if isinstance(result, dict):
-            # Try direct access or find first date key
-            for key, value in result.items():
-                if isinstance(value, dict) and 'aiscore' in value:
-                    scores = value
-                    break
-        
-        if not scores:
-            lines.append(f"❓ **{ticker}**: No score data")
-            continue
-        
-        ai = scores.get('aiscore', '?')
-        fund = scores.get('fundamental', '?')
-        tech = scores.get('technical', '?')
-        sent = scores.get('sentiment', '?')
-        risk = scores.get('low_risk', '?')
-        
-        # Color code AI score
-        if isinstance(ai, int):
-            if ai >= 8:
-                emoji = "🟢"
-            elif ai >= 5:
-                emoji = "🟡"
-            else:
-                emoji = "🔴"
+        if e.code == 403:
+            print("ERROR: Invalid API key or insufficient permissions")
+        elif e.code == 400:
+            print(f"ERROR: Bad request - {e.read().decode()}")
         else:
-            emoji = "⚪"
-        
-        lines.append(
-            f"{emoji} **{ticker}**: AI={ai} | F={fund} T={tech} S={sent} R={risk}"
-        )
-    
-    return '\n'.join(lines)
+            print(f"ERROR: HTTP {e.code}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"ERROR: {e}")
+        sys.exit(1)
 
-def top_picks_summary(min_score: int = 9) -> str:
-    """
-    Get today's top AI-scored stocks.
+
+def format_scores(scores: Dict) -> str:
+    """Format scores for display"""
+    ai = scores.get('aiscore', 'N/A')
+    tech = scores.get('technical', 'N/A')
+    fund = scores.get('fundamental', 'N/A')
+    sent = scores.get('sentiment', 'N/A')
+    risk = scores.get('low_risk', 'N/A')
     
-    Args:
-        min_score: Minimum AI score threshold
+    # Color coding (terminal)
+    def color(val):
+        if val == 'N/A':
+            return val
+        v = int(val) if isinstance(val, str) else val
+        if v >= 8:
+            return f"\033[92m{v}\033[0m"  # Green
+        elif v >= 5:
+            return f"\033[93m{v}\033[0m"  # Yellow
+        else:
+            return f"\033[91m{v}\033[0m"  # Red
     
-    Returns:
-        Formatted summary
-    """
-    result = get_top_stocks(aiscore_min=min_score)
-    
-    if 'error' in result:
-        return f"Error: {result.get('error')}"
-    
-    lines = [f"🏆 **Top Picks (AI Score ≥ {min_score})**\n"]
-    
-    # Result format varies based on query
-    count = 0
-    for key, value in result.items():
-        if isinstance(value, dict):
-            # Could be date -> {ticker -> scores} or ticker -> scores
-            for ticker, scores in (value.items() if 'aiscore' not in value else [(key, value)]):
-                if not isinstance(scores, dict):
-                    continue
-                ai = scores.get('aiscore', 0)
-                if isinstance(ai, int) and ai >= min_score:
-                    fund = scores.get('fundamental', '?')
-                    tech = scores.get('technical', '?')
-                    lines.append(f"  • **{ticker}**: AI={ai} F={fund} T={tech}")
-                    count += 1
-                    if count >= 20:
-                        break
-        if count >= 20:
+    return f"AI:{color(ai)} Tech:{color(tech)} Fund:{color(fund)} Sent:{color(sent)} Risk:{color(risk)}"
+
+
+def cmd_score(ticker: str):
+    """Get current AI scores for a ticker"""
+    today = datetime.now().strftime('%Y-%m-%d')
+    # Try today, then previous trading days
+    for days_back in range(0, 5):
+        date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
+        data = api_request('ranking', {'ticker': ticker.upper(), 'date': date})
+        if data:
             break
     
-    if count == 0:
-        lines.append("  No stocks found matching criteria")
+    if not data:
+        print(f"No data found for {ticker}")
+        return
     
-    return '\n'.join(lines)
+    print(f"\n📊 {ticker.upper()} - Danelfin AI Scores")
+    print("=" * 40)
+    
+    # Data format: {"date": {"aiscore": X, ...}}
+    for date, scores in sorted(data.items(), reverse=True)[:1]:
+        print(f"Date: {date}")
+        print(format_scores(scores))
+        
+        ai = int(scores.get('aiscore', 0))
+        if ai >= 8:
+            print("\n✅ STRONG BUY signal (AI Score 8-10)")
+        elif ai >= 6:
+            print("\n📈 BUY signal (AI Score 6-7)")
+        elif ai <= 3:
+            print("\n⚠️ SELL signal (AI Score 1-3)")
 
-# ============================================================
-# CLI Interface
-# ============================================================
+
+def cmd_history(ticker: str, days: int = 30):
+    """Get score history for a ticker"""
+    data = api_request('ranking', {'ticker': ticker.upper()})
+    
+    if not data:
+        print(f"No data found for {ticker}")
+        return
+    
+    print(f"\n📈 {ticker.upper()} - {days}-Day Score History")
+    print("=" * 50)
+    
+    # Sort by date descending, take last N days
+    sorted_dates = sorted(data.items(), reverse=True)[:days]
+    
+    for date, scores in sorted_dates:
+        print(f"{date}: {format_scores(scores)}")
+
+
+def cmd_top(date: str = None):
+    """Get top 100 stocks by AI Score"""
+    if not date:
+        date = datetime.now().strftime('%Y-%m-%d')
+    
+    data = api_request('ranking', {'date': date, 'aiscore_min': 1})
+    
+    if not data:
+        print(f"No data for {date}")
+        return
+    
+    print(f"\n🏆 Top Stocks by AI Score - {date}")
+    print("=" * 50)
+    
+    # Data format: {"date": {"TICKER": {...}, ...}}
+    if date in data:
+        stocks = data[date]
+    else:
+        stocks = data
+    
+    # Sort by AI score
+    sorted_stocks = sorted(
+        stocks.items(),
+        key=lambda x: int(x[1].get('aiscore', 0)),
+        reverse=True
+    )
+    
+    for ticker, scores in sorted_stocks[:20]:
+        print(f"{ticker:6} {format_scores(scores)}")
+
+
+def cmd_top10():
+    """Get top 10 stocks with AI Score = 10"""
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    for days_back in range(0, 5):
+        date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
+        data = api_request('ranking', {'date': date, 'aiscore': 10})
+        if data:
+            break
+    
+    if not data:
+        print("No stocks with AI Score 10 found")
+        return
+    
+    print(f"\n⭐ AI Score 10 Stocks (Perfect Score)")
+    print("=" * 50)
+    
+    stocks = data.get(date, data)
+    for ticker, scores in list(stocks.items())[:10]:
+        print(f"{ticker:6} {format_scores(scores)}")
+
+
+def cmd_screen(min_score: int = 8):
+    """Screen for stocks with minimum AI Score"""
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    for days_back in range(0, 5):
+        date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
+        data = api_request('ranking', {'date': date, 'aiscore_min': min_score})
+        if data:
+            break
+    
+    if not data:
+        print(f"No stocks with AI Score >= {min_score}")
+        return
+    
+    print(f"\n🔍 Stocks with AI Score >= {min_score}")
+    print("=" * 50)
+    
+    stocks = data.get(date, data)
+    sorted_stocks = sorted(
+        stocks.items(),
+        key=lambda x: int(x[1].get('aiscore', 0)),
+        reverse=True
+    )
+    
+    for ticker, scores in sorted_stocks[:30]:
+        print(f"{ticker:6} {format_scores(scores)}")
+
+
+def cmd_sector(sector_slug: str):
+    """Get sector scores history"""
+    data = api_request(f'sectors/{sector_slug}')
+    
+    if not data:
+        print(f"No data for sector: {sector_slug}")
+        return
+    
+    print(f"\n📊 Sector: {sector_slug}")
+    print("=" * 50)
+    
+    scores = data.get('scores', [])[-10:]  # Last 10 data points
+    for entry in reversed(scores):
+        date = entry.get('date', 'N/A')
+        print(f"{date}: AI:{entry.get('aiscore')} Tech:{entry.get('technical')} Fund:{entry.get('fundamental')}")
+
+
+def cmd_sectors():
+    """List all available sectors"""
+    data = api_request('sectors')
+    
+    print("\n📋 Available Sectors")
+    print("=" * 30)
+    for item in data:
+        print(f"  - {item.get('sector')}")
+
+
+def cmd_watchlist(tickers: str):
+    """Get scores for multiple tickers"""
+    ticker_list = [t.strip().upper() for t in tickers.split(',')]
+    
+    print(f"\n📋 Watchlist Scores")
+    print("=" * 50)
+    
+    for ticker in ticker_list:
+        for days_back in range(0, 5):
+            date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
+            data = api_request('ranking', {'ticker': ticker, 'date': date})
+            if data:
+                break
+        
+        if data:
+            for d, scores in list(data.items())[:1]:
+                ai = int(scores.get('aiscore', 0))
+                signal = "⭐" if ai >= 8 else "📈" if ai >= 6 else "⚠️" if ai <= 3 else "  "
+                print(f"{signal} {ticker:6} {format_scores(scores)}")
+        else:
+            print(f"   {ticker:6} No data")
+
+
+def cmd_trading_screen():
+    """Screen for trading goal - high AI + low risk"""
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    for days_back in range(0, 5):
+        date = (datetime.now() - timedelta(days=days_back)).strftime('%Y-%m-%d')
+        data = api_request('ranking', {
+            'date': date,
+            'aiscore_min': 7,
+            'low_risk_min': 6
+        })
+        if data:
+            break
+    
+    if not data:
+        print("No qualifying stocks found")
+        return
+    
+    print(f"\n🎯 Trading Goal Screen: AI >= 7, Risk >= 6")
+    print("=" * 50)
+    
+    stocks = data.get(date, data)
+    # Sort by AI score, then risk
+    sorted_stocks = sorted(
+        stocks.items(),
+        key=lambda x: (int(x[1].get('aiscore', 0)), int(x[1].get('low_risk', 0))),
+        reverse=True
+    )
+    
+    for ticker, scores in sorted_stocks[:20]:
+        print(f"{ticker:6} {format_scores(scores)}")
+
 
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
         return
     
-    try:
-        init()
-    except ValueError as e:
-        print(f"Error: {e}")
-        print("\nTo use this client, you need a Danelfin API key.")
-        print("Get one at: https://danelfin.com/pricing/api")
-        return
-    
     cmd = sys.argv[1].lower()
-    args = sys.argv[2:]
     
-    if cmd == 'score' and args:
-        ticker = args[0]
-        date = None
-        if '--date' in args:
-            idx = args.index('--date')
-            if idx + 1 < len(args):
-                date = args[idx + 1]
-        
-        result = get_score(ticker, date)
-        print(json.dumps(result, indent=2))
-    
+    if cmd == 'score' and len(sys.argv) >= 3:
+        cmd_score(sys.argv[2])
+    elif cmd == 'history' and len(sys.argv) >= 3:
+        days = int(sys.argv[3]) if len(sys.argv) >= 4 else 30
+        cmd_history(sys.argv[2], days)
     elif cmd == 'top':
-        min_score = 9
-        if '--aiscore-min' in args:
-            idx = args.index('--aiscore-min')
-            if idx + 1 < len(args):
-                min_score = int(args[idx + 1])
-        
-        print(top_picks_summary(min_score))
-    
-    elif cmd == 'watchlist' and args:
-        tickers = args[0].split(',')
-        print(watchlist_scores(tickers))
-    
+        date = sys.argv[2] if len(sys.argv) >= 3 else None
+        cmd_top(date)
+    elif cmd == 'top10':
+        cmd_top10()
+    elif cmd == 'screen':
+        min_score = int(sys.argv[2]) if len(sys.argv) >= 3 else 8
+        cmd_screen(min_score)
+    elif cmd == 'sector' and len(sys.argv) >= 3:
+        cmd_sector(sys.argv[2])
     elif cmd == 'sectors':
-        result = get_sectors()
-        print("Available sectors:")
-        if isinstance(result, list):
-            for s in result:
-                print(f"  • {s.get('sector', s)}")
-        else:
-            print(json.dumps(result, indent=2))
-    
-    elif cmd == 'industries':
-        result = get_industries()
-        print("Available industries:")
-        if isinstance(result, list):
-            for i in result[:30]:  # Limit output
-                print(f"  • {i.get('industry', i)}")
-            if len(result) > 30:
-                print(f"  ... and {len(result) - 30} more")
-        else:
-            print(json.dumps(result, indent=2))
-    
-    elif cmd == 'sector-scores' and args:
-        result = get_sector_scores(args[0])
-        print(json.dumps(result, indent=2))
-    
+        cmd_sectors()
+    elif cmd == 'watchlist' and len(sys.argv) >= 3:
+        cmd_watchlist(sys.argv[2])
+    elif cmd == 'trading':
+        cmd_trading_screen()
     else:
-        print(f"Unknown command: {cmd}")
         print(__doc__)
+
 
 if __name__ == '__main__':
     main()
