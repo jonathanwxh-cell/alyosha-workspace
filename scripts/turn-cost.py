@@ -1,21 +1,22 @@
 #!/usr/bin/env python3
 """
-Per-turn cost estimator for Opus.
+Per-turn cost tracker for Opus.
 
-Estimates cost based on:
-- Context size (from session rotation script or estimate)
-- Input tokens (prompt + context)
-- Output tokens (response length)
+Two modes:
+1. Estimate: Theoretical cost based on context size (less accurate)
+2. Real: Actual cost from session data (accurate)
 
 Pricing (Opus):
 - Input: $15/1M tokens
-- Input (cache read): $1.875/1M tokens  
-- Input (cache write): $18.75/1M tokens
+- Cache read: $1.50/1M tokens (0.1×)
+- Cache write: $18.75/1M tokens (1.25×)
 - Output: $75/1M tokens
 
 Usage:
-    python3 scripts/turn-cost.py --output-chars 500
-    python3 scripts/turn-cost.py --output-chars 2000 --context-pct 70
+    python3 scripts/turn-cost.py real           # Last N turns from session
+    python3 scripts/turn-cost.py real --last 10 # Last 10 turns
+    python3 scripts/turn-cost.py stats          # Session cost distribution
+    python3 scripts/turn-cost.py estimate -o 500  # Estimate for 500 char output
 """
 
 import argparse
@@ -23,124 +24,152 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-# Opus pricing per 1M tokens
+# Opus pricing per 1M tokens (corrected)
 PRICE_INPUT = 15.00
-PRICE_CACHE_READ = 1.875
-PRICE_CACHE_WRITE = 18.75
+PRICE_CACHE_READ = 1.50  # 0.1× input (was incorrectly 1.875)
+PRICE_CACHE_WRITE = 18.75  # 1.25× input
 PRICE_OUTPUT = 75.00
 
-# Model context
-MAX_CONTEXT = 200000  # tokens
+MAX_CONTEXT = 200000
+CHARS_PER_TOKEN = 4
 
-# Estimates
-CHARS_PER_TOKEN = 4  # rough estimate
-SYSTEM_PROMPT_TOKENS = 50000  # baseline system prompt + workspace files
+SESSIONS_DIR = Path.home() / ".openclaw" / "agents" / "main" / "sessions"
 
-def estimate_turn_cost(
-    output_chars: int,
-    context_pct: float = None,
-    input_chars: int = 500,  # user message
-    cache_hit_rate: float = 0.90  # most of system prompt is cached
-) -> dict:
-    """Estimate cost for a single turn."""
+def get_latest_session() -> Path:
+    """Get the most recent session file."""
+    sessions = sorted(SESSIONS_DIR.glob("*.jsonl"), 
+                      key=lambda x: x.stat().st_mtime, reverse=True)
+    return sessions[0] if sessions else None
+
+def get_real_costs(last_n: int = 5) -> list:
+    """Get actual costs from current session."""
+    session = get_latest_session()
+    if not session:
+        return []
     
-    # Get context percentage if not provided
-    if context_pct is None:
-        # Try to read from session-rotation output or estimate
-        context_pct = 70  # default estimate
+    costs = []
+    with open(session) as f:
+        for line in f:
+            try:
+                d = json.loads(line)
+                if 'message' in d and 'usage' in d['message']:
+                    u = d['message']['usage']
+                    c = u.get('cost', {})
+                    if c.get('total'):
+                        costs.append({
+                            'cost': c['total'],
+                            'input': u.get('input', 0),
+                            'output': u.get('output', 0),
+                            'cache_read': u.get('cacheRead', 0),
+                            'cache_write': u.get('cacheWrite', 0),
+                        })
+            except:
+                pass
     
-    # Calculate tokens
-    total_context_tokens = int((context_pct / 100) * MAX_CONTEXT)
+    return costs[-last_n:] if costs else []
+
+def get_session_stats() -> dict:
+    """Get cost statistics for current session."""
+    session = get_latest_session()
+    if not session:
+        return {}
     
-    # New input this turn (user message)
-    new_input_tokens = input_chars // CHARS_PER_TOKEN
+    costs = []
+    with open(session) as f:
+        for line in f:
+            try:
+                d = json.loads(line)
+                if 'message' in d and 'usage' in d['message']:
+                    c = d['message']['usage'].get('cost', {}).get('total', 0)
+                    if c > 0:
+                        costs.append(c)
+            except:
+                pass
     
-    # Output tokens
-    output_tokens = output_chars // CHARS_PER_TOKEN
-    
-    # Context breakdown
-    cached_tokens = int(total_context_tokens * cache_hit_rate)
-    uncached_tokens = total_context_tokens - cached_tokens
-    
-    # Cost calculation
-    cache_read_cost = (cached_tokens / 1_000_000) * PRICE_CACHE_READ
-    cache_write_cost = (uncached_tokens / 1_000_000) * PRICE_CACHE_WRITE
-    new_input_cost = (new_input_tokens / 1_000_000) * PRICE_INPUT
-    output_cost = (output_tokens / 1_000_000) * PRICE_OUTPUT
-    
-    total_cost = cache_read_cost + cache_write_cost + new_input_cost + output_cost
+    if not costs:
+        return {}
     
     return {
-        "context_pct": context_pct,
-        "context_tokens": total_context_tokens,
-        "cached_tokens": cached_tokens,
-        "uncached_tokens": uncached_tokens,
-        "new_input_tokens": new_input_tokens,
-        "output_tokens": output_tokens,
-        "cache_read_cost": round(cache_read_cost, 4),
-        "cache_write_cost": round(cache_write_cost, 4),
-        "new_input_cost": round(new_input_cost, 4),
-        "output_cost": round(output_cost, 4),
-        "total_cost": round(total_cost, 4)
+        'turns': len(costs),
+        'total': sum(costs),
+        'avg': sum(costs) / len(costs),
+        'min': min(costs),
+        'max': max(costs),
+        'distribution': {
+            '<$0.10': sum(1 for c in costs if c < 0.10),
+            '$0.10-0.20': sum(1 for c in costs if 0.10 <= c < 0.20),
+            '$0.20-0.50': sum(1 for c in costs if 0.20 <= c < 0.50),
+            '$0.50-1.00': sum(1 for c in costs if 0.50 <= c < 1.00),
+            '>$1.00': sum(1 for c in costs if c >= 1.00),
+        }
     }
 
-def format_cost(cost_data: dict) -> str:
-    """Format cost for display."""
-    return f"~${cost_data['total_cost']:.2f}"
-
-def format_detailed(cost_data: dict) -> str:
-    """Detailed breakdown."""
-    return f"""Turn Cost Estimate:
-  Context: {cost_data['context_pct']}% ({cost_data['context_tokens']:,} tokens)
-    - Cached: {cost_data['cached_tokens']:,} → ${cost_data['cache_read_cost']:.4f}
-    - Uncached: {cost_data['uncached_tokens']:,} → ${cost_data['cache_write_cost']:.4f}
-  New input: {cost_data['new_input_tokens']:,} tokens → ${cost_data['new_input_cost']:.4f}
-  Output: {cost_data['output_tokens']:,} tokens → ${cost_data['output_cost']:.4f}
-  ─────────────────────
-  TOTAL: ${cost_data['total_cost']:.2f}"""
-
-def log_turn(cost_data: dict, note: str = None):
-    """Log turn cost to daily file."""
-    log_file = Path(__file__).parent.parent / "memory" / "turn-costs.jsonl"
-    entry = {
-        "ts": datetime.utcnow().isoformat(),
-        **cost_data
+def estimate_cost(output_chars: int, input_chars: int = 100, 
+                  context_pct: float = 50, cache_rate: float = 0.95) -> dict:
+    """Estimate cost (less accurate than real)."""
+    context_tokens = int((context_pct / 100) * MAX_CONTEXT)
+    cached = int(context_tokens * cache_rate)
+    uncached = context_tokens - cached
+    
+    output_tokens = output_chars // CHARS_PER_TOKEN
+    input_tokens = input_chars // CHARS_PER_TOKEN
+    
+    cost = (
+        (cached / 1e6) * PRICE_CACHE_READ +
+        (uncached / 1e6) * PRICE_CACHE_WRITE +
+        (input_tokens / 1e6) * PRICE_INPUT +
+        (output_tokens / 1e6) * PRICE_OUTPUT
+    )
+    
+    return {
+        'estimated_cost': round(cost, 4),
+        'context_pct': context_pct,
+        'output_tokens': output_tokens,
+        'note': 'Estimate only - use "real" for actual costs'
     }
-    if note:
-        entry["note"] = note
-    with open(log_file, "a") as f:
-        f.write(json.dumps(entry) + "\n")
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Estimate per-turn Opus cost")
-    parser.add_argument("--output-chars", "-o", type=int, default=1000,
-                        help="Output character count")
-    parser.add_argument("--input-chars", "-i", type=int, default=500,
-                        help="Input (user message) character count")
-    parser.add_argument("--context-pct", "-c", type=float, default=None,
-                        help="Context percentage (0-100)")
-    parser.add_argument("--cache-rate", type=float, default=0.90,
-                        help="Cache hit rate (0-1)")
-    parser.add_argument("--detailed", "-d", action="store_true",
-                        help="Show detailed breakdown")
-    parser.add_argument("--log", action="store_true",
-                        help="Log to turn-costs.jsonl")
-    parser.add_argument("--note", type=str, default=None,
-                        help="Note for log entry")
+def main():
+    parser = argparse.ArgumentParser(description="Turn cost tracker")
+    parser.add_argument("mode", choices=["real", "stats", "estimate"], 
+                        default="stats", nargs="?")
+    parser.add_argument("--last", "-n", type=int, default=5,
+                        help="Number of recent turns (real mode)")
+    parser.add_argument("--output-chars", "-o", type=int, default=500)
+    parser.add_argument("--context-pct", "-c", type=float, default=50)
     
     args = parser.parse_args()
     
-    cost = estimate_turn_cost(
-        output_chars=args.output_chars,
-        context_pct=args.context_pct,
-        input_chars=args.input_chars,
-        cache_hit_rate=args.cache_rate
-    )
-    
-    if args.detailed:
-        print(format_detailed(cost))
-    else:
-        print(format_cost(cost))
-    
-    if args.log:
-        log_turn(cost, args.note)
+    if args.mode == "real":
+        costs = get_real_costs(args.last)
+        if not costs:
+            print("No cost data found")
+            return
+        print(f"Last {len(costs)} turns (actual cost):")
+        for i, c in enumerate(costs, 1):
+            print(f"  {i}. ${c['cost']:.4f} (out:{c['output']:,} cache:{c['cache_read']:,})")
+        total = sum(c['cost'] for c in costs)
+        print(f"  Total: ${total:.4f} | Avg: ${total/len(costs):.4f}")
+        
+    elif args.mode == "stats":
+        stats = get_session_stats()
+        if not stats:
+            print("No session data")
+            return
+        print(f"Session Cost Stats:")
+        print(f"  Turns: {stats['turns']:,}")
+        print(f"  Total: ${stats['total']:.2f}")
+        print(f"  Avg:   ${stats['avg']:.4f}")
+        print(f"  Range: ${stats['min']:.4f} - ${stats['max']:.4f}")
+        print(f"  Distribution:")
+        for bucket, count in stats['distribution'].items():
+            pct = count / stats['turns'] * 100
+            bar = '█' * int(pct / 5)
+            print(f"    {bucket:12} {count:4} ({pct:5.1f}%) {bar}")
+            
+    elif args.mode == "estimate":
+        est = estimate_cost(args.output_chars, context_pct=args.context_pct)
+        print(f"Estimated: ${est['estimated_cost']:.4f}")
+        print(f"  ({est['note']})")
+
+if __name__ == "__main__":
+    main()
