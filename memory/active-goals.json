@@ -20,12 +20,12 @@
         {
           "id": "sub3",
           "description": "Add: LLM decomposition (goal \u2192 sub-goals)",
-          "status": "pending"
+          "status": "complete"
         },
         {
           "id": "sub4",
           "description": "Integrate: sessions_spawn for parallel execution",
-          "status": "pending"
+          "status": "complete"
         },
         {
           "id": "sub5",
@@ -38,7 +38,88 @@
           "status": "pending"
         }
       ],
-      "progress_pct": 33,
+      "progress_pct": 66,
+      "notes": []
+    },
+    {
+      "id": "d7954474",
+      "description": "Write and publish first Substack post about AI consciousness",
+      "status": "active",
+      "created": "2026-02-05 09:50 SGT",
+      "updated": "2026-02-05 09:50 SGT",
+      "sub_goals": [
+        {
+          "id": "e6701746",
+          "description": "Research: Gather 3-5 key sources on AI consciousness (IIT, GWT, phenomenal experience)",
+          "status": "pending",
+          "step": 1,
+          "type": "research",
+          "can_parallel": false,
+          "created": "2026-02-05 09:50 SGT",
+          "agent_session": null
+        },
+        {
+          "id": "2bed94d7",
+          "description": "Research: Review recent developments (Anthropic safety, consciousness tests)",
+          "status": "pending",
+          "step": 2,
+          "type": "research",
+          "can_parallel": true,
+          "created": "2026-02-05 09:50 SGT",
+          "agent_session": null
+        },
+        {
+          "id": "8a2ef83e",
+          "description": "Outline: Create post structure with thesis + 3-4 sections",
+          "status": "pending",
+          "step": 3,
+          "type": "execute",
+          "can_parallel": false,
+          "created": "2026-02-05 09:50 SGT",
+          "agent_session": null
+        },
+        {
+          "id": "6435023b",
+          "description": "Draft: Write first draft (~1500 words)",
+          "status": "pending",
+          "step": 4,
+          "type": "execute",
+          "can_parallel": false,
+          "created": "2026-02-05 09:50 SGT",
+          "agent_session": null
+        },
+        {
+          "id": "905d2ffb",
+          "description": "Polish: Edit for clarity, add examples, tighten prose",
+          "status": "pending",
+          "step": 5,
+          "type": "execute",
+          "can_parallel": false,
+          "created": "2026-02-05 09:50 SGT",
+          "agent_session": null
+        },
+        {
+          "id": "dcb07030",
+          "description": "Review: Self-critique - is it interesting? What's missing?",
+          "status": "pending",
+          "step": 6,
+          "type": "verify",
+          "can_parallel": false,
+          "created": "2026-02-05 09:50 SGT",
+          "agent_session": null
+        },
+        {
+          "id": "648f31a3",
+          "description": "Publish: Format for Substack, add images, publish",
+          "status": "pending",
+          "step": 7,
+          "type": "execute",
+          "can_parallel": false,
+          "created": "2026-02-05 09:50 SGT",
+          "agent_session": null
+        }
+      ],
+      "progress_pct": 0,
       "notes": []
     }
   ],
